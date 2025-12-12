@@ -26,37 +26,71 @@ def process_ticker(
     scraper: ScreenerScraper,
     dry_run: bool = False,
     force: bool = False,
+    max_retries: int = 3,
 ) -> None:
-    """Fetch data for a single ticker and upsert it to the database."""
-    try:
-        # 1. Check freshness if not forcing an update
-        if not force:
+    """Fetch data for a single ticker and upsert it to the database with retry logic."""
+    ticker = ticker.strip().upper()
+    
+    # 1. Check freshness if not forcing an update
+    # We do this outside the retry loop to avoid unnecessary DB calls
+    if not force:
+        try:
             existing = manager.fetch_ticker(ticker)
             if existing and not SupabaseManager.needs_refresh(existing):
                 logging.info("Processed %s: skipped (data is fresh)", ticker)
                 return
+        except Exception as e:
+            logging.warning("Freshness check failed for %s: %s. Proceeding to scrape.", ticker, e)
 
-        # 2. Scrape data (now includes Industry & Industry PE)
-        payload = scraper.fetch_company_payload(ticker)
-        payload["ticker"] = ticker
+    # 2. Scrape data with Retry Logic
+    payload = None
+    for attempt in range(max_retries):
+        try:
+            # Scraper now internally handles Standalone vs Consolidated via scr_bind.json
+            payload = scraper.fetch_company_payload(ticker)
+            payload["ticker"] = ticker
+            break  # Success, exit loop
+        except Exception as exc:
+            error_msg = str(exc)
+            is_last_attempt = attempt == max_retries - 1
+            
+            if "429" in error_msg:
+                if is_last_attempt:
+                    logging.error("Processed %s: failed (Rate Limited after %d attempts)", ticker, max_retries)
+                    return
+                
+                # Exponential backoff for rate limits: 5s, 10s, 15s...
+                wait_time = 5 * (attempt + 1)
+                logging.warning("Rate limited for %s. Retrying in %ds...", ticker, wait_time)
+                time.sleep(wait_time)
+                continue
+            
+            elif "404" in error_msg:
+                logging.error("Processed %s: failed (404 Not Found)", ticker)
+                return # Don't retry 404s
+            
+            else:
+                if is_last_attempt:
+                    logging.error("Processed %s: failed. Reason: %s", ticker, error_msg)
+                    return
+                logging.warning("Error fetching %s: %s. Retrying...", ticker, error_msg)
+                time.sleep(2) # Short sleep for generic errors
 
-        # 3. Dry Run Check
+    if not payload:
+        return
+
+    # 3. Dry Run / Save
+    try:
         if dry_run:
-            logging.info(
-                "Processed %s: dry-run success (Industry: %s)", 
-                ticker, 
-                payload["metadata"].get("industry", "Unknown")
-            )
+            industry = payload.get("metadata", {}).get("industry", "Unknown")
+            logging.info("Processed %s: dry-run success (Industry: %s)", ticker, industry)
             return
 
-        # 4. Save to Database
         manager.upsert_record(payload)
         logging.info("Processed %s: success", ticker)
 
     except Exception as exc:
-        # Catch-all to ensure one failure doesn't stop the whole batch
-        logging.error("Processed %s: failed", ticker)
-        logging.error("Reason: %s", str(exc))
+        logging.error("Database save failed for %s: %s", ticker, str(exc))
 
 
 def chunked(iterable: Iterable[str], size: int) -> Iterable[List[str]]:
@@ -87,7 +121,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     
     try:
         manager = SupabaseManager()
-        scraper = ScreenerScraper()
+        scraper = ScreenerScraper() # Loads scr_bind.json automatically
     except Exception as e:
         logging.critical("Failed to initialize backend services: %s", e)
         return 1
@@ -116,7 +150,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # 3. Randomize Execution
     # Important: Screener.in groups stocks by sector ID. 
-    # Shuffling prevents hitting the same "sector server" sequentially, reducing 403 blocks.
+    # Shuffling prevents hitting the same "sector server" sequentially, reducing 403/429 blocks.
     random.shuffle(tickers)
 
     # 4. Process Loop

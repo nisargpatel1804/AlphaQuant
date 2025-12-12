@@ -1,6 +1,7 @@
 """Comprehensive logic layer that evaluates the 107 fundamental scans with Smart Filters."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -12,19 +13,61 @@ MIN_SERIES_LENGTH = 3
 
 # Industries that do not have physical inventory
 NON_INVENTORY_SECTORS = {
-    "Stockbroking & Allied", "Banks", "Finance", "NBFC", "IT - Software", 
+    "Stockbroking & Allied", "Banks", "Finance", "NBFC", "IT - Software",
     "IT - Services", "Insurance", "Asset Management", "Ratings", "Exchange",
     "Other Bank", "Housing Finance Company", "Private Bank", "Public Bank"
+}
+
+NON_INVENTORY_KEYWORDS = {
+    "bank", "banking", "nbfc", "finance", "financial", "broker", "broking",
+    "stockbroker", "stockbroking", "exchange", "asset management", "insurance",
+    "rating", "ratings", "lending", "fintech", "credit", "housing finance",
+    "microfinance", "it services", "software"
 }
 
 # Industries where Debt/Leverage/EBITDA scans are misleading
 # Banks borrow money (Deposits) to lend, so High Debt is normal.
 # They also don't report standard EBITDA.
 FINANCIAL_SECTORS = {
-    "Banks", "Finance", "NBFC", "Housing Finance", "Microfinance", 
+    "Banks", "Finance", "NBFC", "Housing Finance", "Microfinance",
     "Other Bank", "Housing Finance Company", "Private Bank", "Public Bank",
     "Stockbroking & Allied", "Asset Management", "Insurance"
 }
+
+FINANCIAL_KEYWORDS = {
+    "bank", "banking", "nbfc", "finance", "financial", "lending",
+    "microfinance", "stockbroking", "brokerage", "broker", "exchange",
+    "asset management", "insurance", "credit", "finserv", "fintech"
+}
+
+
+def _tokenize_industry(value: Optional[str]) -> List[str]:
+    if not value:
+        return []
+    raw_tokens = re.findall(r"[a-z0-9]+", value.lower())
+    tokens: List[str] = []
+    for token in raw_tokens:
+        if not token:
+            continue
+        tokens.append(token)
+        if token.endswith("ies") and len(token) > 3:
+            tokens.append(token[:-3] + "y")
+        elif token.endswith("s") and len(token) > 3:
+            tokens.append(token[:-1])
+    return list(dict.fromkeys(tokens))
+
+
+def _industry_matches(industry_tokens: List[str], candidates: Iterable[str]) -> bool:
+    if not industry_tokens:
+        return False
+    token_set = set(industry_tokens)
+    for candidate in candidates:
+        cand_tokens = _tokenize_industry(candidate)
+        if not cand_tokens:
+            continue
+        if set(cand_tokens).issubset(token_set):
+            return True
+    return False
 
 # List of scans to strictly SKIP for Financial Sectors
 FINANCIAL_SKIP_SCANS = {
@@ -40,6 +83,7 @@ FINANCIAL_SKIP_SCANS = {
     "scan_mod_interest_coverage", "scan_low_interest_coverage",
     "scan_high_current_ratio", "scan_mod_current_ratio", 
     "scan_low_current_ratio",
+    "scan_consistently_increasing_leverage", "scan_consistently_decreasing_leverage",
 
     # ROCE (Banks use ROE/ROA, ROCE is less relevant)
     "scan_high_roce", "scan_improved_roce", "scan_consistently_high_roce",
@@ -168,12 +212,6 @@ def _build_scan_definitions() -> Tuple[ScanDefinition, ...]:
         ("scan_share_dii_consistent_increase", "Consistent DII Buying (3 Qtrs)"),
         ("scan_share_promoter_consistent_increase", "Consistent Promoter Buying (3 Qtrs)"),
         ("scan_share_public_consistent_increase", "Consistent Public Buying (3 Qtrs)"),
-        ("scan_share_mf_increase", "Mutual Fund Buying QoQ"),
-        ("scan_share_mf_decrease", "Mutual Fund Selling QoQ"),
-        ("scan_share_mf_consistent_increase", "Consistent Mutual Fund Buying"),
-        ("scan_share_insurance_increase", "Insurance Buying QoQ"),
-        ("scan_share_insurance_decrease", "Insurance Selling QoQ"),
-        ("scan_share_insurance_consistent_increase", "Consistent Insurance Buying"),
         ("scan_share_promoter_very_high", "Very High Promoter Holding (>75%)"),
         ("scan_share_promoter_high", "High Promoter Holding (50-75%)"),
         ("scan_share_promoter_low", "Low Promoter Holding (<50%)"),
@@ -225,8 +263,13 @@ class FundamentalScans:
     SCANS = _build_scan_definitions()
 
     def __init__(self, data: Dict[str, Any]):
-        self.data = data or {}
-        self.metadata = self._build_metadata()
+        # Ensure data is a dictionary
+        if not isinstance(data, dict):
+            data = {}
+
+        self.data = data
+        # Core datasets must be available before metadata so derived metrics (ROE/ROCE)
+        # can safely reference them during _build_metadata.
         self.quarterly = self.data.get("quarterly_results") or {}
         self.annual = self.data.get("profit_loss_annual") or {}
         self.balance_sheet = self.data.get("balance_sheet") or {}
@@ -237,20 +280,19 @@ class FundamentalScans:
         self.shareholding_y = shareholding.get("yearly") or {}
         self._period_cache: Dict[int, List[str]] = {}
         self._current_value: Optional[float] = None
-        
+        self.metadata = self._build_metadata()
+
         # Industry context for Smart Filters
         self.industry = self.metadata.get("industry", "Unknown")
-        self._identify_missing_data_columns()
-
-    def _identify_missing_data_columns(self):
-        """Identify if specific granular data (MF, Insurance) is missing from source."""
-        # Check first available quarter for keys
-        periods = self._get_sorted_periods(self.shareholding_q)
-        if periods:
-            latest = self.shareholding_q[periods[0]]
-            self.has_granular_shareholding = "mutual_funds" in latest or "insurance" in latest
-        else:
-            self.has_granular_shareholding = False
+        self.archetype = self.industry  # For now, archetype is the industry
+        self._industry_tokens = _tokenize_industry(self.industry)
+        self._industry_text = (self.industry or "").lower()
+        self.is_financial = _industry_matches(self._industry_tokens, FINANCIAL_SECTORS) or any(
+            keyword in self._industry_text for keyword in FINANCIAL_KEYWORDS
+        )
+        self.is_non_inventory = self.is_financial or _industry_matches(self._industry_tokens, NON_INVENTORY_SECTORS) or any(
+            keyword in self._industry_text for keyword in NON_INVENTORY_KEYWORDS
+        )
 
     # ------------------------------------------------------------------
     # Helper utilities
@@ -261,6 +303,13 @@ class FundamentalScans:
             # Fallback: check root data if not in metadata block
             if field not in base and field in self.data:
                 base[field] = self.data[field]
+        
+        # Compute ROE and ROCE if missing
+        if base.get("roe") is None:
+            base["roe"] = self._compute_roe()
+        if base.get("roce") is None:
+            base["roce"] = self._compute_roce()
+        
         return base
 
     def _record_value(self, value: Optional[float]) -> None:
@@ -299,6 +348,16 @@ class FundamentalScans:
         if limit is not None: periods = periods[:limit]
         return [dataset.get(p, {}).get(metric) for p in periods]
 
+    def _has_metric_history(self, dataset: Dict[str, Any], metric: str, min_count: int) -> bool:
+        count = 0
+        for period in self._get_sorted_periods(dataset):
+            value = dataset.get(period, {}).get(metric)
+            if value is not None:
+                count += 1
+                if count >= min_count:
+                    return True
+        return False
+
     @staticmethod
     def _safe_growth(current: Optional[float], previous: Optional[float]) -> Optional[float]:
         if current is None or previous is None: return None
@@ -320,6 +379,43 @@ class FundamentalScans:
         if denominator == 0: return 0.0
         try: return numerator / denominator
         except ZeroDivisionError: return None
+
+    def _is_loss_making(self) -> bool:
+        """Check if the company is loss-making based on latest fiscal year net profit (excluding TTM)."""
+        # Get sorted periods and skip TTM if it's the first one
+        periods = self._get_sorted_periods(self.annual)
+        if not periods:
+            return False
+        
+        # Use first non-TTM period for loss-making determination
+        idx = 0
+        if periods[0].strip().upper() == "TTM" and len(periods) > 1:
+            idx = 1
+        
+        np = self._get_value(self.annual, idx, "net_profit")
+        return np is not None and np < 0
+
+    def _compute_roe(self) -> Optional[float]:
+        """Compute ROE dynamically from latest data."""
+        np = self._get_value(self.annual, 0, "net_profit")
+        eq = self._get_value(self.balance_sheet, 0, "equity_capital")
+        res = self._get_value(self.balance_sheet, 0, "reserves")
+        den = None if eq is None or res is None else eq + res
+        roe = self._safe_divide(np, den)
+        return roe * 100 if roe is not None else None
+
+    def _compute_roce(self) -> Optional[float]:
+        """Compute ROCE dynamically from latest data."""
+        # ROCE = EBIT / Capital Employed
+        # Capital Employed = Total Assets - Current Liabilities
+        ebit = self._get_value(self.quarterly, 0, "operating_profit")  # or annual
+        if ebit is None:
+            ebit = self._get_value(self.annual, 0, "operating_profit")
+        ta = self._get_value(self.balance_sheet, 0, "total_assets")
+        cl = self._get_value(self.balance_sheet, 0, "current_liabilities")
+        ce = self._safe_divide(ta - cl, 1) if ta is not None and cl is not None else None
+        roce = self._safe_divide(ebit, ce)
+        return roce * 100 if roce is not None else None
 
     def _same_quarter_last_year(self, metric: str) -> Tuple[Optional[float], Optional[float]]:
         periods = self._get_sorted_periods(self.quarterly)
@@ -379,12 +475,41 @@ class FundamentalScans:
         return self._safe_divide(op, int_exp)
 
     def _current_ratio(self) -> Optional[float]:
-        ca, cl = self._get_value(self.balance_sheet, 0, "current_assets"), self._get_value(self.balance_sheet, 0, "current_liabilities")
-        if ca is None:
-            ta, fa = self._get_value(self.balance_sheet, 0, "total_assets"), self._get_value(self.balance_sheet, 0, "fixed_assets")
-            if ta is not None and fa is not None:
-                ca = ta - fa - (self._get_value(self.balance_sheet, 0, "cwip") or 0) - (self._get_value(self.balance_sheet, 0, "investments") or 0)
-        return self._safe_divide(ca, cl)
+        periods = self._get_sorted_periods(self.balance_sheet)
+        for period in periods:
+            bs = self.balance_sheet[period]
+            ca = bs.get("current_assets")
+            cl = bs.get("current_liabilities")
+            
+            # Calculate Current Assets if missing
+            # Formula: CA = Total Assets - Fixed Assets - CWIP - Investments
+            if ca is None:
+                ta = bs.get("total_assets")
+                fa = bs.get("fixed_assets")
+                cwip = bs.get("cwip") or 0
+                investments = bs.get("investments") or 0
+                if ta is not None and fa is not None:
+                    ca = ta - fa - cwip - investments
+            
+            # Calculate Current Liabilities if missing
+            # Formula: CL = Total Liabilities - Equity - Reserves - Long-term Borrowings
+            if cl is None:
+                tl = bs.get("total_liabilities")
+                equity = bs.get("equity_capital") or 0
+                reserves = bs.get("reserves") or 0
+                # Try long_term_borrowings first, fallback to borrowings (assuming it's long-term)
+                lt_borrowings = bs.get("long_term_borrowings") or bs.get("borrowings") or 0
+                if tl is not None:
+                    cl = tl - equity - reserves - lt_borrowings
+                    # Ensure CL is non-negative (accounting sanity check)
+                    if cl is not None and cl < 0:
+                        cl = None
+            
+            # Return ratio if both components are available
+            if ca is not None and cl is not None:
+                return self._safe_divide(ca, cl)
+        
+        return None
 
     def _cfo_series(self) -> List[Tuple[str, float]]:
         return [(p, self.cash_flow.get(p, {}).get("cash_from_operating")) for p in self._get_sorted_periods(self.cash_flow) if self.cash_flow.get(p, {}).get("cash_from_operating") is not None]
@@ -420,6 +545,173 @@ class FundamentalScans:
     def _dividend_series(self) -> List[float]:
         return [self.annual.get(p, {}).get("dividend_payout_percent") for p in self._get_sorted_periods(self.annual) if self.annual.get(p, {}).get("dividend_payout_percent") is not None]
 
+    def _has_required_data(self, scan_name: str) -> bool:
+        """Check if sufficient data exists to run a scan. Return False to skip the scan."""
+        # Dividend scans
+        if scan_name == "scan_consistent_dividends":
+            return len(self._dividend_series()) >= 5
+        if scan_name == "scan_high_dividend_payout":
+            return len(self._dividend_series()) >= MIN_SERIES_LENGTH
+        
+        # EPS consistency scans
+        if scan_name in {"scan_consistent_inc_ann_eps", "scan_consistent_dec_ann_eps"}:
+            return self._has_metric_history(self.annual, "eps", MIN_SERIES_LENGTH)
+        if scan_name in {"scan_consistent_inc_qtr_eps", "scan_consistent_dec_qtr_eps"}:
+            return self._has_metric_history(self.quarterly, "eps", MIN_SERIES_LENGTH)
+        
+        # Book value scans
+        if scan_name in {"scan_price_above_book", "scan_price_below_book"}:
+            return self.metadata.get("book_value") is not None and self.metadata.get("current_price") is not None
+        
+        # ROE scans requiring historical data
+        if scan_name == "scan_improved_roe":
+            roe_series = self._roe_series()
+            return len(roe_series) >= 2
+        if scan_name == "scan_consistently_high_roe":
+            roe_series = self._roe_series()
+            return len(roe_series) >= MIN_SERIES_LENGTH
+        
+        # ROCE scans requiring historical data
+        if scan_name in {"scan_improved_roce", "scan_consistently_high_roce"}:
+            roce_series = self._roce_series()
+            required = 2 if "improved" in scan_name else MIN_SERIES_LENGTH
+            return len(roce_series) >= required
+        
+        # Profitability "highest" scans (need 2+ periods to compare)
+        if scan_name in {"scan_highest_qtr_net_profit", "scan_highest_qtr_ebitda"}:
+            periods = self._get_sorted_periods(self.quarterly)
+            return len(periods) >= 2
+        if scan_name in {"scan_highest_ann_net_profit", "scan_highest_ann_ebitda"}:
+            periods = self._get_sorted_periods(self.annual)
+            return len(periods) >= 2
+        
+        # Margin consistency scans (need MIN_SERIES_LENGTH periods)
+        if scan_name == "scan_consistently_high_ebitda_margin":
+            values = self._get_series(self.annual, "opm_percent", MIN_SERIES_LENGTH)
+            return len([v for v in values if v is not None]) >= MIN_SERIES_LENGTH
+        if scan_name == "scan_consistently_high_pat_margin":
+            # Check if we can compute PAT margin for MIN_SERIES_LENGTH periods
+            periods = self._get_sorted_periods(self.annual)
+            return len(periods) >= MIN_SERIES_LENGTH and all(
+                self.annual.get(p, {}).get("net_profit") is not None and
+                self.annual.get(p, {}).get("sales") is not None
+                for p in periods[:MIN_SERIES_LENGTH]
+            )
+        
+        # Sales growth scans
+        if scan_name == "scan_consistent_sales_growth":
+            periods = self._get_sorted_periods(self.annual)
+            # Need 4 periods to check 3 growth transitions
+            return len(periods) >= 4 and all(
+                self.annual.get(p, {}).get("sales") is not None 
+                for p in periods[:4]
+            )
+        if scan_name in {"scan_highest_qtr_sales"}:
+            periods = self._get_sorted_periods(self.quarterly)
+            return len(periods) >= 2
+        if scan_name in {"scan_highest_ann_sales"}:
+            periods = self._get_sorted_periods(self.annual)
+            return len(periods) >= 2
+        if scan_name == "scan_high_ann_sales_growth":
+            periods = self._get_sorted_periods(self.annual)
+            return len(periods) >= 2 and all(
+                self.annual.get(p, {}).get("sales") is not None
+                for p in periods[:2]
+            )
+        
+        # Cash flow scans
+        if scan_name in {"scan_increasing_cfo"}:
+            cfo_series = self._cfo_series()
+            return len(cfo_series) >= 2
+        if scan_name in {"scan_consistent_positive_cfo", "scan_growing_cfo"}:
+            cfo_series = self._cfo_series()
+            return len(cfo_series) >= MIN_SERIES_LENGTH
+        if scan_name == "scan_increasing_fcf":
+            periods = self._get_sorted_periods(self.cash_flow)
+            return len(periods) >= 2 and all(
+                self.cash_flow.get(p, {}).get("cash_from_operating") is not None and
+                self.cash_flow.get(p, {}).get("cash_from_investing") is not None
+                for p in periods[:2]
+            )
+        if scan_name in {"scan_consistent_positive_fcf", "scan_consistently_declining_fcf"}:
+            # Check if we have CFO and investing cash flow for MIN_SERIES_LENGTH periods
+            periods = self._get_sorted_periods(self.cash_flow)
+            return len(periods) >= MIN_SERIES_LENGTH and all(
+                self.cash_flow.get(p, {}).get("cash_from_operating") is not None and
+                self.cash_flow.get(p, {}).get("cash_from_investing") is not None
+                for p in periods[:MIN_SERIES_LENGTH]
+            )
+        if scan_name == "scan_highest_ann_cfo":
+            periods = self._get_sorted_periods(self.cash_flow)
+            return len(periods) >= 2
+        
+        # Solvency/Leverage scans requiring historical data
+        if scan_name in {"scan_consistently_increasing_leverage", "scan_consistently_decreasing_leverage"}:
+            # Need to be able to calculate leverage for MIN_SERIES_LENGTH periods
+            periods = self._get_sorted_periods(self.balance_sheet)
+            return len(periods) >= MIN_SERIES_LENGTH
+        
+        # Valuation scans requiring historical comparison
+        if scan_name in {"scan_increasing_ev_ebitda", "scan_decreasing_ev_ebitda"}:
+            # Need 2 periods to compare EV/EBITDA
+            periods_annual = self._get_sorted_periods(self.annual)
+            periods_bs = self._get_sorted_periods(self.balance_sheet)
+            return len(periods_annual) >= 2 and len(periods_bs) >= 2
+        
+        if scan_name in {"scan_high_peg", "scan_low_peg"}:
+            # PEG requires PE and EPS growth - need multiple periods for EPS
+            if self.metadata.get("stock_pe") is None:
+                return False
+            periods = self._get_sorted_periods(self.annual)
+            return len(periods) >= 2 and all(
+                self.annual.get(p, {}).get("eps") is not None
+                for p in periods[:2]
+            )
+        
+        # Efficiency/Fixed Asset scans
+        if scan_name == "scan_high_gfa_increase":
+            periods = self._get_sorted_periods(self.balance_sheet)
+            return len(periods) >= 2 and all(
+                self.balance_sheet.get(p, {}).get("fixed_assets") is not None
+                for p in periods[:2]
+            )
+        if scan_name == "scan_high_gfa_increase_three_year":
+            periods = self._get_sorted_periods(self.balance_sheet)
+            return len(periods) >= MIN_SERIES_LENGTH and all(
+                self.balance_sheet.get(p, {}).get("fixed_assets") is not None
+                for p in periods[:MIN_SERIES_LENGTH]
+            )
+
+        
+        # Ratio/Efficiency scans requiring historical data
+        ratio_scans = {
+            "scan_increasing_debtor_days", "scan_decreasing_debtor_days",
+            "scan_increasing_payable_days", "scan_decreasing_payable_days",
+            "scan_increasing_inventory_days", "scan_decreasing_inventory_days",
+            "scan_increasing_working_cap_days", "scan_decreasing_working_cap_days"
+        }
+        if scan_name in ratio_scans:
+            # Extract the metric name from scan name
+            metric_map = {
+                "debtor": "debtor_days",
+                "payable": "payable_days",
+                "inventory": "inventory_days",
+                "working_cap": "working_capital_days"
+            }
+            metric = None
+            for key, value in metric_map.items():
+                if key in scan_name:
+                    metric = value
+                    break
+            if metric:
+                periods = self._get_sorted_periods(self.ratios)
+                return len(periods) >= MIN_SERIES_LENGTH and all(
+                    self.ratios.get(p, {}).get(metric) is not None
+                    for p in periods[:MIN_SERIES_LENGTH]
+                )
+        
+        return True
+
     def _ratio_trend(self, field: str, *, increasing: bool) -> Optional[bool]:
         vals = [v if v is not None else 0.0 for v in self._get_series(self.ratios, field, MIN_SERIES_LENGTH)]
         self._record_value(vals[0] if vals else None)
@@ -430,17 +722,39 @@ class FundamentalScans:
 
     def _shareholding_delta(self, field: str, *, increasing: bool) -> Optional[bool]:
         periods = self._get_sorted_periods(self.shareholding_q)
-        if len(periods) < 2: return None
-        curr, prev = self.shareholding_q.get(periods[0], {}).get(field), self.shareholding_q.get(periods[1], {}).get(field)
-        if curr is None or prev is None: return None
+        if len(periods) < 2:
+            self._record_value(None)
+            return False
+        curr_period = self.shareholding_q.get(periods[0], {})
+        prev_period = self.shareholding_q.get(periods[1], {})
+        curr = curr_period.get(field)
+        prev = prev_period.get(field)
+        if field == "promoters":
+            if curr is None and curr_period.get("public") is not None:
+                curr = 0.0
+            if prev is None and prev_period.get("public") is not None:
+                prev = 0.0
+        if curr is None or prev is None:
+            self._record_value(None)
+            return False
         delta = curr - prev
         self._record_value(delta)
         return delta > 0 if increasing else delta < 0
 
     def _shareholding_consistency(self, field: str) -> Optional[bool]:
-        vals = self._get_series(self.shareholding_q, field, MIN_SERIES_LENGTH)
+        periods = self._get_sorted_periods(self.shareholding_q)
+        periods = periods[:MIN_SERIES_LENGTH]
+        vals: List[Optional[float]] = []
+        for period in periods:
+            section = self.shareholding_q.get(period, {})
+            val = section.get(field)
+            if val is None and field == "promoters" and section.get("public") is not None:
+                val = 0.0
+            vals.append(val)
         self._record_value(vals[0] if vals else None)
-        if all(v is None for v in vals): return False
+        cleaned = [v for v in vals if v is not None]
+        if len(cleaned) < MIN_SERIES_LENGTH:
+            return False
         return self._check_consistency(reversed(vals), increasing=True)
 
     def _shareholding_level(self, field: str, threshold_low: float, threshold_high: Optional[float] = None) -> Optional[bool]:
@@ -452,9 +766,13 @@ class FundamentalScans:
 
     def _shareholder_count_delta(self, increasing: bool) -> Optional[bool]:
         periods = self._get_sorted_periods(self.shareholding_q)
-        if len(periods) < 2: return None
+        if len(periods) < 2:
+            self._record_value(None)
+            return False
         curr, prev = self.shareholding_q.get(periods[0], {}).get("no_of_shareholders"), self.shareholding_q.get(periods[1], {}).get("no_of_shareholders")
-        if curr is None or prev is None: return None
+        if curr is None or prev is None:
+            self._record_value(None)
+            return False
         delta = curr - prev
         self._record_value(delta)
         return delta > 0 if increasing else delta < 0
@@ -471,11 +789,15 @@ class FundamentalScans:
     # ------------------------------------------------------------------
     def scan_high_roe(self) -> Optional[bool]:
         value = self.metadata.get("roe")
+        if value is None:
+            value = self._compute_roe()
         self._record_value(value)
         return None if value is None else value > 15
 
     def scan_high_roce(self) -> Optional[bool]:
         value = self.metadata.get("roce")
+        if value is None:
+            value = self._compute_roce()
         self._record_value(value)
         return None if value is None else value > 15
 
@@ -998,47 +1320,7 @@ class FundamentalScans:
     def scan_share_public_consistent_increase(self) -> Optional[bool]:
         return self._shareholding_consistency("public")
 
-    def scan_share_mf_increase(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None # Triggers skip
-        result = self._shareholding_delta("mutual_funds", increasing=True)
-        if result is False: 
-            result = self._shareholding_delta("diis", increasing=True)
-        return result
 
-    def scan_share_mf_decrease(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None
-        result = self._shareholding_delta("mutual_funds", increasing=False)
-        if result is False:
-            result = self._shareholding_delta("diis", increasing=False)
-        return result
-
-    def scan_share_mf_consistent_increase(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None
-        result = self._shareholding_consistency("mutual_funds")
-        if result is False:
-            result = self._shareholding_consistency("diis")
-        return result
-
-    def scan_share_insurance_increase(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None
-        result = self._shareholding_delta("insurance", increasing=True)
-        if result is False:
-            result = self._shareholding_delta("diis", increasing=True)
-        return result
-
-    def scan_share_insurance_decrease(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None
-        result = self._shareholding_delta("insurance", increasing=False)
-        if result is False:
-            result = self._shareholding_delta("diis", increasing=False)
-        return result
-
-    def scan_share_insurance_consistent_increase(self) -> Optional[bool]:
-        if not self.has_granular_shareholding: return None
-        result = self._shareholding_consistency("insurance")
-        if result is False:
-            result = self._shareholding_consistency("diis")
-        return result
 
     def scan_share_promoter_very_high(self) -> Optional[bool]:
         latest = self._get_value(self.shareholding_q, 0, "promoters")
@@ -1076,7 +1358,8 @@ class FundamentalScans:
     def scan_share_shareholders_consistent_increase(self) -> Optional[bool]:
         values = self._get_series(self.shareholding_q, "no_of_shareholders", MIN_SERIES_LENGTH)
         self._record_value(values[0] if values else None)
-        if all(v is None for v in values):
+        cleaned = [v for v in values if v is not None]
+        if len(cleaned) < MIN_SERIES_LENGTH:
             return False
         return self._check_consistency(reversed(values), increasing=True)
 
@@ -1145,19 +1428,19 @@ class FundamentalScans:
     def run_scans(self) -> Dict[str, List[Dict[str, Any]]]:
         summary = {"passed": [], "failed": [], "pending": [], "skipped": []}
         
-        # Determine strict skip conditions based on industry
-        skip_names = set()
+        # Determine which scans are unusual for this industry (for flagging, not skipping)
+        unusual_scans = set()
 
-        # Filter 1: Non-Inventory Sectors
-        if self.industry in NON_INVENTORY_SECTORS:
-            skip_names.update([
+        # Mark inventory-related scans as unusual for non-inventory sectors
+        if self.is_non_inventory:
+            unusual_scans.update([
                 "scan_increasing_inventory_days", 
                 "scan_decreasing_inventory_days"
             ])
             
-        # Filter 2: Financial Sectors (Skip EBITDA, Debt, Interest Coverage, ROCE)
-        if self.industry in FINANCIAL_SECTORS:
-            skip_names.update(FINANCIAL_SKIP_SCANS)
+        # Mark financial-specific scans as unusual for financial sectors
+        if self.is_financial:
+            unusual_scans.update(FINANCIAL_SKIP_SCANS)
 
         for definition in self.SCANS:
             payload: Dict[str, Any] = {
@@ -1166,16 +1449,23 @@ class FundamentalScans:
                 "category": definition.category,
             }
 
-            # 1. Smart Filter: Check if scan is in the Skip List
-            if definition.name in skip_names:
+            # 1. Smart Filter: Skip valuation scans for loss-making companies with undefined PE
+            if definition.category == "Valuation" and self.metadata.get("stock_pe") is None and self._is_loss_making():
+                payload["reason"] = "loss-making-undefined-pe"
                 summary["skipped"].append(payload)
                 continue
 
-            # 2. Smart Filter: Check Data Availability (Specific for Shareholding)
-            if "mf" in definition.name or "insurance" in definition.name:
-                if not self.has_granular_shareholding:
-                    summary["skipped"].append(payload)
-                    continue
+            # 2. Check if data is actually available
+            if not self._has_required_data(definition.name):
+                payload["reason"] = "insufficient-data"
+                summary["skipped"].append(payload)
+                continue
+
+            # 3. Skip scans that are industry-irrelevant (instead of just flagging)
+            if definition.name in unusual_scans:
+                payload["reason"] = "industry-irrelevant"
+                summary["skipped"].append(payload)
+                continue
 
             method = getattr(self, definition.name)
             self._current_value = None

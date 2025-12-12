@@ -3,10 +3,13 @@ from __future__ import annotations
 
 import asyncio
 import csv
+import json
+import os
 import random
 import re
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 # Set event loop policy for Windows compatibility with Playwright
@@ -188,12 +191,65 @@ def get_nifty_tickers(
 
 class ScreenerScraper:
     base_url = "https://www.screener.in/company/{ticker}/"
+    ticker_map_file = "ticker_mapping.json"
+    scr_bind_file = "scr_bind.json"
 
     def __init__(self, *, session: Optional[requests.Session] = None, timeout: int = 30, use_playwright: bool = True) -> None:
         self.session = session or requests.Session()
         self.timeout = timeout
         self.use_playwright = use_playwright
         self._industry_map: Dict[str, float] = {}
+        self._ticker_map: Dict[str, str] = self._load_ticker_map()
+        self._standalone_tickers: set = self._load_scr_bind()
+
+    def _load_ticker_map(self) -> Dict[str, str]:
+        """Load ticker mapping from cache file."""
+        if os.path.exists(self.ticker_map_file):
+            try:
+                with open(self.ticker_map_file, 'r') as f:
+                    return json.load(f)
+            except Exception:
+                return {}
+        return {}
+    
+    def _load_scr_bind(self) -> set:
+        """Load list of tickers that must use Standalone URLs from scr_bind.json."""
+        if os.path.exists(self.scr_bind_file):
+            try:
+                with open(self.scr_bind_file, 'r') as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        return set(data)
+            except Exception as e:
+                print(f"Warning: Failed to load {self.scr_bind_file}: {e}")
+        return set()
+
+    def _save_ticker_map(self) -> None:
+        """Save ticker mapping to cache file."""
+        try:
+            with open(self.ticker_map_file, 'w') as f:
+                json.dump(self._ticker_map, f, indent=2)
+        except Exception as e:
+            print(f"Warning: Failed to save ticker mapping: {e}")
+
+    def _get_ticker_variations(self, ticker: str) -> List[str]:
+        """Generate possible ticker variations for a given ticker."""
+        variations = [ticker]
+        
+        # Remove trailing 'S' (e.g., GMRAIRPORTS -> GMRAIRPORT)
+        if ticker.endswith('S') and len(ticker) > 1:
+            variations.append(ticker[:-1])
+        
+        # Add trailing 'S' (e.g., GMRAIRPORT -> GMRAIRPORTS)
+        if not ticker.endswith('S'):
+            variations.append(ticker + 'S')
+        
+        # Remove trailing 'LTD' or 'LIMITED'
+        for suffix in ['LTD', 'LIMITED']:
+            if ticker.endswith(suffix):
+                variations.append(ticker[:-len(suffix)])
+        
+        return variations
 
     def _ensure_industry_map(self) -> None:
         """Lazy load the Industry Median PE map."""
@@ -238,143 +294,67 @@ class ScreenerScraper:
         html, final_url = self._download_company_page(ticker)
         soup = BeautifulSoup(html, "html.parser")
 
-        # --- SMART FALLBACK: DATA DENSITY CHECK ---
-        if "/consolidated/" in final_url:
-            pnl_table = soup.select_one("section#profit-loss table.data-table")
-            consolidated_count = 0
-            
-            if pnl_table:
-                first_data_row = pnl_table.select_one("tbody tr")
-                if first_data_row:
-                    cells = first_data_row.select("td")
-                    for cell in cells[1:]:
-                        txt = cell.get_text(strip=True)
-                        if txt and txt not in ["-", "--", ""]:
-                            consolidated_count += 1
-                else:
-                    consolidated_count = len(pnl_table.select("thead th")) - 1
-
-            # If valid data is sparse (< 5 years), verify if Standalone has MORE valid data.
-            if consolidated_count < 5:
-                standalone_url = None
-                link = soup.find("a", string=re.compile(r"View Standalone", re.I))
-                if link and link.get("href"):
-                    standalone_url = "https://www.screener.in" + link.get("href")
-                
-                if not standalone_url:
-                    standalone_url = self.base_url.format(ticker=ticker)
-
-                try:
-                    resp = self._request_with_headers(standalone_url)
-                    if resp.status_code == 200 and "/consolidated/" not in resp.url:
-                        soup_sa = BeautifulSoup(resp.text, "html.parser")
-                        pnl_table_sa = soup_sa.select_one("section#profit-loss table.data-table")
-                        standalone_count = 0
-                        
-                        if pnl_table_sa:
-                            first_data_row_sa = pnl_table_sa.select_one("tbody tr")
-                            if first_data_row_sa:
-                                cells_sa = first_data_row_sa.select("td")
-                                for cell in cells_sa[1:]:
-                                    txt = cell.get_text(strip=True)
-                                    if txt and txt not in ["-", "--", ""]:
-                                        standalone_count += 1
-                            else:
-                                standalone_count = len(pnl_table_sa.select("thead th")) - 1
-                        
-                        if standalone_count > consolidated_count:
-                            print(f"Info: Switching {ticker} to Standalone (Data Density: {standalone_count} vs {consolidated_count} years).")
-                            soup = soup_sa
-                            final_url = resp.url
-                except Exception as e:
-                    print(f"Warning: Failed fallback check for {ticker}: {e}")
-        # -------------------------------------------
-
-        industry = self._extract_industry_name(soup)
-        industry_pe = self._industry_map.get(industry)
-        if industry_pe is None:
-            ind_lower = industry.lower()
-            for k, v in self._industry_map.items():
-                if ind_lower in k.lower() or k.lower() in ind_lower:
-                    industry_pe = v
-                    break
-
-        top_ratios = self._parse_top_ratios(soup)
+        payload = self._build_payload_from_soup(ticker, soup, final_url)
         
-        if "industry_pe" not in top_ratios and industry_pe is not None:
-            top_ratios["industry_pe"] = industry_pe
+        # Auto-switch logic removed. Relies strictly on scr_bind.json via _standalone_tickers set.
 
-        quarterly = self._parse_financial_table(soup, "quarters", QUARTERLY_MAP)
-        profit_loss = self._parse_financial_table(soup, "profit-loss", PROFIT_LOSS_MAP)
-        
-        # Use Playwright for enhanced balance sheet if enabled, else soup fallback
-        balance_sheet = {}
         if self.use_playwright:
             try:
-                balance_sheet = fetch_enhanced_balance_sheet(ticker, final_url)
+                enhanced_balance_sheet = fetch_enhanced_balance_sheet(ticker, payload["metadata"]["source_url"])
             except Exception:
-                pass
-        
-        if not balance_sheet:
-             balance_sheet = self._parse_financial_table(soup, "balance-sheet", BALANCE_SHEET_MAP)
-        
-        # --- DATA SANITIZATION: FORCE CALCULATE MISSING TOTALS ---
-        # Some pages don't list "Total Current Assets" explicitly, breaking solvency scans.
-        for period, data in balance_sheet.items():
-            if "current_assets" not in data:
-                comps = [data.get(k) for k in ("inventories", "trade_receivables", "cash_equivalents", "loans_advances") if data.get(k) is not None]
-                if comps:
-                    val = sum(comps)
-                    if data.get("other_asset_items"): val += data["other_asset_items"]
-                    data["current_assets"] = val
-            
-            if "current_liabilities" not in data:
-                # Note: 'borrowings' is typically Long Term. Short term is usually split. 
-                # If short_term_borrowings is missing but borrowings exists, we assume borrowings is LT unless specified.
-                # However, for total CL, we look for trade_payables + short_term + other.
-                comps = [data.get(k) for k in ("trade_payables", "short_term_borrowings") if data.get(k) is not None]
-                if comps:
-                    val = sum(comps)
-                    if data.get("other_liability_items"): val += data["other_liability_items"]
-                    data["current_liabilities"] = val
-        # ---------------------------------------------------------
+                enhanced_balance_sheet = {}
+            if enhanced_balance_sheet:
+                self._sanitize_balance_sheet(enhanced_balance_sheet)
+                payload["balance_sheet"] = enhanced_balance_sheet
 
-        cash_flow = self._parse_financial_table(soup, "cash-flow", CASH_FLOW_MAP)
-        ratios = self._parse_financial_table(soup, "ratios", RATIOS_MAP)
-        shareholding, pledge_found = self._parse_shareholding(soup)
-
-        metadata = {
-            "source_url": final_url,
-            "scraped_at": datetime.now(timezone.utc).isoformat(),
-            "pledge_data_missing": not pledge_found,
-            "industry": industry,
-        }
-
-        payload = {
-            "metadata": metadata,
-            "quarterly_results": quarterly,
-            "profit_loss_annual": profit_loss,
-            "balance_sheet": balance_sheet,
-            "cash_flow": cash_flow,
-            "ratios": ratios,
-            "shareholding": shareholding,
-        }
-        payload.update(self._extract_top_ratio_fields(top_ratios))
         return payload
 
     # --------------------------------------------------------------
     # HTTP helpers
     # --------------------------------------------------------------
     def _download_company_page(self, ticker: str) -> Tuple[str, str]:
+        # Check if we have a cached mapping for this ticker
+        actual_ticker = self._ticker_map.get(ticker, ticker)
+        
+        # Try the mapped ticker first
+        try:
+            return self._try_download_ticker(actual_ticker)
+        except requests.HTTPError as e:
+            if e.response.status_code == 404 and actual_ticker == ticker:
+                # Try variations only if we haven't found a mapping yet
+                variations = self._get_ticker_variations(ticker)
+                for variation in variations:
+                    if variation == ticker:
+                        continue
+                    try:
+                        html, url = self._try_download_ticker(variation)
+                        # Success! Save this mapping for future use
+                        self._ticker_map[ticker] = variation
+                        self._save_ticker_map()
+                        print(f"✓ Found ticker mapping: {ticker} -> {variation}")
+                        return html, url
+                    except requests.HTTPError:
+                        continue
+            # Re-raise the original error if no variation worked
+            raise
+
+    def _try_download_ticker(self, ticker: str) -> Tuple[str, str]:
+        """Attempt to download company page for a specific ticker."""
         consolidated_url = self.base_url.format(ticker=ticker) + "consolidated/"
         fallback_url = self.base_url.format(ticker=ticker)
 
-        # Default preference: Consolidated
+        # 1. Check if ticker is in scr_bind.json (Standalone Only)
+        if ticker in self._standalone_tickers:
+            response = self._request_with_headers(fallback_url)
+            response.raise_for_status()
+            return response.text, response.url
+
+        # 2. Default: Prefer CONSOLIDATED
         response = self._request_with_headers(consolidated_url)
         if self._is_consolidated_response(response):
             return response.text, response.url
             
-        # Fallback to base (usually Standalone)
+        # 3. Fallback to Standalone (if Consolidated doesn't exist/redirects)
         response = self._request_with_headers(fallback_url)
         response.raise_for_status()
         return response.text, response.url
@@ -485,6 +465,118 @@ class ScreenerScraper:
                 if value is None: continue
                 dataset.setdefault(header, {})[mapped] = value
         return {period: fields for period, fields in dataset.items() if fields}, pledge_found
+
+    def _build_payload_from_soup(self, ticker: str, soup: BeautifulSoup, final_url: str) -> Dict[str, Any]:
+        industry = self._extract_industry_name(soup)
+        industry_pe = self._industry_map.get(industry)
+        if industry_pe is None and industry:
+            ind_lower = industry.lower()
+            for name, value in self._industry_map.items():
+                lower = name.lower()
+                if ind_lower in lower or lower in ind_lower:
+                    industry_pe = value
+                    break
+
+        top_ratios = self._parse_top_ratios(soup)
+        if "industry_pe" not in top_ratios and industry_pe is not None:
+            top_ratios["industry_pe"] = industry_pe
+
+        quarterly = self._parse_financial_table(soup, "quarters", QUARTERLY_MAP)
+        profit_loss = self._parse_financial_table(soup, "profit-loss", PROFIT_LOSS_MAP)
+        balance_sheet = self._parse_financial_table(soup, "balance-sheet", BALANCE_SHEET_MAP)
+        self._sanitize_balance_sheet(balance_sheet)
+        cash_flow = self._parse_financial_table(soup, "cash-flow", CASH_FLOW_MAP)
+        ratios = self._parse_financial_table(soup, "ratios", RATIOS_MAP)
+        shareholding, pledge_found = self._parse_shareholding(soup)
+
+        metadata = {
+            "source_url": final_url,
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
+            "pledge_data_missing": not pledge_found,
+            "industry": industry,
+        }
+
+        payload = {
+            "metadata": metadata,
+            "quarterly_results": quarterly,
+            "profit_loss_annual": profit_loss,
+            "balance_sheet": balance_sheet,
+            "cash_flow": cash_flow,
+            "ratios": ratios,
+            "shareholding": shareholding,
+            "ticker": ticker,
+        }
+        payload.update(self._extract_top_ratio_fields(top_ratios))
+        return payload
+
+    def _sanitize_balance_sheet(self, balance_sheet: Dict[str, Dict[str, float]]) -> None:
+        for data in balance_sheet.values():
+            if "current_assets" not in data:
+                comps = [data.get(key) for key in ("inventories", "trade_receivables", "cash_equivalents", "loans_advances") if data.get(key) is not None]
+                if comps:
+                    total = sum(comps)
+                    if data.get("other_asset_items") is not None:
+                        total += data.get("other_asset_items")
+                    data["current_assets"] = total
+            if "current_liabilities" not in data:
+                comps = [data.get(key) for key in ("trade_payables", "short_term_borrowings") if data.get(key) is not None]
+                if comps:
+                    total = sum(comps)
+                    if data.get("other_liability_items") is not None:
+                        total += data.get("other_liability_items")
+                    data["current_liabilities"] = total
+
+    def _measure_payload_health(self, payload: Dict[str, Any]) -> Dict[str, int]:
+        quarterly = payload.get("quarterly_results") or {}
+        profit_loss = payload.get("profit_loss_annual") or {}
+
+        quarterly_periods = len([period for period, values in quarterly.items() if values])
+        quarterly_np_points = sum(1 for values in quarterly.values() if values.get("net_profit") is not None)
+        annual_eps_points = sum(1 for values in profit_loss.values() if values.get("eps") is not None)
+        annual_years = len([period for period, values in profit_loss.items() if values])
+        score = quarterly_periods * 3 + quarterly_np_points * 2 + annual_eps_points
+
+        return {
+            "quarterly_periods": quarterly_periods,
+            "quarterly_net_profit_points": quarterly_np_points,
+            "annual_eps_points": annual_eps_points,
+            "annual_years": annual_years,
+            "score": score,
+        }
+
+    def _should_try_standalone(self, health: Dict[str, int]) -> bool:
+        return health["quarterly_periods"] < 2 or health["annual_eps_points"] < 3
+
+    def _is_health_better(self, candidate: Dict[str, int], current: Dict[str, int]) -> bool:
+        if candidate["score"] != current["score"]:
+            return candidate["score"] > current["score"]
+        if candidate["quarterly_periods"] != current["quarterly_periods"]:
+            return candidate["quarterly_periods"] > current["quarterly_periods"]
+        return candidate["annual_eps_points"] > current["annual_eps_points"]
+
+    def _maybe_switch_to_standalone(self, ticker: str, current_health: Dict[str, int]) -> Optional[Tuple[Dict[str, Any], Dict[str, int]]]:
+        if not self._should_try_standalone(current_health):
+            return None
+        try:
+            response = self._request_with_headers(self.base_url.format(ticker=ticker))
+            response.raise_for_status()
+        except requests.RequestException:
+            return None
+        if "/consolidated/" in response.url:
+            return None
+        soup = BeautifulSoup(response.text, "html.parser")
+        candidate_payload = self._build_payload_from_soup(ticker, soup, response.url)
+        candidate_health = self._measure_payload_health(candidate_payload)
+        if self._is_health_better(candidate_health, current_health):
+            print(
+                "Info: Switching {} to Standalone (Data Health Score: {} vs {}).".format(
+                    ticker,
+                    candidate_health["score"],
+                    current_health["score"],
+                )
+            )
+            return candidate_payload, candidate_health
+        return None
 
     def _extract_top_ratio_fields(self, ratios: Dict[str, float]) -> Dict[str, float]:
         mapped = {}

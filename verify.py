@@ -4,56 +4,66 @@ import logging
 import sys
 import time
 from datetime import datetime
+from typing import Optional, Dict, Any
 
 # Add src directory to path for imports
 sys.path.append('src')
 
 # Import local modules
-# Ensure these files (screener_scraper.py, scans.py) are in the same directory
 from screener_scraper import ScreenerScraper, get_nifty_tickers
 from scans import FundamentalScans
 
-# Configure logging to show info on console
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%H:%M:%S"
 )
 
-def verify_ticker(ticker: str, output_file: bool = True):
+def run_single_stock(ticker: str, max_retries: int = 3) -> Optional[Dict[str, Any]]:
     """
-    Fetches real-time data for a single ticker and runs fundamental scans.
-    Returns True on success, False on failure.
+    Fetches data and runs scans for a single ticker.
+    Returns the scan report dictionary if successful, None otherwise.
     """
     ticker = ticker.upper().strip()
-    logging.info(f"Starting verification for: {ticker}")
-
-    # 1. Scrape Real-Time Data
+    
+    # 1. Scrape Real-Time Data with retry logic
     scraper = ScreenerScraper()
-    try:
-        logging.info(f"Fetching data from Screener.in for {ticker}...")
-        # Direct fetch, bypassing database
-        data = scraper.fetch_company_payload(ticker)
-        data["ticker"] = ticker
-        logging.info("Data fetch successful.")
-    except Exception as e:
-        logging.error(f"Failed to fetch data for {ticker}. Error: {e}")
-        return False
+    for attempt in range(max_retries):
+        try:
+            data = scraper.fetch_company_payload(ticker)
+            data["ticker"] = ticker
+            break  # Success, exit retry loop
+        except Exception as e:
+            error_msg = str(e)
+            if "429" in error_msg and attempt < max_retries - 1:
+                # Rate limited, wait longer and retry
+                wait_time = 5 * (attempt + 1)  # 5s, 10s, 15s
+                logging.warning(f"Rate limited for {ticker}, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
+                continue
+            else:
+                logging.error(f"Failed to fetch data for {ticker}: {e}")
+                return None
+    
+    # If we get here without data, scraping failed
+    if 'data' not in locals():
+        return None
 
     # 2. Run Fundamental Scans
     try:
-        logging.info("Running 107 fundamental scans...")
         scanner = FundamentalScans(data)
         results = scanner.run_scans()
         metadata = scanner.metadata
     except Exception as e:
-        logging.error(f"Error running scans: {e}")
-        return False
+        logging.error(f"Error running scans for {ticker}: {e}")
+        return None
 
-    # 3. Structure the Output - Scan Results
+    # 3. Structure the Output
     scan_report = {
         "ticker": ticker,
         "timestamp": datetime.now().isoformat(),
+        "archetype": scanner.archetype,
         "industry_context": {
             "industry": metadata.get("industry", "Unknown"),
             "current_price": metadata.get("current_price"),
@@ -63,143 +73,139 @@ def verify_ticker(ticker: str, output_file: bool = True):
         },
         "scan_summary": {
             "total_pending": len(results.get("pending", [])),
-            "total_skipped": len(results.get("skipped", []))
+            "total_skipped": len(results.get("skipped", [])),
+            "total_unusual": sum(1 for item in results.get("pending", []) if item.get("unusual_for_industry"))
         },
         "pending": results.get("pending", []),
-        "skipped": results.get("skipped", [])
+        "skipped": results.get("skipped", []),
+        # Pass raw data through for saving
+        "_raw_data": data
     }
+    return scan_report
 
-    # 4. Display Summary to Console
-    print("\n" + "="*60)
-    print(f" 🔍 RE-SCAN-X REPORT: {ticker}")
-    print("="*60)
-    print(f" Industry:  {scan_report['industry_context']['industry']}")
-    print(f" Price:     ₹{scan_report['industry_context'].get('current_price', 'N/A')}")
-    print(f" PE Ratio:  {scan_report['industry_context']['pe']} (Ind: {scan_report['industry_context']['industry_pe']})")
-    print("-" * 60)
-    print(f" ⏳ PENDING:  {scan_report['scan_summary']['total_pending']}")
-    print(f" ⏭️  SKIPPED:  {scan_report['scan_summary']['total_skipped']}")
-    print("="*60)
+def save_stock_files(report: Dict[str, Any]):
+    """Saves the _screener.json and _scan.json files."""
+    ticker = report["ticker"]
+    raw_data = report.pop("_raw_data") # Remove raw data from scan report before saving
 
-    if scan_report["pending"]:
-        print("\n⏳ PENDING SCANS (Data Missing):")
-        for item in scan_report["pending"]:
-            print(f"   - {item['label']}")
+    # Save screener data
+    try:
+        with open(f"json/{ticker}_screener.json", "w", encoding="utf-8") as f:
+            json.dump(raw_data, f, indent=4)
+    except Exception as e:
+        logging.error(f"Failed to save screener JSON: {e}")
 
-    if scan_report["skipped"]:
-        print("\n⏭️ SKIPPED SCANS (Not Applicable):")
-        for item in scan_report["skipped"]:
-            print(f"   - {item['label']}")
+    # Save scan results
+    try:
+        with open(f"json/{ticker}_scan.json", "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=4)
+        logging.info(f"💾 Saved reports for {ticker}")
+    except Exception as e:
+        logging.error(f"Failed to save scan JSON: {e}")
 
-    print("\n" + "="*60)
-
-    # 5. Save to JSON Files
-    if output_file:
-        # Save screener data
-        screener_filename = f"json/{ticker}_screener.json"
-        try:
-            with open(screener_filename, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4)
-            logging.info(f"Screener data saved to: {screener_filename}")
-        except Exception as e:
-            logging.error(f"Failed to save screener JSON file: {e}")
-        
-        # Save scan results
-        scan_filename = f"json/{ticker}_scan.json"
-        try:
-            with open(scan_filename, "w", encoding="utf-8") as f:
-                json.dump(scan_report, f, indent=4)
-            logging.info(f"Scan results saved to: {scan_filename}")
-        except Exception as e:
-            logging.error(f"Failed to save scan JSON file: {e}")
-    
-    return True
-
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
-        description="RE-SCAN-X: Run fundamental scans on stocks",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python verify.py RELIANCE              # Scan single ticker
-  python verify.py                       # Scan all Nifty 500 stocks
-  python verify.py 1 5                   # Scan stocks 1 to 5
-  python verify.py 5 15                  # Scan stocks 5 to 15
-        """
+        description="RE-SCAN-X: Smart Scan Mode",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("ticker", nargs="?", help="Stock ticker symbol OR start index")
-    parser.add_argument("end", nargs="?", type=int, help="End index (inclusive, only if ticker is a number)")
+    parser.add_argument("start_index", type=int, nargs="?", default=1, help="Start index (1-based) from Nifty 500 list")
+    parser.add_argument("--count", type=int, default=5, help="Stop after finding N pending stocks (default: 5)")
+    parser.add_argument("--ticker", type=str, help="Scan a specific ticker instead of using index")
     
     args = parser.parse_args()
     
-    # Determine if ticker is actually a range start
-    is_range = False
-    start_idx = None
-    end_idx = None
-    
     if args.ticker:
-        # Check if ticker is a number (range mode)
-        try:
-            start_idx = int(args.ticker)
-            if args.end is not None:
-                end_idx = args.end
-                is_range = True
+        # Scan single ticker
+        logging.info(f"Scanning specific ticker: {args.ticker}")
+        report = run_single_stock(args.ticker)
+        if report:
+            pending_count = report["scan_summary"]["total_pending"]
+            skipped_count = report["scan_summary"]["total_skipped"]
+            unusual_count = report["scan_summary"]["total_unusual"]
+            industry = report["industry_context"]["industry"]
+            archetype = report["archetype"]
+            if pending_count > 0:
+                print(f"⚠️  PENDING: {pending_count} (Arch: {archetype})")
+                print(f"   -> Industry: {industry}")
+                if unusual_count > 0:
+                    print(f"   ⚡ Unusual metrics calculated: {unusual_count}")
+                save_stock_files(report)
             else:
-                # Single number without end - treat as ticker
-                is_range = False
-        except ValueError:
-            # Not a number, it's a ticker symbol
-            is_range = False
+                status_msg = f"✅ Clean (Skipped: {skipped_count})"
+                if unusual_count > 0:
+                    status_msg += f" ⚡ Unusual: {unusual_count}"
+                print(status_msg)
+        else:
+            print("❌ Failed")
+        return
     
-    # Case 1: Single ticker provided
-    if args.ticker and not is_range:
-        logging.info(f"Running scans for single ticker: {args.ticker}")
-        verify_ticker(args.ticker)
-        sys.exit(0)
-    
-    # Case 2 & 3: Range or all tickers
+    # 1. Fetch Tickers
     logging.info("Fetching Nifty 500 tickers...")
     try:
         tickers = get_nifty_tickers()
-        logging.info(f"Found {len(tickers)} tickers from Nifty 500.")
+        logging.info(f"Loaded {len(tickers)} tickers.")
     except Exception as e:
-        logging.error(f"Failed to fetch tickers: {e}")
+        logging.critical(f"Failed to fetch tickers: {e}")
+        sys.exit(1)
+        logging.critical(f"Failed to fetch tickers: {e}")
+        sys.exit(1)
+
+    # 2. Slice List
+    start_pos = max(0, args.start_index - 1)
+    if start_pos >= len(tickers):
+        logging.error("Start index out of range.")
         sys.exit(1)
     
-    # Determine range
-    if is_range and start_idx is not None and end_idx is not None:
-        # Range-based scan (1-indexed, inclusive)
-        start_pos = max(1, start_idx)
-        end_pos = min(len(tickers), end_idx)
-        selected_tickers = tickers[start_pos - 1:end_pos]  # Convert to 0-indexed
-        logging.info(f"Processing stocks {start_pos} to {end_pos} ({len(selected_tickers)} stocks)")
-    else:
-        # All tickers
-        selected_tickers = tickers
-        logging.info(f"Processing all {len(selected_tickers)} stocks")
-    
-    # Process tickers
-    success_count = 0
-    failure_count = 0
-    
-    for i, ticker in enumerate(selected_tickers, 1):
-        actual_position = (tickers.index(ticker) + 1) if ticker in tickers else i
-        logging.info(f"Processing {i}/{len(selected_tickers)} (#{actual_position} in Nifty 500): {ticker}")
-        
-        if verify_ticker(ticker):
-            success_count += 1
-        else:
-            failure_count += 1
-        
-        # Rate limiting to be respectful to the server
-        if i < len(selected_tickers):
-            time.sleep(1)
-    
-    # Final summary
+    target_tickers = tickers[start_pos:]
+    logging.info(f"Starting scan from #{args.start_index} ({target_tickers[0]})")
+    logging.info(f"Target: Find {args.count} stocks with PENDING data issues.")
+
+    pending_found = 0
+    stocks_processed = 0
+
     print("\n" + "="*60)
-    print(f" BATCH PROCESSING COMPLETE")
+    print(f" 🕵️  HUNT MODE: Searching for {args.count} Pending Stocks")
     print("="*60)
-    print(f" Total Processed: {len(selected_tickers)}")
-    print(f" ✅ Successful:   {success_count}")
-    print(f" ❌ Failed:       {failure_count}")
-    print("="*60)
+
+    for i, ticker in enumerate(target_tickers):
+        idx = args.start_index + i
+        print(f"\nProcessing #{idx}: {ticker} ... ", end="", flush=True)
+        
+        report = run_single_stock(ticker)
+        
+        if not report:
+            print("❌ Failed")
+            continue
+
+        pending_count = report["scan_summary"]["total_pending"]
+        skipped_count = report["scan_summary"]["total_skipped"]
+        unusual_count = report["scan_summary"]["total_unusual"]
+        industry = report["industry_context"]["industry"]
+        archetype = report["archetype"]
+
+        if pending_count > 0:
+            print(f"⚠️  PENDING: {pending_count} (Arch: {archetype})")
+            print(f"   -> Industry: {industry}")
+            if unusual_count > 0:
+                print(f"   ⚡ Unusual metrics calculated: {unusual_count}")
+            save_stock_files(report)
+            pending_found += 1
+        else:
+            status_msg = f"✅ Clean (Skipped: {skipped_count})"
+            if unusual_count > 0:
+                status_msg += f" ⚡ Unusual: {unusual_count}"
+            print(status_msg)
+            # We explicitly DO NOT save clean files to avoid clutter, as requested.
+
+        stocks_processed += 1
+        
+        if pending_found >= args.count:
+            print("\n" + "="*60)
+            print(f"🎯 Target Reached! Found {pending_found} pending stocks.")
+            print("="*60)
+            break
+        
+        time.sleep(2)  # Increased delay to avoid rate limiting
+
+if __name__ == "__main__":
+    main()

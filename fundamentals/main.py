@@ -20,7 +20,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import from local package
-from fundamentals.database import SupabaseManager
 from fundamentals.fetcher import ScreenerScraper
 from fundamentals.scans import FundamentalScans
 from fundamentals.utils import (
@@ -45,12 +44,10 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 def process_ticker(
     ticker: str,
     *,
-    manager: SupabaseManager,
     scraper: ScreenerScraper,
     ticker_to_industry: Dict[str, str],
     industry_pe_map: Dict[str, float],
-    dry_run: bool = False,
-    force: bool = False
+    force: bool = True
 ) -> Optional[Dict[str, Any]]:
     """
     Full pipeline for a single ticker:
@@ -62,45 +59,39 @@ def process_ticker(
     ticker = ticker.strip().upper()
     logging.info(f"--- Processing {ticker} ---")
 
-    # 1. Check Database (Cache)
-    existing_record = None
-    if not force:
-        existing_record = manager.fetch_ticker(ticker)
-        
-    needs_scrape = force or not existing_record or manager.needs_refresh(existing_record, hours=24)
+    # NOTE (Dec 2025): This pipeline intentionally runs in "no database" mode.
+    # It always scrapes fresh data and computes scans locally.
+    #
+    # Future fallback (commented): re-enable DB caching + upsert.
+    # from fundamentals.database import SupabaseManager
+    # manager = SupabaseManager()
+    # existing_record = manager.fetch_ticker(ticker)
+    # if not force and existing_record and not manager.needs_refresh(existing_record, hours=24):
+    #     payload = existing_record
+    # else:
+    #     payload = scraper.fetch_company_payload(ticker)
+    #     payload["ticker"] = ticker
+    #     manager.upsert_record(payload)
 
-    payload = existing_record
-    
-    # 2. Scrape Data (if needed)
-    if needs_scrape:
-        logging.info(f"Fetching fresh data for {ticker}...")
-        try:
-            # Random delay to be polite to Screener if scraping multiple
-            if not force: 
-                time.sleep(random.uniform(1.0, 3.0))
-                
-            payload = scraper.fetch_company_payload(ticker)
-            payload["ticker"] = ticker
-            
-            # Enrich with Industry Data
-            apply_industry_context(
-                payload,
-                ticker=ticker,
-                ticker_to_industry=ticker_to_industry,
-                industry_to_pe=industry_pe_map
-            )
-            
-            # Save to DB
-            if not dry_run:
-                manager.upsert_record(payload)
-                logging.info(f"Upserted {ticker} to Supabase.")
-                
-        except Exception as e:
-            logging.error(f"Failed to fetch/save {ticker}: {e}")
-            if not payload: # If we have no old data either, give up
-                return None
-    else:
-        logging.info(f"Using cached data for {ticker}")
+    payload: Optional[Dict[str, Any]] = None
+    logging.info(f"Fetching fresh data for {ticker}...")
+    try:
+        # Add a small jitter to reduce bursty traffic when running batches.
+        if not force:
+            time.sleep(random.uniform(0.5, 1.5))
+
+        payload = scraper.fetch_company_payload(ticker)
+        payload["ticker"] = ticker
+
+        apply_industry_context(
+            payload,
+            ticker=ticker,
+            ticker_to_industry=ticker_to_industry,
+            industry_to_pe=industry_pe_map
+        )
+    except Exception:
+        logging.exception(f"Failed to fetch data for {ticker}")
+        return None
 
     # 3. Run Fundamental Scans
     try:
@@ -111,11 +102,10 @@ def process_ticker(
         logging.error(f"Error running scans for {ticker}: {e}")
         return None
 
-    # 4. Compile Report
+    # 4. Compile Report (Updated Structure)
     report = {
         "ticker": ticker,
         "timestamp": datetime.now().isoformat(),
-        "archetype": getattr(scanner, "archetype", "Generic"),
         "industry_context": {
             "industry": metadata.get("industry", "Unknown"),
             "current_price": metadata.get("current_price"),
@@ -124,9 +114,10 @@ def process_ticker(
             "market_cap": metadata.get("market_cap")
         },
         "scan_summary": {
-            "pass": len(scan_results.get("pass", [])),
-            "fail": len(scan_results.get("fail", [])),
-            "pending": len(scan_results.get("pending", [])),
+            "High": len(scan_results.get("High", [])),
+            "Moderate": len(scan_results.get("Moderate", [])),
+            "Low": len(scan_results.get("Low", [])),
+            "Pending": len(scan_results.get("Pending", [])),
         },
         "results": scan_results
     }
@@ -147,25 +138,22 @@ def main():
     parser.add_argument("--ticker", type=str, help="Process a single ticker")
     parser.add_argument("--limit", type=int, help="Limit total stocks processed")
     parser.add_argument("--industry", type=str, help="Process all stocks in a specific industry")
-    parser.add_argument("--force", action="store_true", help="Force refresh from Screener (ignore cache)")
-    parser.add_argument("--dry-run", action="store_true", help="Run without saving to DB")
+    # Always fresh now; flag kept for backward compatibility.
+    parser.add_argument("--force", action="store_true", help="(Deprecated) No effect; data is always fetched fresh")
     parser.add_argument("--batch-size", type=int, default=10, help="Pause after N stocks")
     
     args = parser.parse_args()
 
-    # Initialize Services
+    # Initialize Services (no database)
     try:
-        manager = SupabaseManager()
-        scraper = ScreenerScraper(use_industry_pe_map=False) # PE map handled via utils now
+        scraper = ScreenerScraper(use_industry_pe_map=False)
     except Exception as e:
         logging.critical(f"Initialization failed: {e}")
         sys.exit(1)
 
-    # Load Industry Context
     master_map = load_master_industry_map()
     ticker_to_ind, ind_to_pe = build_ticker_to_industry_and_pe(master_map)
 
-    # Determine Universe
     tickers = []
     if args.ticker:
         tickers = [args.ticker.strip().upper()]
@@ -186,34 +174,29 @@ def main():
             logging.critical(f"Failed to load Nifty list: {e}")
             sys.exit(1)
 
-    # Apply Limit
     if args.limit:
         tickers = tickers[:args.limit]
 
-    # Execution Loop
     processed = 0
     failures = 0
     
     for ticker in tickers:
         result = process_ticker(
             ticker,
-            manager=manager,
             scraper=scraper,
             ticker_to_industry=ticker_to_ind,
             industry_pe_map=ind_to_pe,
-            dry_run=args.dry_run,
-            force=args.force
+            force=True
         )
         
         if result:
-            summary = result["scan_summary"]
-            logging.info(f"Result {ticker}: PASS={summary['pass']} FAIL={summary['fail']} PENDING={summary['pending']}")
+            s = result["scan_summary"]
+            logging.info(f"Result {ticker}: High={s['High']} Mod={s['Moderate']} Low={s['Low']} Pending={s['Pending']}")
         else:
             failures += 1
 
         processed += 1
         
-        # Batch Pausing
         if processed % args.batch_size == 0 and processed < len(tickers):
             logging.info("Batch pause (2s)...")
             time.sleep(2)

@@ -1,9 +1,9 @@
-"""Streamlit dashboard for Nifty 500 fundamental scans."""
+"""Streamlit dashboard for ReScanX (Fundamentals + Technicals)."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import nest_asyncio
 import streamlit as st
@@ -13,17 +13,27 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# NEW IMPORTS (Refactored Structure)
-from fundamentals.database import SupabaseManager
+# FUNDAMENTALS IMPORTS
 from fundamentals.fetcher import ScreenerScraper
 from fundamentals.utils import get_nifty_tickers
 from fundamentals.scans import FundamentalScans
 
+# TECHNICALS IMPORTS
+# Ensure technicals module is reachable
+try:
+    from technicals.fetcher import TechnicalFetcher
+    from technicals.indicators import TechnicalIndicators
+    from technicals.scans import TechnicalScans
+    HAS_TECHNICALS = True
+except ImportError:
+    HAS_TECHNICALS = False
+
 # Fix async conflict: Allow nested event loops for Playwright within Streamlit
-nest_asyncio.apply()
+# nest_asyncio.apply()  # Commented out as it conflicts with Playwright
+
+# --- Helper Functions (Fundamentals) ---
 
 def _load_master_industry_map() -> List[Dict[str, Any]]:
-    # Update path to use the config or direct path
     path = PROJECT_ROOT / "fundamentals" / "source" / "master_industry_map.json"
     if not path.exists():
         return []
@@ -33,7 +43,6 @@ def _load_master_industry_map() -> List[Dict[str, Any]]:
     except Exception:
         return []
     return [row for row in data if isinstance(row, dict)] if isinstance(data, list) else []
-
 
 def _build_ticker_to_industry_and_pe(master_map: List[Dict[str, Any]]) -> tuple[Dict[str, str], Dict[str, float]]:
     ticker_to_industry: Dict[str, str] = {}
@@ -59,7 +68,6 @@ def _build_ticker_to_industry_and_pe(master_map: List[Dict[str, Any]]) -> tuple[
 
     return ticker_to_industry, industry_to_pe
 
-
 def _apply_industry_context(
     payload: Dict[str, Any],
     *,
@@ -83,6 +91,7 @@ def _apply_industry_context(
         metadata["industry_pe"] = pe
         payload["industry_pe"] = pe
 
+# --- Caching ---
 
 @st.cache_data(show_spinner=False)
 def cached_tickers() -> List[str]:
@@ -92,25 +101,31 @@ def cached_tickers() -> List[str]:
     except Exception:
         return []
 
-
 @st.cache_resource(show_spinner=False)
-def cached_industry_context() -> tuple[ScreenerScraper, Dict[str, str], Dict[str, float]]:
-    # Initialize scraper
+def cached_fundamental_context() -> tuple[ScreenerScraper, Dict[str, str], Dict[str, float]]:
     scraper = ScreenerScraper(use_industry_pe_map=False)
     master_map = _load_master_industry_map()
     ticker_to_industry, industry_to_pe = _build_ticker_to_industry_and_pe(master_map)
     return scraper, ticker_to_industry, industry_to_pe
 
+@st.cache_resource(show_spinner=False)
+def cached_technical_fetcher() -> Optional[Any]:
+    if HAS_TECHNICALS:
+        return TechnicalFetcher()
+    return None
+
+# --- Main Logic ---
 
 def main() -> None:
     st.set_page_config(
-        page_title="ReScanX Fundamentals",
-        page_icon="R",
+        page_title="ReScanX Dashboard",
+        page_icon="📈",
         layout="wide"
     )
 
-    manager = SupabaseManager()
-    scraper, ticker_to_industry, industry_pe_map = cached_industry_context()
+    # Initialize Services (no database)
+    fund_scraper, ticker_to_industry, industry_pe_map = cached_fundamental_context()
+    tech_fetcher = cached_technical_fetcher()
 
     # --- Sidebar Controls ---
     with st.sidebar:
@@ -129,182 +144,220 @@ def main() -> None:
             index=tickers.index("RELIANCE") if "RELIANCE" in tickers else 0
         )
         
-        scan_type = "Fundamentals"  # Default
-        force_refresh = False
-        
-        if ticker:
-            st.markdown("---")
-            scan_type = st.radio(
-                "Choose Scan Type",
-                ["Fundamentals", "Technicals (Coming Soon)"],
-                index=0,
-                help="Fundamentals: 101 scans on financial data\nTechnicals: Chart analysis (not yet implemented)"
-            )
-            
-            if scan_type == "Fundamentals":
-                force_refresh = st.button("Force Refresh Data", help="Clear cache and re-scrape Screener.in")
-            else:
-                st.info("Technicals scan is not yet implemented. Please select Fundamentals.")
-        
-        st.markdown("### About")
-        st.info(
-            "This tool performs **101 Fundamental Scans** tailored to Indian stocks. "
-            "It strictly processes data from consolidated or standalone sources based on Nifty 500 definitions. "
-            "Scans are classified as Pass, Fail, or Pending based on data availability."
+        st.markdown("---")
+        scan_type = st.radio(
+            "Choose Scan Type",
+            ["Fundamentals", "Technicals"],
+            index=0,
+            help="Fundamentals: Financial health check\nTechnicals: Trend & momentum check"
         )
-
-    if not ticker or scan_type != "Fundamentals":
-        return
-
-    # --- Data Fetching Logic ---
-    data = manager.fetch_ticker(ticker)
-    
-    # Check if data is stale (>24h) or missing, or if user forced refresh
-    needs_refresh = force_refresh or not data or SupabaseManager.needs_refresh(data)
-
-    if needs_refresh:
-        status_container = st.empty()
-        with status_container.container():
-            with st.spinner(f"Scraping latest data for {ticker} from Screener.in..."):
-                try:
-                    payload = scraper.fetch_company_payload(ticker)
-                    payload["ticker"] = ticker
-                    _apply_industry_context(
-                        payload,
-                        ticker=ticker,
-                        ticker_to_industry=ticker_to_industry,
-                        industry_to_pe=industry_pe_map,
-                    )
-                    manager.upsert_record(payload)
-                    st.success("Data updated successfully!")
-                except Exception as e:
-                    error_msg = str(e)
-                    if "getaddrinfo failed" in error_msg or "Name resolution failure" in error_msg:
-                        st.error("Unable to connect to Screener.in. Please check your internet connection and try again.")
-                    else:
-                        st.error(f"Scraping failed: {error_msg}")
-                    # If scrape fails but we have old data, try to use it
-                    if not data:
-                        return
         
-        # Re-fetch fresh data
-        data = manager.fetch_ticker(ticker)
-        status_container.empty() # Clear loading message
+        # Data is always fetched fresh (no database cache).
+        force_refresh = st.button("Refresh Data", help="Re-fetch data now")
+        
+        st.markdown("---")
+        st.markdown("### Legend")
+        if scan_type == "Fundamentals":
+            st.success("High Quality")
+            st.warning("Moderate")
+            st.error("Low Quality")
+        else:
+            st.success("Bullish")
+            st.error("Bearish")
+            st.info("Neutral")
 
-    if not data:
-        st.error("Unable to load data. Please try refreshing.")
+    if not ticker:
         return
 
-    # --- Execution Logic ---
+    # --- Routing ---
+    if scan_type == "Fundamentals":
+        render_fundamentals(ticker, fund_scraper, ticker_to_industry, industry_pe_map, force_refresh)
+    elif scan_type == "Technicals":
+        if not HAS_TECHNICALS:
+            st.error("Technical Analysis module not found. Check installation.")
+        else:
+            render_technicals(ticker, tech_fetcher, force_refresh)
+
+# --- Renderers ---
+
+def render_fundamentals(
+    ticker: str, 
+    scraper: ScreenerScraper,
+    ticker_map: Dict, 
+    pe_map: Dict, 
+    force: bool
+) -> None:
+    # NOTE (Dec 2025): No database mode.
+    # Always scrape fresh fundamentals for the selected ticker.
+    #
+    # Future fallback (commented): enable Supabase caching.
+    # from fundamentals.database import SupabaseManager
+    # manager = SupabaseManager()
+    # data = manager.fetch_ticker(ticker)
+    # if force or not data or SupabaseManager.needs_refresh(data):
+    #     payload = scraper.fetch_company_payload(ticker)
+    #     payload["ticker"] = ticker
+    #     manager.upsert_record(payload)
+    #     data = payload
+
+    with st.spinner(f"Scraping Fundamentals for {ticker}..."):
+        try:
+            payload = scraper.fetch_company_payload(ticker)
+            payload["ticker"] = ticker
+            _apply_industry_context(payload, ticker=ticker, ticker_to_industry=ticker_map, industry_to_pe=pe_map)
+            data = payload
+            if force:
+                st.toast("Data refreshed!", icon="✅")
+        except Exception as e:
+            st.error(f"Scraping failed: {e}")
+            return
+
+    # 2. Run Scans
     scanner = FundamentalScans(data)
     results = scanner.run_scans()
     metadata = scanner.metadata
 
-    # --- Dashboard Header ---
-    st.header(f"{ticker} Analysis")
-    
-    # Top Metrics Row
+    # 3. Header
+    st.header(f"{ticker} - Fundamentals")
     m1, m2, m3, m4 = st.columns(4)
-    
-    price = metadata.get('current_price')
-    mcap = metadata.get('market_cap')
-    pe = metadata.get('stock_pe')
-    ind_pe = metadata.get('industry_pe')
-    
-    m1.metric("Current Price", f"₹ {price:,.2f}" if price else "—")
-    m2.metric("Market Cap", f"₹ {mcap:,.0f} Cr" if mcap else "—")
-    m3.metric("Stock P/E", f"{pe:.1f}" if pe else "—")
-    m4.metric("Industry P/E", f"{ind_pe:.1f}" if ind_pe else "—")
+    m1.metric("Current Price", f"₹{metadata.get('current_price', 0):,.2f}")
+    m2.metric("Market Cap", f"₹{metadata.get('market_cap', 0):,.0f} Cr")
+    m3.metric("Stock P/E", f"{metadata.get('stock_pe', 0):.1f}")
+    m4.metric("Industry P/E", f"{metadata.get('industry_pe', 0):.1f}")
+    st.caption(f"**Sector:** {metadata.get('industry', 'Unknown')}")
 
-    # Industry Context
-    st.caption(f"**Sector:** {metadata.get('industry', 'Unknown')} | **Archetype:** {scanner.archetype}")
-
-    # --- Scorecard ---
-    counts = {
-        "pass": len(results.get("pass", [])),
-        "fail": len(results.get("fail", [])),
-        "pending": len(results.get("pending", [])),
-    }
-    
     st.divider()
-    score_c1, score_c2, score_c3, score_c4 = st.columns(4)
-    score_c1.metric("Passed", counts.get("pass", 0))
-    score_c2.metric("Failed", counts.get("fail", 0))
-    score_c3.metric("Pending", counts.get("pending", 0))
-    score_c4.metric("Total Scans", counts.get("pass", 0) + counts.get("fail", 0) + counts.get("pending", 0))
 
-    # --- Detailed Results Tabs ---
-    tab_pass, tab_fail, tab_pend, tab_raw = st.tabs([
-        "Passed",
-        "Failed",
-        "Pending",
-        "Raw Data",
-    ])
+    # 4. Scorecard & Tabs
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("High Quality", len(results.get("High", [])), delta="Strong", delta_color="normal")
+    c2.metric("Moderate", len(results.get("Moderate", [])), delta="Avg", delta_color="off")
+    c3.metric("Low Quality", len(results.get("Low", [])), delta="Weak", delta_color="inverse")
+    c4.metric("Pending", len(results.get("Pending", [])))
 
-    with tab_pass:
-        _display_grouped(results.get("pass", []), "No scans passed yet.", is_success=True)
+    tabs = st.tabs(["High Quality", "Moderate", "Low Quality", "Pending", "Raw Data"])
+    
+    with tabs[0]: _display_grouped(results.get("High", []), "No high quality metrics found.", "High", mode="fund")
+    with tabs[1]: _display_grouped(results.get("Moderate", []), "No moderate metrics found.", "Moderate", mode="fund")
+    with tabs[2]: _display_grouped(results.get("Low", []), "No low quality metrics found.", "Low", mode="fund")
+    with tabs[3]: _display_grouped(results.get("Pending", []), "No pending metrics.", "Pending", mode="fund")
+    with tabs[4]: st.json(data)
 
-    with tab_fail:
-        _display_grouped(results.get("fail", []), "No failed scans.", is_success=False)
 
-    with tab_pend:
-        st.markdown(
-            "> **Pending** means the scan is **non-calculable** with the available data."
-        )
-        _display_list(results.get("pending", []), "No pending scans.")
+def render_technicals(ticker: str, fetcher: TechnicalFetcher, force: bool) -> None:
+    # 1. Fetch & Calculate (No database for technicals yet, live fetch usually preferred)
+    # Ideally we'd cache this in session_state to avoid re-fetching on slight interactions
+    
+    if force or f"tech_data_{ticker}" not in st.session_state:
+        with st.spinner(f"Fetching Technicals for {ticker}..."):
+            try:
+                daily_df, weekly_df = fetcher.fetch_stock_data(ticker)
+                if daily_df.empty:
+                    st.error("No data found.")
+                    return
+                
+                bench = fetcher.fetch_benchmark()
+                
+                # Industry Beta
+                ind_name, ind_beta = None, None
+                if hasattr(fetcher, 'fetch_industry_beta_avg'):
+                    ind_name, ind_beta = fetcher.fetch_industry_beta_avg(ticker, bench)
+                    daily_df["INDUSTRY_BETA_AVG"] = ind_beta
 
-    with tab_raw:
-        with st.expander("Inspect JSON Payload", expanded=False):
-            st.json(data)
+                TechnicalIndicators.add_all_indicators(daily_df, is_weekly=False, benchmark_data=bench)
+                TechnicalIndicators.add_all_indicators(weekly_df, is_weekly=True)
+                
+                scanner = TechnicalScans(daily_df, weekly_df)
+                results = scanner.run_all()
+                
+                # Store in session state
+                st.session_state[f"tech_data_{ticker}"] = {
+                    "results": results,
+                    "daily": daily_df,
+                    "meta": {"last_close": daily_df['Close'].iloc[-1], "industry": ind_name}
+                }
+                
+            except Exception as e:
+                st.error(f"Technical Analysis failed: {e}")
+                return
+
+    # 2. Retrieve from Cache
+    cached = st.session_state[f"tech_data_{ticker}"]
+    results = cached["results"]
+    meta = cached["meta"]
+    
+    # 3. Header
+    st.header(f"{ticker} - Technicals")
+    st.metric("Last Close", f"₹{meta['last_close']:,.2f}")
+    if meta.get("industry"):
+        st.caption(f"**Sector:** {meta['industry']}")
+
+    st.divider()
+
+    # 4. Scorecard & Tabs
+    bull_count = len(results.get("Bullish", []))
+    bear_count = len(results.get("Bearish", []))
+    neut_count = len(results.get("Neutral", []))
+    
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Bullish Signals", bull_count, delta="Buy", delta_color="normal")
+    c2.metric("Bearish Signals", bear_count, delta="Sell", delta_color="inverse")
+    c3.metric("Neutral Signals", neut_count, delta="Hold", delta_color="off")
+
+    tabs = st.tabs(["Bullish", "Bearish", "Neutral", "Pending"])
+    
+    with tabs[0]: _display_grouped(results.get("Bullish", []), "No bullish signals.", "Bullish", mode="tech")
+    with tabs[1]: _display_grouped(results.get("Bearish", []), "No bearish signals.", "Bearish", mode="tech")
+    with tabs[2]: _display_grouped(results.get("Neutral", []), "No neutral signals.", "Neutral", mode="tech")
+    with tabs[3]: _display_grouped(results.get("Pending", []), "No pending scans.", "Pending", mode="tech")
 
 
 # --- Helper Rendering Functions ---
 
-def _display_grouped(items: List[Dict[str, Any]], empty_message: str, is_success: bool) -> None:
-    """Group scans by category inside expanders."""
+def _display_grouped(items: List[Dict[str, Any]], empty_msg: str, status_type: str, mode: str) -> None:
     if not items:
-        st.info(empty_message)
+        st.info(empty_msg)
         return
-        
-    # Group items by category
-    grouped: Dict[str, List[Dict[str, Any]]] = {}
+    
+    grouped = {}
     for item in items:
         grouped.setdefault(item["category"], []).append(item)
-    
-    # Render categories
-    for category, rows in grouped.items():
-        # Add count to category header
-        header = f"{category} ({len(rows)})"
-        with st.expander(header, expanded=True):
+        
+    for cat, rows in grouped.items():
+        with st.expander(f"{cat} ({len(rows)})", expanded=True):
             for row in rows:
-                value_str = _format_value(row.get("value"))
-                label_prefix = "[PASS]" if is_success else "[FAIL]"
-                st.markdown(f"**{label_prefix} {row['label']}** {value_str}")
+                val = row.get("value")
+                val_str = _format_value(val)
+                status_text = row.get('status', status_type)
+                
+                # Icons
+                prefix = "⚪"
+                if mode == "fund":
+                    if status_type == "High": prefix = "✅"
+                    elif status_type == "Moderate": prefix = "⚠️"
+                    elif status_type == "Low": prefix = "🔻"
+                else: # tech
+                    if status_type == "Bullish": prefix = "🟢"
+                    elif status_type == "Bearish": prefix = "🔴"
+                    elif status_type == "Neutral": prefix = "⚪"
+
+                st.markdown(f"{prefix} **{row['label']}**: {status_text} {val_str}")
 
 
 def _display_list(items: List[Dict[str, Any]], empty_message: str) -> None:
-    """Simple list for pending items."""
     if not items:
         st.info(empty_message)
         return
-    
     for item in items:
         st.markdown(f"- **{item['label']}** ({item['category']})")
 
 
 def _format_value(value: Any) -> str:
-    """Format numeric values for display."""
-    if value is None:
-        return ""
-    
-    if isinstance(value, float):
-        # Format percentage-like numbers logic could be added here if needed
-        # For now, general float formatting
-        if abs(value) > 1000:
-            return f"— **{value:,.0f}**"
-        return f"— **{value:,.2f}**"
-        
-    return f"— **{value}**"
+    if value is None: return ""
+    if isinstance(value, (int, float)):
+        if abs(value) > 1000: return f"({value:,.0f})"
+        return f"({value:,.2f})"
+    return f"({value})"
 
 
 if __name__ == "__main__":

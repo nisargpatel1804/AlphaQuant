@@ -5,6 +5,7 @@ Handles connection, fetching, upserting, and schema management.
 from __future__ import annotations
 
 import os
+from urllib.parse import urlparse
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
@@ -105,7 +106,15 @@ class SupabaseManager:
         payload.setdefault("last_updated", datetime.now(timezone.utc).isoformat())
         
         # Perform upsert
-        self.client.table(self.table).upsert(payload, on_conflict="ticker").execute()
+        try:
+            self.client.table(self.table).upsert(payload, on_conflict="ticker").execute()
+        except Exception as exc:
+            parsed = urlparse(self.url or "")
+            host = parsed.netloc or parsed.path or "<unknown host>"
+            raise RuntimeError(
+                f"Supabase upsert failed (could not connect to {host}). "
+                "Check DNS/VPN/proxy settings and that SUPABASE_URL is correct."
+            ) from exc
 
     # ------------------------------------------------------------------
     # Utility helpers

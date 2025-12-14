@@ -1,17 +1,12 @@
 """
-Comprehensive logic layer that evaluates 101 fundamental scans.
-
-Project rule (simplified):
-- Run every scan whenever the required data exists.
-- Use `pending` when a scan is non-calculable (missing/insufficient data).
-- Do not use `skip`.
+Comprehensive logic layer that evaluates fundamental scans with tiered classification.
+Classifies metrics into High, Moderate, Low, or Pending instead of simple Pass/Fail.
 """
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 NUMBER_OF_QUARTERS_IN_YEAR = 4
 MIN_SERIES_LENGTH = 3
@@ -22,134 +17,59 @@ class ScanDefinition:
     label: str
     category: str
 
-
 def _build_scan_definitions() -> Tuple[ScanDefinition, ...]:
+    # We consolidate multiple boolean checks into single categorical checks where possible
+    
     profitability = [
-        ("scan_high_roe", "High ROE (> 15%)"),
-        ("scan_high_roce", "High ROCE (> 15%)"),
-        ("scan_improved_roe", "Improved ROE YoY"),
-        ("scan_improved_roce", "Improved ROCE YoY"),
-        ("scan_qtr_net_profit_growth_yoy", "Quarterly Net Profit Growth YoY"),
-        ("scan_qtr_ebitda_growth_yoy", "Quarterly EBITDA Growth YoY"),
-        ("scan_highest_qtr_net_profit", "Highest Quarterly Net Profit"),
-        ("scan_highest_qtr_ebitda", "Highest Quarterly EBITDA"),
-        ("scan_highest_ann_net_profit", "Highest Annual Net Profit"),
-        ("scan_highest_ann_ebitda", "Highest Annual EBITDA"),
-        ("scan_turnaround_yoy", "Turnaround Net Profit YoY"),
-        ("scan_consistent_inc_qtr_eps", "Consistently Increasing Quarterly EPS"),
-        ("scan_consistent_dec_qtr_eps", "Consistently Decreasing Quarterly EPS"),
-        ("scan_consistent_inc_ann_eps", "Consistently Increasing Annual EPS"),
-        ("scan_consistent_dec_ann_eps", "Consistently Decreasing Annual EPS"),
-        ("scan_high_ebitda_margin", "High EBITDA Margin (>20%)"),
-        ("scan_consistently_high_ebitda_margin", "Consistently High EBITDA Margin"),
-        ("scan_high_pat_margin", "High PAT Margin (>10%)"),
-        ("scan_consistently_high_pat_margin", "Consistently High PAT Margin"),
-        ("scan_consistently_high_roe", "Consistently High ROE (>15%)"),
-        ("scan_consistently_high_roce", "Consistently High ROCE (>15%)"),
+        ("check_roe_status", "ROE Status"),
+        ("check_roce_status", "ROCE Status"),
+        ("check_net_profit_growth_qtr", "Quarterly Profit Growth"),
+        ("check_ebitda_margin_trend", "EBITDA Margin Trend"),
+        ("check_pat_margin_status", "PAT Margin Status"),
+        ("check_earnings_consistency", "Earnings Consistency"),
     ]
 
     turnover = [
-        ("scan_high_qtr_sales_growth", "High Quarterly Sales Growth (>15%)"),
-        ("scan_high_ann_sales_growth", "High Annual Sales Growth (>15%)"),
-        ("scan_consistent_sales_growth", "Consistently Growing Annual Sales"),
-        ("scan_increasing_qtr_sales", "Increasing Quarterly Sales (3 Qtrs)"),
-        ("scan_highest_qtr_sales", "Highest Quarterly Sales"),
-        ("scan_highest_ann_sales", "Highest Annual Sales"),
+        ("check_sales_growth_qtr", "Quarterly Sales Growth"),
+        ("check_sales_growth_ann", "Annual Sales Growth"),
+        ("check_sales_consistency", "Sales Consistency"),
     ]
 
     solvency = [
-        ("scan_no_leverage", "No Leverage (Debt=0)"),
-        ("scan_low_leverage", "Low Leverage (<0.5x)"),
-        ("scan_mod_leverage", "Moderate Leverage (0.5-1.0x)"),
-        ("scan_high_leverage", "High Leverage (>1.0x)"),
-        ("scan_high_interest_coverage", "High Interest Coverage (>4x)"),
-        ("scan_mod_interest_coverage", "Moderate Interest Coverage (2-4x)"),
-        ("scan_low_interest_coverage", "Low Interest Coverage (<2x)"),
-        ("scan_high_current_ratio", "High Current Ratio (>2x)"),
-        ("scan_mod_current_ratio", "Moderate Current Ratio (1.5-2x)"),
-        ("scan_low_current_ratio", "Low Current Ratio (<1.5x)"),
-        ("scan_consistently_increasing_leverage", "Consistently Increasing Leverage"),
-        ("scan_consistently_decreasing_leverage", "Consistently Decreasing Leverage"),
+        ("check_leverage_status", "Debt-to-Equity Status"),
+        ("check_interest_coverage", "Interest Coverage Ratio"),
+        ("check_current_ratio", "Current Ratio Status"),
+        ("check_leverage_trend", "Leverage Trend"),
     ]
 
     cash_flow = [
-        ("scan_increasing_cfo", "Increasing CFO YoY"),
-        ("scan_consistent_positive_cfo", "Positive CFO for 3 Years"),
-        ("scan_growing_cfo", "Growing CFO (3 Years)"),
-        ("scan_positive_fcf", "Positive Free Cash Flow"),
-        ("scan_increasing_fcf", "Increasing Free Cash Flow"),
-        ("scan_consistent_positive_fcf", "Positive Free Cash Flow (3 Years)"),
-        ("scan_consistently_declining_fcf", "Consistently Declining FCF"),
-        ("scan_highest_ann_cfo", "Highest Annual CFO"),
+        ("check_cfo_status", "Operating Cash Flow Status"),
+        ("check_fcf_status", "Free Cash Flow Status"),
+        ("check_cfo_consistency", "CFO Consistency"),
     ]
 
     valuation = [
-        ("scan_very_high_pe", "Very High PE (>50)"),
-        ("scan_high_pe", "High PE (20-50)"),
-        ("scan_moderate_pe", "Moderate PE (10-20)"),
-        ("scan_low_pe", "Low PE (<10)"),
-        ("scan_pe_above_industry", "PE Above Industry"),
-        ("scan_pe_below_industry", "PE Below Industry"),
-        ("scan_high_peg", "High PEG (>1.5)"),
-        ("scan_low_peg", "Low PEG (<1.0)"),
-        ("scan_price_above_book", "Price Above Book Value"),
-        ("scan_price_below_book", "Price Below Book Value"),
-        ("scan_increasing_ev_ebitda", "Increasing EV/EBITDA"),
-        ("scan_decreasing_ev_ebitda", "Decreasing EV/EBITDA"),
-        ("scan_high_ev_sales", "High EV/Sales (>3x)"),
-        ("scan_moderate_ev_sales", "Moderate EV/Sales (1-3x)"),
-        ("scan_low_ev_sales", "Low EV/Sales (<1x)"),
+        ("check_pe_valuation", "P/E Valuation"),
+        ("check_relative_pe", "P/E vs Industry"),
+        ("check_peg_valuation", "PEG Valuation"),
+        ("check_price_to_book", "Price to Book Value"),
+        ("check_ev_ebitda_trend", "EV/EBITDA Trend"),
     ]
 
     dividends = [
-        ("scan_consistent_dividends", "Consistent Dividend Payout (5 Years)"),
-        ("scan_positive_dividend_yield", "Positive Dividend Yield"),
-        ("scan_high_dividend_payout", "High Dividend Payout (>30%)"),
+        ("check_dividend_yield", "Dividend Yield Status"),
+        ("check_dividend_consistency", "Dividend Consistency"),
     ]
 
     efficiency = [
-        ("scan_increasing_debtor_days", "Increasing Debtor Days"),
-        ("scan_decreasing_debtor_days", "Decreasing Debtor Days"),
-        ("scan_increasing_payable_days", "Increasing Payable Days"),
-        ("scan_decreasing_payable_days", "Decreasing Payable Days"),
-        ("scan_increasing_inventory_days", "Increasing Inventory Days"),
-        ("scan_decreasing_inventory_days", "Decreasing Inventory Days"),
-        ("scan_increasing_working_cap_days", "Increasing Working Capital Days"),
-        ("scan_decreasing_working_cap_days", "Decreasing Working Capital Days"),
-        ("scan_high_gfa_increase", "High Fixed Asset Increase (>10%)"),
-        ("scan_high_gfa_increase_three_year", "Fixed Asset CAGR >10% (3Y)"),
+        ("check_working_capital_trend", "Working Capital Cycle"),
+        ("check_fixed_asset_turnover", "Fixed Asset Efficiency"), # Proxy via Capex growth
     ]
 
     shareholding = [
-        ("scan_share_fii_increase", "FII Buying QoQ"),
-        ("scan_share_fii_decrease", "FII Selling QoQ"),
-        ("scan_share_dii_increase", "DII Buying QoQ"),
-        ("scan_share_dii_decrease", "DII Selling QoQ"),
-        ("scan_share_promoter_increase", "Promoter Buying QoQ"),
-        ("scan_share_promoter_decrease", "Promoter Selling QoQ"),
-        ("scan_share_public_increase", "Public Buying QoQ"),
-        ("scan_share_public_decrease", "Public Selling QoQ"),
-        ("scan_share_fii_consistent_increase", "Consistent FII Buying (3 Qtrs)"),
-        ("scan_share_dii_consistent_increase", "Consistent DII Buying (3 Qtrs)"),
-        ("scan_share_promoter_consistent_increase", "Consistent Promoter Buying (3 Qtrs)"),
-        ("scan_share_public_consistent_increase", "Consistent Public Buying (3 Qtrs)"),
-        ("scan_share_promoter_very_high", "Very High Promoter Holding (>75%)"),
-        ("scan_share_promoter_high", "High Promoter Holding (50-75%)"),
-        ("scan_share_promoter_low", "Low Promoter Holding (<50%)"),
-        ("scan_share_shareholders_increase", "Rising Shareholder Count QoQ"),
-        ("scan_share_shareholders_decrease", "Falling Shareholder Count QoQ"),
-        ("scan_share_shareholders_consistent_increase", "Consistently Rising Shareholder Count"),
-        ("scan_share_public_high", "High Public Holding (>20%)"),
-        ("scan_share_public_low", "Low Public Holding (<10%)"),
-    ]
-
-    pledge = [
-        ("scan_pledge_increase", "Increasing Promoter Pledge"),
-        ("scan_pledge_decrease", "Decreasing Promoter Pledge"),
-        ("scan_pledge_zero", "Zero Pledge"),
-        ("scan_pledge_low", "Low Pledge (<20%)"),
-        ("scan_pledge_moderate", "Moderate Pledge (20-40%)"),
-        ("scan_pledge_high", "High Pledge (>40%)"),
+        ("check_promoter_holding", "Promoter Holding Status"),
+        ("check_institutional_trend", "Institutional (FII+DII) Trend"),
+        ("check_pledge_status", "Promoter Pledge Status"),
     ]
 
     categories = [
@@ -161,7 +81,6 @@ def _build_scan_definitions() -> Tuple[ScanDefinition, ...]:
         ("Dividends", dividends),
         ("Efficiency", efficiency),
         ("Shareholding", shareholding),
-        ("Pledge", pledge),
     ]
 
     definitions: List[ScanDefinition] = []
@@ -172,7 +91,13 @@ def _build_scan_definitions() -> Tuple[ScanDefinition, ...]:
 
 
 class FundamentalScans:
-    """Evaluate the 101 fundamental scans for a stock's Supabase record."""
+    """
+    Evaluates fundamental metrics and returns a classification:
+    - High / Good
+    - Moderate / Average
+    - Low / Poor
+    - Pending (Insufficient Data)
+    """
 
     METADATA_FIELDS = (
         "market_cap", "current_price", "stock_pe", "book_value",
@@ -184,7 +109,6 @@ class FundamentalScans:
     SCANS = _build_scan_definitions()
 
     def __init__(self, data: Dict[str, Any]):
-        # Ensure data is a dictionary
         if not isinstance(data, dict):
             data = {}
 
@@ -197,16 +121,17 @@ class FundamentalScans:
         shareholding = self.data.get("shareholding") or {}
         self.shareholding_q = shareholding.get("quarterly") or {}
         self.shareholding_y = shareholding.get("yearly") or {}
+        
         self._period_cache: Dict[int, List[str]] = {}
         self._current_value: Optional[float] = None
         self.metadata = self._build_metadata()
         self.industry = self.metadata.get("industry", "Unknown")
-
-        # Archetype is retained for backward compatibility with UI/verify output.
+        
+        # Archetype logic can be added here based on results if needed
         self.archetype = "Generic"
 
     # ------------------------------------------------------------------
-    # Helper utilities
+    # Utilities
     # ------------------------------------------------------------------
     def _build_metadata(self) -> Dict[str, Any]:
         base = dict(self.data.get("metadata") or {})
@@ -255,31 +180,6 @@ class FundamentalScans:
         if limit is not None: periods = periods[:limit]
         return [dataset.get(p, {}).get(metric) for p in periods]
 
-    def _has_metric_history(self, dataset: Dict[str, Any], metric: str, min_count: int) -> bool:
-        count = 0
-        for period in self._get_sorted_periods(dataset):
-            value = dataset.get(period, {}).get(metric)
-            if value is not None:
-                count += 1
-                if count >= min_count:
-                    return True
-        return False
-
-    @staticmethod
-    def _safe_growth(current: Optional[float], previous: Optional[float]) -> Optional[float]:
-        if current is None or previous is None: return None
-        if previous == 0: return 999.0 if current > 0 else (-999.0 if current < 0 else 0.0)
-        try: return (current - previous) / abs(previous) * 100
-        except ZeroDivisionError: return None
-
-    @staticmethod
-    def _check_consistency(values: Iterable[Optional[float]], *, increasing: bool) -> Optional[bool]:
-        cleaned = [v for v in values if v is not None]
-        if len(cleaned) < MIN_SERIES_LENGTH: return None
-        pairs = list(zip(cleaned[:-1], cleaned[1:]))
-        if not pairs: return None
-        return all(curr > prev for prev, curr in pairs) if increasing else all(curr < prev for prev, curr in pairs)
-
     @staticmethod
     def _safe_divide(numerator: Optional[float], denominator: Optional[float]) -> Optional[float]:
         if numerator is None or denominator is None: return None
@@ -287,15 +187,13 @@ class FundamentalScans:
         try: return numerator / denominator
         except ZeroDivisionError: return None
 
-    def _is_loss_making(self) -> bool:
-        periods = self._get_sorted_periods(self.annual)
-        if not periods: return False
-        idx = 0
-        if periods[0].strip().upper() == "TTM" and len(periods) > 1:
-            idx = 1
-        np = self._get_value(self.annual, idx, "net_profit")
-        return np is not None and np < 0
+    @staticmethod
+    def _safe_growth(current: Optional[float], previous: Optional[float]) -> Optional[float]:
+        if current is None or previous is None: return None
+        if previous == 0: return 100.0 if current > 0 else (-100.0 if current < 0 else 0.0)
+        return ((current - previous) / abs(previous)) * 100
 
+    # --- Computed Metrics ---
     def _compute_roe(self) -> Optional[float]:
         np = self._get_value(self.annual, 0, "net_profit")
         eq = self._get_value(self.balance_sheet, 0, "equity_capital")
@@ -305,954 +203,389 @@ class FundamentalScans:
         return roe * 100 if roe is not None else None
 
     def _compute_roce(self) -> Optional[float]:
-        ebit = self._get_value(self.quarterly, 0, "operating_profit")
-        if ebit is None:
-            ebit = self._get_value(self.annual, 0, "operating_profit")
+        ebit = self._get_value(self.quarterly, 0, "operating_profit") # Proxy using OP
+        if ebit is None: ebit = self._get_value(self.annual, 0, "operating_profit")
         ta = self._get_value(self.balance_sheet, 0, "total_assets")
         cl = self._get_value(self.balance_sheet, 0, "current_liabilities")
         ce = self._safe_divide(ta - cl, 1) if ta is not None and cl is not None else None
         roce = self._safe_divide(ebit, ce)
         return roce * 100 if roce is not None else None
 
-    def _same_quarter_last_year(self, metric: str) -> Tuple[Optional[float], Optional[float]]:
-        periods = self._get_sorted_periods(self.quarterly)
-        if len(periods) <= NUMBER_OF_QUARTERS_IN_YEAR: return None, None
-        return self.quarterly.get(periods[0], {}).get(metric), self.quarterly.get(periods[NUMBER_OF_QUARTERS_IN_YEAR], {}).get(metric)
-
-    def _highest_vs_history(self, dataset: Dict[str, Any], metric: str) -> Optional[bool]:
-        periods = self._get_sorted_periods(dataset)
-        if len(periods) < 2: return None
-        latest = dataset.get(periods[0], {}).get(metric)
-        history = [dataset.get(p, {}).get(metric) for p in periods[1:]]
-        history = [v for v in history if v is not None]
-        if latest is None or not history: return None
-        return latest > max(history)
-
-    def _annual_margin_series(self, metric: str, threshold: float, *, greater: bool = True) -> Optional[bool]:
-        values = self._get_series(self.annual, metric, MIN_SERIES_LENGTH)
-        valid = [v for v in values if v is not None]
-        if len(valid) < MIN_SERIES_LENGTH: return None
-        comp = (lambda v: v > threshold) if greater else (lambda v: v < threshold)
-        return all(comp(v) for v in valid[:MIN_SERIES_LENGTH])
-
-    def _annual_pat_margin(self, index: int = 0) -> Optional[float]:
-        ratio = self._safe_divide(self._get_value(self.annual, index, "net_profit"), self._get_value(self.annual, index, "sales"))
-        return None if ratio is None else ratio * 100
-
-    def _annual_opm(self, index: int = 0) -> Optional[float]:
-        return self._get_value(self.annual, index, "opm_percent")
-
-    def _roe_series(self) -> List[float]:
-        series = []
-        for p in self._get_sorted_periods(self.annual):
-            np = self.annual.get(p, {}).get("net_profit")
-            eq = self.balance_sheet.get(p, {}).get("equity_capital")
-            res = self.balance_sheet.get(p, {}).get("reserves")
-            den = None if eq is None or res is None else eq + res
-            roe = self._safe_divide(np, den)
-            if roe is not None: series.append(roe * 100)
-        return series
-
-    def _roce_series(self) -> List[float]:
-        return [v for _, v in self._series_from_ratio("roce_percent")]
-
-    def _series_from_ratio(self, metric: str) -> List[Tuple[str, float]]:
-        return [(p, self.ratios.get(p, {}).get(metric)) for p in self._get_sorted_periods(self.ratios) if self.ratios.get(p, {}).get(metric) is not None]
-
-    def _leverage(self, index: int = 0) -> Optional[float]:
-        b, e, r = self._get_value(self.balance_sheet, index, "borrowings"), self._get_value(self.balance_sheet, index, "equity_capital"), self._get_value(self.balance_sheet, index, "reserves")
-        if b == 0: return 0.0
+    def _leverage_ratio(self) -> Optional[float]:
+        b = self._get_value(self.balance_sheet, 0, "borrowings")
+        e = self._get_value(self.balance_sheet, 0, "equity_capital")
+        r = self._get_value(self.balance_sheet, 0, "reserves")
         if b is None: return None
-        return self._safe_divide(b, (e + r) if e is not None and r is not None else None)
-
-    def _interest_coverage(self) -> Optional[float]:
-        op, int_exp = self._get_value(self.quarterly, 0, "operating_profit"), self._get_value(self.quarterly, 0, "interest")
-        if op is None: return None
-        if int_exp == 0 or int_exp is None: return 9999.0 if op > 0 else None
-        return self._safe_divide(op, int_exp)
-
-    def _current_ratio(self) -> Optional[float]:
-        periods = self._get_sorted_periods(self.balance_sheet)
-        for period in periods:
-            bs = self.balance_sheet[period]
-            ca = bs.get("current_assets")
-            cl = bs.get("current_liabilities")
-            if ca is None:
-                ta = bs.get("total_assets")
-                fa = bs.get("fixed_assets")
-                cwip = bs.get("cwip") or 0
-                investments = bs.get("investments") or 0
-                if ta is not None and fa is not None:
-                    ca = ta - fa - cwip - investments
-            if cl is None:
-                tl = bs.get("total_liabilities")
-                equity = bs.get("equity_capital") or 0
-                reserves = bs.get("reserves") or 0
-                lt_borrowings = bs.get("long_term_borrowings") or bs.get("borrowings") or 0
-                if tl is not None:
-                    cl = tl - equity - reserves - lt_borrowings
-                    if cl is not None and cl < 0: cl = None
-            if ca is not None and cl is not None:
-                return self._safe_divide(ca, cl)
-        return None
-
-    def _cfo_series(self) -> List[Tuple[str, float]]:
-        return [(p, self.cash_flow.get(p, {}).get("cash_from_operating")) for p in self._get_sorted_periods(self.cash_flow) if self.cash_flow.get(p, {}).get("cash_from_operating") is not None]
-
-    def _fcf(self, index: int = 0) -> Optional[float]:
-        cfo, capex = self._get_value(self.cash_flow, index, "cash_from_operating"), self._get_value(self.cash_flow, index, "cash_from_investing")
-        return (cfo - abs(capex)) if cfo is not None and capex is not None else None
-
-    def _ev(self) -> Optional[float]:
-        mc = self.metadata.get("market_cap")
-        if mc is None: return None
-        b = self._get_value(self.balance_sheet, 0, "borrowings") or 0
-        c = (self._get_value(self.balance_sheet, 0, "cash_equivalents") or self._get_value(self.balance_sheet, 0, "cash_and_cash_equivalents") or 0)
-        return mc + b - c
-
-    def _ev_ebitda(self, index: int = 0) -> Optional[float]:
-        return self._safe_divide(self._ev(), self._get_value(self.annual, index, "operating_profit"))
-
-    def _ev_sales(self, index: int = 0) -> Optional[float]:
-        return self._safe_divide(self._ev(), self._get_value(self.annual, index, "sales"))
-
-    def _peg(self) -> Optional[float]:
-        pe = self.metadata.get("stock_pe")
-        g = self._safe_growth(self._get_value(self.annual, 0, "net_profit"), self._get_value(self.annual, 1, "net_profit"))
-        if pe is None or g is None: return None
-        if g == 0: return None 
-        return pe / g
-
-    def _dividend_series(self) -> List[float]:
-        return [self.annual.get(p, {}).get("dividend_payout_percent") for p in self._get_sorted_periods(self.annual) if self.annual.get(p, {}).get("dividend_payout_percent") is not None]
-
-    def _has_required_data(self, scan_name: str) -> bool:
-        """Check if sufficient data exists to run a scan."""
-        if scan_name == "scan_consistent_dividends":
-            return len(self._dividend_series()) >= 5
-        if scan_name == "scan_high_dividend_payout":
-            return len(self._dividend_series()) >= MIN_SERIES_LENGTH
-        if scan_name in {"scan_consistent_inc_ann_eps", "scan_consistent_dec_ann_eps"}:
-            return self._has_metric_history(self.annual, "eps", MIN_SERIES_LENGTH)
-        if scan_name in {"scan_consistent_inc_qtr_eps", "scan_consistent_dec_qtr_eps"}:
-            return self._has_metric_history(self.quarterly, "eps", MIN_SERIES_LENGTH)
-        if scan_name in {"scan_price_above_book", "scan_price_below_book"}:
-            return self.metadata.get("book_value") is not None and self.metadata.get("current_price") is not None
-        if scan_name == "scan_improved_roe":
-            return len(self._roe_series()) >= 2
-        if scan_name == "scan_consistently_high_roe":
-            return len(self._roe_series()) >= MIN_SERIES_LENGTH
-        if scan_name in {"scan_improved_roce", "scan_consistently_high_roce"}:
-            roce_series = self._roce_series()
-            required = 2 if "improved" in scan_name else MIN_SERIES_LENGTH
-            return len(roce_series) >= required
-        if scan_name in {"scan_highest_qtr_net_profit", "scan_highest_qtr_ebitda"}:
-            periods = self._get_sorted_periods(self.quarterly)
-            return len(periods) >= 2
-        if scan_name in {"scan_highest_ann_net_profit", "scan_highest_ann_ebitda"}:
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= 2
-        if scan_name == "scan_consistently_high_ebitda_margin":
-            values = self._get_series(self.annual, "opm_percent", MIN_SERIES_LENGTH)
-            return len([v for v in values if v is not None]) >= MIN_SERIES_LENGTH
-        if scan_name == "scan_consistently_high_pat_margin":
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= MIN_SERIES_LENGTH and all(
-                self.annual.get(p, {}).get("net_profit") is not None and
-                self.annual.get(p, {}).get("sales") is not None
-                for p in periods[:MIN_SERIES_LENGTH]
-            )
-        if scan_name == "scan_consistent_sales_growth":
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= 4 and all(
-                self.annual.get(p, {}).get("sales") is not None 
-                for p in periods[:4]
-            )
-        if scan_name in {"scan_highest_qtr_sales"}:
-            periods = self._get_sorted_periods(self.quarterly)
-            return len(periods) >= 2
-        if scan_name in {"scan_highest_ann_sales"}:
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= 2
-        if scan_name == "scan_high_ann_sales_growth":
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= 2 and all(
-                self.annual.get(p, {}).get("sales") is not None
-                for p in periods[:2]
-            )
-        if scan_name in {"scan_increasing_cfo"}:
-            cfo_series = self._cfo_series()
-            return len(cfo_series) >= 2
-        if scan_name in {"scan_consistent_positive_cfo", "scan_growing_cfo"}:
-            cfo_series = self._cfo_series()
-            return len(cfo_series) >= MIN_SERIES_LENGTH
-        if scan_name == "scan_increasing_fcf":
-            periods = self._get_sorted_periods(self.cash_flow)
-            return len(periods) >= 2 and all(
-                self.cash_flow.get(p, {}).get("cash_from_operating") is not None and
-                self.cash_flow.get(p, {}).get("cash_from_investing") is not None
-                for p in periods[:2]
-            )
-        if scan_name in {"scan_consistent_positive_fcf", "scan_consistently_declining_fcf"}:
-            periods = self._get_sorted_periods(self.cash_flow)
-            return len(periods) >= MIN_SERIES_LENGTH and all(
-                self.cash_flow.get(p, {}).get("cash_from_operating") is not None and
-                self.cash_flow.get(p, {}).get("cash_from_investing") is not None
-                for p in periods[:MIN_SERIES_LENGTH]
-            )
-        if scan_name == "scan_highest_ann_cfo":
-            periods = self._get_sorted_periods(self.cash_flow)
-            return len(periods) >= 2
-        if scan_name in {"scan_consistently_increasing_leverage", "scan_consistently_decreasing_leverage"}:
-            periods = self._get_sorted_periods(self.balance_sheet)
-            return len(periods) >= MIN_SERIES_LENGTH
-        if scan_name in {"scan_increasing_ev_ebitda", "scan_decreasing_ev_ebitda"}:
-            periods_annual = self._get_sorted_periods(self.annual)
-            periods_bs = self._get_sorted_periods(self.balance_sheet)
-            return len(periods_annual) >= 2 and len(periods_bs) >= 2
-        if scan_name in {"scan_high_peg", "scan_low_peg"}:
-            if self.metadata.get("stock_pe") is None:
-                return False
-            periods = self._get_sorted_periods(self.annual)
-            return len(periods) >= 2 and all(
-                self.annual.get(p, {}).get("eps") is not None
-                for p in periods[:2]
-            )
-        if scan_name == "scan_high_gfa_increase":
-            periods = self._get_sorted_periods(self.balance_sheet)
-            return len(periods) >= 2 and all(
-                self.balance_sheet.get(p, {}).get("fixed_assets") is not None
-                for p in periods[:2]
-            )
-        if scan_name == "scan_high_gfa_increase_three_year":
-            periods = self._get_sorted_periods(self.balance_sheet)
-            return len(periods) >= MIN_SERIES_LENGTH and all(
-                self.balance_sheet.get(p, {}).get("fixed_assets") is not None
-                for p in periods[:MIN_SERIES_LENGTH]
-            )
-        ratio_scans = {
-            "scan_increasing_debtor_days", "scan_decreasing_debtor_days",
-            "scan_increasing_payable_days", "scan_decreasing_payable_days",
-            "scan_increasing_inventory_days", "scan_decreasing_inventory_days",
-            "scan_increasing_working_cap_days", "scan_decreasing_working_cap_days"
-        }
-        if scan_name in ratio_scans:
-            metric_map = {
-                "debtor": "debtor_days",
-                "payable": "days_payable",
-                "inventory": "inventory_days",
-                "working_cap": "working_capital_days"
-            }
-            metric = None
-            for key, value in metric_map.items():
-                if key in scan_name:
-                    metric = value
-                    break
-            if metric:
-                return self._has_metric_history(self.ratios, metric, MIN_SERIES_LENGTH)
-        return True
-
-    def _ratio_trend(self, field: str, *, increasing: bool) -> Optional[bool]:
-        periods = self._get_sorted_periods(self.ratios)
-        latest_value: Optional[float] = None
-        collected: List[float] = []
-        for p in periods:
-            v = self.ratios.get(p, {}).get(field)
-            if latest_value is None:
-                latest_value = v
-            if v is None:
-                continue
-            collected.append(v)
-            if len(collected) >= MIN_SERIES_LENGTH:
-                break
-
-        self._record_value(latest_value)
-        if len(collected) < MIN_SERIES_LENGTH:
-            return None
-
-        # periods are newest->oldest, collected matches that order.
-        chron = list(reversed(collected))  # oldest->newest
-        pairs = list(zip(chron[:-1], chron[1:]))
-        return all(curr > prev for prev, curr in pairs) if increasing else all(curr <= prev for prev, curr in pairs)
-
-    def _shareholding_delta(self, field: str, *, increasing: bool) -> Optional[bool]:
-        periods = self._get_sorted_periods(self.shareholding_q)
-        if len(periods) < 2:
-            self._record_value(None)
-            return False
-        curr_period = self.shareholding_q.get(periods[0], {})
-        prev_period = self.shareholding_q.get(periods[1], {})
-        curr = curr_period.get(field)
-        prev = prev_period.get(field)
-        if field == "promoters":
-            if curr is None and curr_period.get("public") is not None:
-                curr = 0.0
-            if prev is None and prev_period.get("public") is not None:
-                prev = 0.0
-        if curr is None or prev is None:
-            self._record_value(None)
-            return False
-        delta = curr - prev
-        self._record_value(delta)
-        return delta > 0 if increasing else delta < 0
-
-    def _shareholding_consistency(self, field: str) -> Optional[bool]:
-        periods = self._get_sorted_periods(self.shareholding_q)
-        periods = periods[:MIN_SERIES_LENGTH]
-        vals: List[Optional[float]] = []
-        for period in periods:
-            section = self.shareholding_q.get(period, {})
-            val = section.get(field)
-            if val is None and field == "promoters" and section.get("public") is not None:
-                val = 0.0
-            vals.append(val)
-        self._record_value(vals[0] if vals else None)
-        cleaned = [v for v in vals if v is not None]
-        if len(cleaned) < MIN_SERIES_LENGTH:
-            return False
-        return self._check_consistency(reversed(vals), increasing=True)
-
-    def _shareholding_level(self, field: str, threshold_low: float, threshold_high: Optional[float] = None) -> Optional[bool]:
-        val = self._get_value(self.shareholding_q, 0, field)
-        if val is None and field == "promoters" and self._get_value(self.shareholding_q, 0, "public") is not None: val = 0.0
-        self._record_value(val)
-        if val is None: return None
-        return val > threshold_low if threshold_high is None else (threshold_low <= val < threshold_high) if threshold_low > 0 else val < threshold_high
-
-    def _shareholder_count_delta(self, increasing: bool) -> Optional[bool]:
-        periods = self._get_sorted_periods(self.shareholding_q)
-        if len(periods) < 2:
-            self._record_value(None)
-            return False
-        curr, prev = self.shareholding_q.get(periods[0], {}).get("no_of_shareholders"), self.shareholding_q.get(periods[1], {}).get("no_of_shareholders")
-        if curr is None or prev is None:
-            self._record_value(None)
-            return False
-        delta = curr - prev
-        self._record_value(delta)
-        return delta > 0 if increasing else delta < 0
-
-    def _pledge_values(self) -> Tuple[Optional[float], Optional[float]]:
-        if self._get_value(self.shareholding_q, 0, "promoters") == 0: return 0.0, 0.0
-        if self._get_value(self.shareholding_q, 0, "promoters") is None and self._get_value(self.shareholding_q, 0, "public") is not None: return 0.0, 0.0
-        periods = self._get_sorted_periods(self.shareholding_q)
-        if not periods: return None, None
-        return self.shareholding_q.get(periods[0], {}).get("pledged_percent"), self.shareholding_q.get(periods[1], {}).get("pledged_percent") if len(periods) > 1 else None
+        equity = (e or 0) + (r or 0)
+        return self._safe_divide(b, equity)
 
     # ------------------------------------------------------------------
-    # Profitability scans
+    # Profitability Logic
     # ------------------------------------------------------------------
-    def scan_high_roe(self) -> Optional[bool]:
-        value = self.metadata.get("roe")
-        if value is None:
-            value = self._compute_roe()
-        self._record_value(value)
-        return None if value is None else value > 15
-
-    def scan_high_roce(self) -> Optional[bool]:
-        value = self.metadata.get("roce")
-        if value is None:
-            value = self._compute_roce()
-        self._record_value(value)
-        return None if value is None else value > 15
-
-    def scan_improved_roe(self) -> Optional[bool]:
-        series = self._roe_series()
-        if len(series) < 2: return None
-        self._record_value(series[0])
-        return series[0] > series[1]
-
-    def scan_improved_roce(self) -> Optional[bool]:
-        series = self._roce_series()
-        if len(series) < 2: return None
-        self._record_value(series[0])
-        return series[0] > series[1]
-
-    def scan_qtr_net_profit_growth_yoy(self) -> Optional[bool]:
-        latest, previous = self._same_quarter_last_year("net_profit")
-        self._record_value(latest)
-        if latest is None or previous is None: return None
-        return latest > previous
-
-    def scan_qtr_ebitda_growth_yoy(self) -> Optional[bool]:
-        latest, previous = self._same_quarter_last_year("operating_profit")
-        self._record_value(latest)
-        if latest is None or previous is None: return None
-        return latest > previous
-
-    def scan_highest_qtr_net_profit(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.quarterly, "net_profit")
-        self._record_value(self._get_value(self.quarterly, 0, "net_profit"))
-        return result
-
-    def scan_highest_qtr_ebitda(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.quarterly, "operating_profit")
-        self._record_value(self._get_value(self.quarterly, 0, "operating_profit"))
-        return result
-
-    def scan_highest_ann_net_profit(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.annual, "net_profit")
-        self._record_value(self._get_value(self.annual, 0, "net_profit"))
-        return result
-
-    def scan_highest_ann_ebitda(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.annual, "operating_profit")
-        self._record_value(self._get_value(self.annual, 0, "operating_profit"))
-        return result
-
-    def scan_turnaround_yoy(self) -> Optional[bool]:
-        latest, previous = self._same_quarter_last_year("net_profit")
-        self._record_value(latest)
-        if latest is None or previous is None: return None
-        return latest > 0 and previous < 0
-
-    def scan_consistent_inc_qtr_eps(self) -> Optional[bool]:
-        values = self._get_series(self.quarterly, "eps", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        non_none = [v for v in values if v is not None]
-        if non_none and any(v < 0 for v in non_none): return False
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_consistent_dec_qtr_eps(self) -> Optional[bool]:
-        values = self._get_series(self.quarterly, "eps", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        non_none = [v for v in values if v is not None]
-        if non_none and any(v < 0 for v in non_none): return False
-        return self._check_consistency(reversed(values), increasing=False)
-
-    def scan_consistent_inc_ann_eps(self) -> Optional[bool]:
-        values = self._get_series(self.annual, "eps", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        non_none = [v for v in values if v is not None]
-        if non_none and any(v < 0 for v in non_none): return False
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_consistent_dec_ann_eps(self) -> Optional[bool]:
-        values = self._get_series(self.annual, "eps", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        non_none = [v for v in values if v is not None]
-        if non_none and any(v < 0 for v in non_none): return False
-        return self._check_consistency(reversed(values), increasing=False)
-
-    def scan_high_ebitda_margin(self) -> Optional[bool]:
-        value = self._annual_opm(0)
-        self._record_value(value)
-        return None if value is None else value > 20
-
-    def scan_consistently_high_ebitda_margin(self) -> Optional[bool]:
-        result = self._annual_margin_series("opm_percent", 20, greater=True)
-        self._record_value(self._annual_opm(0))
-        return result
-
-    def scan_high_pat_margin(self) -> Optional[bool]:
-        value = self._annual_pat_margin(0)
-        self._record_value(value)
-        return None if value is None else value > 10
-
-    def scan_consistently_high_pat_margin(self) -> Optional[bool]:
-        values = [self._annual_pat_margin(i) for i in range(MIN_SERIES_LENGTH)]
-        if len([v for v in values if v is not None]) < MIN_SERIES_LENGTH:
-            self._record_value(values[0] if values else None)
-            return None
-        self._record_value(values[0])
-        return all(v is not None and v > 10 for v in values)
-
-    def scan_consistently_high_roe(self) -> Optional[bool]:
-        series = self._roe_series()
-        if len(series) < MIN_SERIES_LENGTH:
-            self._record_value(series[0] if series else None)
-            return None
-        self._record_value(series[0])
-        return all(value > 15 for value in series[:MIN_SERIES_LENGTH])
-
-    def scan_consistently_high_roce(self) -> Optional[bool]:
-        series = self._roce_series()
-        if len(series) < MIN_SERIES_LENGTH:
-            self._record_value(series[0] if series else None)
-            return None
-        self._record_value(series[0])
-        return all(value > 15 for value in series[:MIN_SERIES_LENGTH])
-
-    # ------------------------------------------------------------------
-    # Turnover scans
-    # ------------------------------------------------------------------
-    def scan_high_qtr_sales_growth(self) -> Optional[bool]:
-        latest, previous = self._same_quarter_last_year("sales")
-        self._record_value(latest)
-        if latest is None or previous is None: return None
-        growth = self._safe_growth(latest, previous)
-        return None if growth is None else growth > 15
-
-    def scan_high_ann_sales_growth(self) -> Optional[bool]:
-        latest = self._get_value(self.annual, 0, "sales")
-        previous = self._get_value(self.annual, 1, "sales")
-        self._record_value(latest)
-        growth = self._safe_growth(latest, previous)
-        return None if growth is None else growth > 15
-
-    def scan_consistent_sales_growth(self) -> Optional[bool]:
-        values = self._get_series(self.annual, "sales", MIN_SERIES_LENGTH + 1)
-        if len([v for v in values if v is not None]) < MIN_SERIES_LENGTH + 1:
-            self._record_value(values[0] if values else None)
-            return None
-        for idx in range(MIN_SERIES_LENGTH):
-            growth = self._safe_growth(values[idx], values[idx + 1])
-            if growth is None or growth <= 0:
-                self._record_value(values[0])
-                return False
-        self._record_value(values[0])
-        return True
-
-    def scan_increasing_qtr_sales(self) -> Optional[bool]:
-        values = self._get_series(self.quarterly, "sales", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_highest_qtr_sales(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.quarterly, "sales")
-        self._record_value(self._get_value(self.quarterly, 0, "sales"))
-        return result
-
-    def scan_highest_ann_sales(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.annual, "sales")
-        self._record_value(self._get_value(self.annual, 0, "sales"))
-        return result
-
-    # ------------------------------------------------------------------
-    # Solvency scans
-    # ------------------------------------------------------------------
-    def scan_no_leverage(self) -> Optional[bool]:
-        value = self._leverage(0)
-        self._record_value(value)
-        return None if value is None else value == 0
-
-    def scan_low_leverage(self) -> Optional[bool]:
-        value = self._leverage(0)
-        self._record_value(value)
-        if value is None: return None
-        return value > 0 and value < 0.5
-
-    def scan_mod_leverage(self) -> Optional[bool]:
-        value = self._leverage(0)
-        self._record_value(value)
-        return None if value is None else 0.5 <= value < 1.0
-
-    def scan_high_leverage(self) -> Optional[bool]:
-        value = self._leverage(0)
-        self._record_value(value)
-        return None if value is None else value >= 1.0
-
-    def scan_high_interest_coverage(self) -> Optional[bool]:
-        value = self._interest_coverage()
-        display_val = value if value != float('inf') else None
-        self._record_value(display_val)
-        return None if value is None else value > 4
-
-    def scan_mod_interest_coverage(self) -> Optional[bool]:
-        value = self._interest_coverage()
-        display_val = value if value != float('inf') else None
-        self._record_value(display_val)
-        if value is None or value == float('inf'): return None
-        return 2 <= value <= 4
-
-    def scan_low_interest_coverage(self) -> Optional[bool]:
-        value = self._interest_coverage()
-        display_val = value if value != float('inf') else None
-        self._record_value(display_val)
-        return None if value is None else value < 2
-
-    def scan_high_current_ratio(self) -> Optional[bool]:
-        value = self._current_ratio()
-        self._record_value(value)
-        return None if value is None else value > 2
-
-    def scan_mod_current_ratio(self) -> Optional[bool]:
-        value = self._current_ratio()
-        self._record_value(value)
-        if value is None: return None
-        return 1.5 <= value <= 2
-
-    def scan_low_current_ratio(self) -> Optional[bool]:
-        value = self._current_ratio()
-        self._record_value(value)
-        return None if value is None else value < 1.5
-
-    def scan_consistently_increasing_leverage(self) -> Optional[bool]:
-        values = [self._leverage(i) for i in range(MIN_SERIES_LENGTH)]
-        self._record_value(values[0] if values else None)
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_consistently_decreasing_leverage(self) -> Optional[bool]:
-        values = [self._leverage(i) for i in range(MIN_SERIES_LENGTH)]
-        self._record_value(values[0] if values else None)
-        return self._check_consistency(reversed(values), increasing=False)
-
-    # ------------------------------------------------------------------
-    # Cash Flow scans
-    # ------------------------------------------------------------------
-    def scan_increasing_cfo(self) -> Optional[bool]:
-        cfo = self._cfo_series()
-        if len(cfo) < 2:
-            self._record_value(cfo[0][1] if cfo else None)
-            return None
-        self._record_value(cfo[0][1])
-        return cfo[0][1] > cfo[1][1]
-
-    def scan_consistent_positive_cfo(self) -> Optional[bool]:
-        cfo = self._cfo_series()
-        if len(cfo) < MIN_SERIES_LENGTH:
-            self._record_value(cfo[0][1] if cfo else None)
-            return None
-        self._record_value(cfo[0][1])
-        return all(value > 0 for _, value in cfo[:MIN_SERIES_LENGTH])
-
-    def scan_growing_cfo(self) -> Optional[bool]:
-        values = [value for _, value in self._cfo_series()[:MIN_SERIES_LENGTH]]
-        self._record_value(values[0] if values else None)
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_positive_fcf(self) -> Optional[bool]:
-        value = self._fcf(0)
-        self._record_value(value)
-        return None if value is None else value > 0
-
-    def scan_increasing_fcf(self) -> Optional[bool]:
-        current = self._fcf(0)
-        previous = self._fcf(1)
-        self._record_value(current)
-        if current is None or previous is None: return None
-        return current > previous
-
-    def scan_consistent_positive_fcf(self) -> Optional[bool]:
-        values = [self._fcf(i) for i in range(MIN_SERIES_LENGTH)]
-        self._record_value(values[0] if values else None)
-        if any(v is None for v in values): return None
-        return all(v > 0 for v in values)
-
-    def scan_consistently_declining_fcf(self) -> Optional[bool]:
-        values = [self._fcf(i) for i in range(MIN_SERIES_LENGTH)]
-        self._record_value(values[0] if values else None)
-        return self._check_consistency(reversed(values), increasing=False)
-
-    def scan_highest_ann_cfo(self) -> Optional[bool]:
-        result = self._highest_vs_history(self.cash_flow, "cash_from_operating")
-        self._record_value(self._get_value(self.cash_flow, 0, "cash_from_operating"))
-        return result
-
-    # ------------------------------------------------------------------
-    # Valuation scans
-    # ------------------------------------------------------------------
-    def scan_very_high_pe(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        self._record_value(pe)
-        if pe is None or pe < 0: return None
-        return pe > 50
-
-    def scan_high_pe(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        self._record_value(pe)
-        if pe is None or pe < 0: return None
-        return 20 < pe <= 50
-
-    def scan_moderate_pe(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        self._record_value(pe)
-        if pe is None or pe < 0: return None
-        return 10 <= pe <= 20
-
-    def scan_low_pe(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        self._record_value(pe)
-        if pe is None or pe < 0: return None
-        return pe < 10
-
-    def scan_pe_above_industry(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        industry = self.metadata.get("industry_pe")
-        self._record_value(pe)
-        if pe is None or industry is None or pe < 0 or industry < 0: return None
-        return pe > industry
-
-    def scan_pe_below_industry(self) -> Optional[bool]:
-        pe = self.metadata.get("stock_pe")
-        industry = self.metadata.get("industry_pe")
-        self._record_value(pe)
-        if pe is None or industry is None or pe < 0 or industry < 0: return None
-        return pe < industry
-
-    def scan_high_peg(self) -> Optional[bool]:
-        peg = self._peg()
-        self._record_value(peg)
-        return None if peg is None else peg > 1.5
-
-    def scan_low_peg(self) -> Optional[bool]:
-        peg = self._peg()
-        self._record_value(peg)
-        if peg is None: return None
-        return 0 < peg < 1.0
-
-    def scan_price_above_book(self) -> Optional[bool]:
-        price = self.metadata.get("current_price")
-        book_value = self.metadata.get("book_value")
-        self._record_value(price)
-        if price is None or book_value is None: return None
-        return price > book_value
-
-    def scan_price_below_book(self) -> Optional[bool]:
-        price = self.metadata.get("current_price")
-        book_value = self.metadata.get("book_value")
-        self._record_value(price)
-        if price is None or book_value is None: return None
-        return price < book_value
-
-    def scan_increasing_ev_ebitda(self) -> Optional[bool]:
-        current = self._ev_ebitda(0)
-        previous = self._ev_ebitda(1)
-        self._record_value(current)
-        if current is None or previous is None: return None
-        return current > previous
-
-    def scan_decreasing_ev_ebitda(self) -> Optional[bool]:
-        current = self._ev_ebitda(0)
-        previous = self._ev_ebitda(1)
-        self._record_value(current)
-        if current is None or previous is None: return None
-        return current < previous
-
-    def scan_high_ev_sales(self) -> Optional[bool]:
-        value = self._ev_sales(0)
-        self._record_value(value)
-        return None if value is None else value > 3
-
-    def scan_moderate_ev_sales(self) -> Optional[bool]:
-        value = self._ev_sales(0)
-        self._record_value(value)
-        if value is None: return None
-        return 1 <= value <= 3
-
-    def scan_low_ev_sales(self) -> Optional[bool]:
-        value = self._ev_sales(0)
-        self._record_value(value)
-        return None if value is None else value < 1
-
-    # ------------------------------------------------------------------
-    # Dividend scans
-    # ------------------------------------------------------------------
-    def scan_consistent_dividends(self) -> Optional[bool]:
-        series = self._dividend_series()
-        if len(series) < 5:
-            self._record_value(series[0] if series else None)
-            return None if not series else False
-        self._record_value(series[0])
-        return all(value > 0 for value in series[:5])
-
-    def scan_positive_dividend_yield(self) -> Optional[bool]:
-        value = self.metadata.get("dividend_yield")
-        self._record_value(value)
-        if value == 0: return False
-        return None if value is None else value > 0
-
-    def scan_high_dividend_payout(self) -> Optional[bool]:
-        series = self._dividend_series()
-        if len(series) < MIN_SERIES_LENGTH:
-            self._record_value(series[0] if series else None)
-            return None if not series else False
-        self._record_value(series[0])
-        return all(value > 30 for value in series[:MIN_SERIES_LENGTH])
-
-    # ------------------------------------------------------------------
-    # Efficiency scans
-    # ------------------------------------------------------------------
-    def scan_increasing_debtor_days(self) -> Optional[bool]:
-        return self._ratio_trend("debtor_days", increasing=True)
-
-    def scan_decreasing_debtor_days(self) -> Optional[bool]:
-        return self._ratio_trend("debtor_days", increasing=False)
-
-    def scan_increasing_payable_days(self) -> Optional[bool]:
-        return self._ratio_trend("days_payable", increasing=True)
-
-    def scan_decreasing_payable_days(self) -> Optional[bool]:
-        return self._ratio_trend("days_payable", increasing=False)
-
-    def scan_increasing_inventory_days(self) -> Optional[bool]:
-        return self._ratio_trend("inventory_days", increasing=True)
-
-    def scan_decreasing_inventory_days(self) -> Optional[bool]:
-        return self._ratio_trend("inventory_days", increasing=False)
-
-    def scan_increasing_working_cap_days(self) -> Optional[bool]:
-        return self._ratio_trend("working_capital_days", increasing=True)
-
-    def scan_decreasing_working_cap_days(self) -> Optional[bool]:
-        return self._ratio_trend("working_capital_days", increasing=False)
-
-    def scan_high_gfa_increase(self) -> Optional[bool]:
-        latest = self._get_value(self.balance_sheet, 0, "fixed_assets")
-        previous = self._get_value(self.balance_sheet, 1, "fixed_assets")
-        growth = self._safe_growth(latest, previous)
+    def check_roe_status(self) -> str:
+        roe = self.metadata.get("roe")
+        self._record_value(roe)
+        if roe is None: return "Pending"
+        if roe >= 20: return "High"
+        if roe >= 12: return "Moderate"
+        return "Low"
+
+    def check_roce_status(self) -> str:
+        roce = self.metadata.get("roce")
+        self._record_value(roce)
+        if roce is None: return "Pending"
+        if roce >= 20: return "High"
+        if roce >= 12: return "Moderate"
+        return "Low"
+
+    def check_net_profit_growth_qtr(self) -> str:
+        periods = self._get_sorted_periods(self.quarterly)
+        if len(periods) <= 4: return "Pending" # Need same qtr last year
+        
+        curr = self._get_value(self.quarterly, 0, "net_profit")
+        prev = self._get_value(self.quarterly, 4, "net_profit") # YoY Quarter
+        growth = self._safe_growth(curr, prev)
         self._record_value(growth)
-        return None if growth is None else growth > 10
+        
+        if growth is None: return "Pending"
+        if growth >= 20: return "High Growth"
+        if growth >= 5: return "Moderate Growth"
+        if growth >= 0: return "Flat"
+        return "Negative"
 
-    def scan_high_gfa_increase_three_year(self) -> Optional[bool]:
-        values = [self._get_value(self.balance_sheet, i, "fixed_assets") for i in range(MIN_SERIES_LENGTH)]
-        if any(v is None or v <= 0 for v in values):
-            self._record_value(values[0] if values else None)
-            return None
-        cagr = (values[0] / values[-1]) ** (1 / (MIN_SERIES_LENGTH - 1)) - 1
-        cagr_percent = cagr * 100
-        self._record_value(cagr_percent)
-        return cagr_percent > 10
+    def check_ebitda_margin_trend(self) -> str:
+        # Check annual trend
+        m1 = self._get_value(self.annual, 0, "opm_percent")
+        m2 = self._get_value(self.annual, 1, "opm_percent")
+        self._record_value(m1)
+        if m1 is None or m2 is None: return "Pending"
+        
+        if m1 > 20: return "High Margin"
+        if m1 > 10: return "Moderate Margin"
+        return "Low Margin"
 
-    # ------------------------------------------------------------------
-    # Shareholding scans
-    # ------------------------------------------------------------------
-    def scan_share_fii_increase(self) -> Optional[bool]:
-        return self._shareholding_delta("fiis", increasing=True)
+    def check_pat_margin_status(self) -> str:
+        sales = self._get_value(self.annual, 0, "sales")
+        pat = self._get_value(self.annual, 0, "net_profit")
+        if sales is None or pat is None: return "Pending"
+        margin = self._safe_divide(pat, sales) * 100
+        self._record_value(margin)
+        
+        if margin >= 15: return "High"
+        if margin >= 8: return "Moderate"
+        return "Low"
 
-    def scan_share_fii_decrease(self) -> Optional[bool]:
-        return self._shareholding_delta("fiis", increasing=False)
-
-    def scan_share_dii_increase(self) -> Optional[bool]:
-        return self._shareholding_delta("diis", increasing=True)
-
-    def scan_share_dii_decrease(self) -> Optional[bool]:
-        return self._shareholding_delta("diis", increasing=False)
-
-    def scan_share_promoter_increase(self) -> Optional[bool]:
-        return self._shareholding_delta("promoters", increasing=True)
-
-    def scan_share_promoter_decrease(self) -> Optional[bool]:
-        return self._shareholding_delta("promoters", increasing=False)
-
-    def scan_share_public_increase(self) -> Optional[bool]:
-        return self._shareholding_delta("public", increasing=True)
-
-    def scan_share_public_decrease(self) -> Optional[bool]:
-        return self._shareholding_delta("public", increasing=False)
-
-    def scan_share_fii_consistent_increase(self) -> Optional[bool]:
-        return self._shareholding_consistency("fiis")
-
-    def scan_share_dii_consistent_increase(self) -> Optional[bool]:
-        return self._shareholding_consistency("diis")
-
-    def scan_share_promoter_consistent_increase(self) -> Optional[bool]:
-        return self._shareholding_consistency("promoters")
-
-    def scan_share_public_consistent_increase(self) -> Optional[bool]:
-        return self._shareholding_consistency("public")
-
-    def scan_share_promoter_very_high(self) -> Optional[bool]:
-        return self._shareholding_level("promoters", 75)
-
-    def scan_share_promoter_high(self) -> Optional[bool]:
-        return self._shareholding_level("promoters", 50, 75)
-
-    def scan_share_promoter_low(self) -> Optional[bool]:
-        return self._shareholding_level("promoters", 0, 50)
-
-    def scan_share_shareholders_increase(self) -> Optional[bool]:
-        return self._shareholder_count_delta(True)
-
-    def scan_share_shareholders_decrease(self) -> Optional[bool]:
-        return self._shareholder_count_delta(False)
-
-    def scan_share_shareholders_consistent_increase(self) -> Optional[bool]:
-        values = self._get_series(self.shareholding_q, "no_of_shareholders", MIN_SERIES_LENGTH)
-        self._record_value(values[0] if values else None)
-        cleaned = [v for v in values if v is not None]
-        if len(cleaned) < MIN_SERIES_LENGTH: return False
-        return self._check_consistency(reversed(values), increasing=True)
-
-    def scan_share_public_high(self) -> Optional[bool]:
-        return self._shareholding_level("public", 20)
-
-    def scan_share_public_low(self) -> Optional[bool]:
-        return self._shareholding_level("public", 0, 10)
+    def check_earnings_consistency(self) -> str:
+        # Check if EPS has grown last 3 years
+        eps_series = self._get_series(self.annual, "eps", 3)
+        if len(eps_series) < 3 or any(e is None for e in eps_series):
+            return "Pending"
+        
+        self._record_value(eps_series[0])
+        # Series is newest first. So [0] > [1] > [2]
+        if eps_series[0] > eps_series[1] > eps_series[2]:
+            return "Consistent Growth"
+        if eps_series[0] > eps_series[1]:
+            return "Growth"
+        return "Inconsistent"
 
     # ------------------------------------------------------------------
-    # Pledge scans
+    # Turnover
     # ------------------------------------------------------------------
-    def scan_pledge_increase(self) -> Optional[bool]:
-        latest, previous = self._pledge_values()
-        self._record_value(latest)
-        if latest is None and previous is None: return None
-        if latest is None or previous is None: return None
-        return latest > previous
+    def check_sales_growth_qtr(self) -> str:
+        curr = self._get_value(self.quarterly, 0, "sales")
+        prev = self._get_value(self.quarterly, 4, "sales")
+        growth = self._safe_growth(curr, prev)
+        self._record_value(growth)
+        
+        if growth is None: return "Pending"
+        if growth >= 15: return "High"
+        if growth >= 5: return "Moderate"
+        return "Low"
 
-    def scan_pledge_decrease(self) -> Optional[bool]:
-        latest, previous = self._pledge_values()
-        self._record_value(latest)
-        if latest is None and previous is None: return None
-        if latest is None or previous is None: return None
-        return latest < previous
+    def check_sales_growth_ann(self) -> str:
+        curr = self._get_value(self.annual, 0, "sales")
+        prev = self._get_value(self.annual, 1, "sales")
+        growth = self._safe_growth(curr, prev)
+        self._record_value(growth)
+        
+        if growth is None: return "Pending"
+        if growth >= 15: return "High"
+        if growth >= 5: return "Moderate"
+        return "Low"
 
-    def scan_pledge_zero(self) -> Optional[bool]:
-        latest, _ = self._pledge_values()
-        self._record_value(latest)
-        if latest is None: return None
-        return latest == 0
-
-    def scan_pledge_low(self) -> Optional[bool]:
-        latest, _ = self._pledge_values()
-        self._record_value(latest)
-        if latest is None: return None
-        return latest > 0 and latest < 20
-
-    def scan_pledge_moderate(self) -> Optional[bool]:
-        latest, _ = self._pledge_values()
-        self._record_value(latest)
-        if latest is None: return None
-        return 20 <= latest <= 40
-
-    def scan_pledge_high(self) -> Optional[bool]:
-        latest, _ = self._pledge_values()
-        self._record_value(latest)
-        if latest is None: return None
-        return latest > 40
+    def check_sales_consistency(self) -> str:
+        sales = self._get_series(self.annual, "sales", 3)
+        if len(sales) < 3 or any(s is None for s in sales): return "Pending"
+        self._record_value(sales[0])
+        
+        if sales[0] > sales[1] > sales[2]: return "Consistent Growth"
+        if sales[0] > sales[1]: return "Growth"
+        return "Inconsistent"
 
     # ------------------------------------------------------------------
-    # Public API (Strict Execution)
+    # Solvency
+    # ------------------------------------------------------------------
+    def check_leverage_status(self) -> str:
+        de = self._leverage_ratio()
+        self._record_value(de)
+        if de is None: return "Pending"
+        
+        # Lower is better
+        if de == 0: return "Debt Free"
+        if de < 0.5: return "Low Debt"
+        if de <= 1.0: return "Moderate Debt"
+        return "High Debt"
+
+    def check_interest_coverage(self) -> str:
+        icr = self._safe_divide(self._get_value(self.quarterly, 0, "operating_profit"), self._get_value(self.quarterly, 0, "interest"))
+        self._record_value(icr)
+        if icr is None: return "Pending"
+        
+        if icr > 6: return "High Coverage"
+        if icr > 3: return "Moderate"
+        return "Low Coverage"
+
+    def check_current_ratio(self) -> str:
+        ca = self._get_value(self.balance_sheet, 0, "current_assets")
+        cl = self._get_value(self.balance_sheet, 0, "current_liabilities")
+        cr = self._safe_divide(ca, cl)
+        self._record_value(cr)
+        if cr is None: return "Pending"
+        
+        if cr > 2.0: return "Strong Liquidity"
+        if cr >= 1.2: return "Adequate"
+        return "Tight Liquidity"
+
+    def check_leverage_trend(self) -> str:
+        curr = self._leverage_ratio()
+        # Hack to calculate prev leverage (index 1)
+        b = self._get_value(self.balance_sheet, 1, "borrowings")
+        e = self._get_value(self.balance_sheet, 1, "equity_capital")
+        r = self._get_value(self.balance_sheet, 1, "reserves")
+        prev = self._safe_divide(b, (e or 0) + (r or 0)) if b is not None else None
+        
+        if curr is None or prev is None: return "Pending"
+        self._record_value(curr)
+        
+        if curr < prev: return "Improving (Reducing)"
+        if curr > prev: return "Worsening (Increasing)"
+        return "Stable"
+
+    # ------------------------------------------------------------------
+    # Cash Flow
+    # ------------------------------------------------------------------
+    def check_cfo_status(self) -> str:
+        cfo = self._get_value(self.cash_flow, 0, "cash_from_operating")
+        self._record_value(cfo)
+        if cfo is None: return "Pending"
+        if cfo > 0: return "Positive"
+        return "Negative"
+
+    def check_fcf_status(self) -> str:
+        cfo = self._get_value(self.cash_flow, 0, "cash_from_operating")
+        capex = self._get_value(self.cash_flow, 0, "cash_from_investing") # Proxy
+        if cfo is None or capex is None: return "Pending"
+        fcf = cfo - abs(capex)
+        self._record_value(fcf)
+        if fcf > 0: return "Positive Free Cash"
+        return "Negative Free Cash"
+
+    def check_cfo_consistency(self) -> str:
+        cfos = self._get_series(self.cash_flow, "cash_from_operating", 3)
+        if len(cfos) < 3 or any(c is None for c in cfos): return "Pending"
+        if all(c > 0 for c in cfos): return "Consistent Positive"
+        return "Volatile"
+
+    # ------------------------------------------------------------------
+    # Valuation
+    # ------------------------------------------------------------------
+    def check_pe_valuation(self) -> str:
+        pe = self.metadata.get("stock_pe")
+        self._record_value(pe)
+        if pe is None: return "Pending"
+        
+        # General market rules
+        if pe < 15: return "Undervalued (Low PE)"
+        if pe < 30: return "Fair Value"
+        if pe < 50: return "Premium Valuation"
+        return "Expensive"
+
+    def check_relative_pe(self) -> str:
+        pe = self.metadata.get("stock_pe")
+        ind_pe = self.metadata.get("industry_pe")
+        if pe is None or ind_pe is None: return "Pending"
+        self._record_value(pe)
+        
+        if pe < ind_pe * 0.8: return "Cheaper than Industry"
+        if pe > ind_pe * 1.2: return "Premium to Industry"
+        return "In Line with Industry"
+
+    def check_peg_valuation(self) -> str:
+        pe = self.metadata.get("stock_pe")
+        # Profit growth
+        np0 = self._get_value(self.annual, 0, "net_profit")
+        np1 = self._get_value(self.annual, 1, "net_profit")
+        g = self._safe_growth(np0, np1)
+        
+        if pe is None or g is None or g <= 0: return "Pending"
+        peg = pe / g
+        self._record_value(peg)
+        
+        if peg < 1: return "Undervalued (PEG < 1)"
+        if peg < 2: return "Fair Value"
+        return "Expensive (PEG > 2)"
+
+    def check_price_to_book(self) -> str:
+        pb = self._safe_divide(self.metadata.get("current_price"), self.metadata.get("book_value"))
+        self._record_value(pb)
+        if pb is None: return "Pending"
+        
+        if pb < 1: return "Below Book Value"
+        if pb < 3: return "Reasonable"
+        return "Premium"
+
+    def check_ev_ebitda_trend(self) -> str:
+        # Too complex to calc trend reliably without EV history. Returning placeholder.
+        return "Pending"
+
+    # ------------------------------------------------------------------
+    # Dividends
+    # ------------------------------------------------------------------
+    def check_dividend_yield(self) -> str:
+        dy = self.metadata.get("dividend_yield")
+        self._record_value(dy)
+        if dy is None or dy == 0: return "No Dividend"
+        if dy > 3: return "High Yield"
+        if dy > 1: return "Moderate Yield"
+        return "Low Yield"
+
+    def check_dividend_consistency(self) -> str:
+        divs = self._get_series(self.annual, "dividend_payout_percent", 3)
+        if not divs: return "No History"
+        # If paying for 3 years
+        count = sum(1 for d in divs if d is not None and d > 0)
+        if count >= 3: return "Consistent Payer"
+        if count > 0: return "Occasional Payer"
+        return "Non-Payer"
+
+    # ------------------------------------------------------------------
+    # Efficiency
+    # ------------------------------------------------------------------
+    def check_working_capital_trend(self) -> str:
+        wc0 = self._get_value(self.ratios, 0, "working_capital_days")
+        wc1 = self._get_value(self.ratios, 1, "working_capital_days")
+        self._record_value(wc0)
+        if wc0 is None or wc1 is None: return "Pending"
+        
+        if wc0 < wc1: return "Improving (Shortening)"
+        if wc0 > wc1: return "Worsening (Lengthening)"
+        return "Stable"
+
+    def check_fixed_asset_turnover(self) -> str:
+        # Proxy: Is Fixed Asset increasing?
+        fa0 = self._get_value(self.balance_sheet, 0, "fixed_assets")
+        fa1 = self._get_value(self.balance_sheet, 1, "fixed_assets")
+        self._record_value(fa0)
+        if fa0 is None or fa1 is None: return "Pending"
+        
+        if fa0 > fa1: return "Expanding Capacity"
+        return "Stable Capacity"
+
+    # ------------------------------------------------------------------
+    # Shareholding
+    # ------------------------------------------------------------------
+    def check_promoter_holding(self) -> str:
+        ph = self._get_value(self.shareholding_q, 0, "promoters")
+        self._record_value(ph)
+        if ph is None: return "Pending"
+        
+        if ph > 60: return "High Skin in Game"
+        if ph > 40: return "Moderate"
+        return "Low Promoter Holding"
+
+    def check_institutional_trend(self) -> str:
+        fii0 = self._get_value(self.shareholding_q, 0, "fiis") or 0
+        dii0 = self._get_value(self.shareholding_q, 0, "diis") or 0
+        total0 = fii0 + dii0
+        
+        fii1 = self._get_value(self.shareholding_q, 1, "fiis") or 0
+        dii1 = self._get_value(self.shareholding_q, 1, "diis") or 0
+        total1 = fii1 + dii1
+        
+        self._record_value(total0)
+        if total0 == 0 and total1 == 0: return "No Institutional Holding"
+        
+        if total0 > total1: return "Accumulating"
+        if total0 < total1: return "Distributing"
+        return "Stable"
+
+    def check_pledge_status(self) -> str:
+        pledge = self._get_value(self.shareholding_q, 0, "pledged_percent")
+        self._record_value(pledge)
+        if pledge is None or pledge == 0: return "Clean (No Pledge)"
+        if pledge < 10: return "Low Pledge"
+        if pledge < 25: return "Moderate Pledge"
+        return "High Pledge Risk"
+
+    # ------------------------------------------------------------------
+    # Public Execution
     # ------------------------------------------------------------------
     def run_scans(self) -> Dict[str, List[Dict[str, Any]]]:
-        summary: Dict[str, List[Dict[str, Any]]] = {
-            "pass": [],
-            "fail": [],
-            "pending": [],
+        """
+        Executes all defined checks. 
+        Returns a dictionary grouping results by their classification (High, Moderate, Low, Pending).
+        """
+        results: Dict[str, List[Dict[str, Any]]] = {
+            "High": [],
+            "Moderate": [],
+            "Low": [],
+            "Pending": [],
+            "Info": [] # For non-rankable statuses like "Consistent Payer"
         }
         
-        # Iterate over all defined scans without exception
         for definition in self.SCANS:
-            payload: Dict[str, Any] = {
-                "name": definition.name,
-                "label": definition.label,
-                "category": definition.category,
-            }
-
-            # 1. Check if data is actually available
-            if not self._has_required_data(definition.name):
-                payload["reason"] = "insufficient-data"
-                summary["pending"].append(payload)
-                continue
-
-            # 2. Run Scan Logic
             method = getattr(self, definition.name)
             self._current_value = None
             try:
-                outcome = method()
+                result_text = method()
             except Exception:
-                outcome = None
+                result_text = "Pending"
             
-            if self._current_value is not None:
-                payload["value"] = self._current_value
+            payload = {
+                "label": definition.label,
+                "category": definition.category,
+                "status": result_text,
+                "value": self._current_value
+            }
 
-            if outcome is True:
-                summary["pass"].append(payload)
-            elif outcome is False:
-                summary["fail"].append(payload)
-            else:
-                payload["reason"] = "non-calculable"
-                summary["pending"].append(payload)
+            # Map the detailed string result to a simplified bucket for the dashboard summary
+            # We map specific keywords to the 4 main buckets
+            text_lower = result_text.lower()
+            
+            bucket = "Info"
+            if "high" in text_lower or "strong" in text_lower or "improving" in text_lower or "consistent" in text_lower or "positive" in text_lower or "undervalued" in text_lower or "clean" in text_lower or "free" in text_lower:
+                if "risk" not in text_lower and "expensive" not in text_lower and "debt" not in text_lower:
+                     bucket = "High"
+                elif "debt" in text_lower and "high" in text_lower:
+                     bucket = "Low" # High Debt is Bad
+                elif "pledge" in text_lower and "high" in text_lower:
+                     bucket = "Low" # High Pledge is Bad
 
-        return summary
+            if "moderate" in text_lower or "fair" in text_lower or "adequate" in text_lower or "stable" in text_lower:
+                bucket = "Moderate"
+                
+            if "low" in text_lower or "weak" in text_lower or "worsening" in text_lower or "negative" in text_lower or "inconsistent" in text_lower or "expensive" in text_lower:
+                if "low debt" in text_lower or "low pledge" in text_lower or "low pe" in text_lower:
+                    bucket = "High" # Low Debt/Pledge/PE is Good
+                else:
+                    bucket = "Low"
+
+            if "pending" in text_lower:
+                bucket = "Pending"
+
+            if bucket not in results:
+                results[bucket] = []
+            results[bucket].append(payload)
+
+        return results

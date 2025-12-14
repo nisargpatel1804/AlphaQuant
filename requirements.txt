@@ -7,4 +7,3 @@ streamlit
 psycopg2-binary
 nest-asyncio
 yfinance
-pandas-ta

@@ -71,16 +71,20 @@ def process_stock(ticker: str, fetcher: TechnicalFetcher) -> Dict[str, Any]:
         benchmark_series = fetcher.fetch_benchmark()
 
         # 2b. Compute Industry (Sector) Beta as avg beta of industry members vs benchmark
-        industry_name, industry_beta_avg = fetcher.fetch_industry_beta_avg(ticker, benchmark_series)
-        # Attach to DF so scans can reference it
-        daily_df["INDUSTRY_BETA_AVG"] = industry_beta_avg
+        # (Assuming fetcher has this method, otherwise skip/default to None)
+        industry_name = None
+        industry_beta_avg = None
+        if hasattr(fetcher, 'fetch_industry_beta_avg'):
+             industry_name, industry_beta_avg = fetcher.fetch_industry_beta_avg(ticker, benchmark_series)
+             # Attach to DF so scans can reference it
+             daily_df["INDUSTRY_BETA_AVG"] = industry_beta_avg
 
         # 3. Calculate Indicators
         # Modifies DataFrames in-place
         TechnicalIndicators.add_all_indicators(daily_df, is_weekly=False, benchmark_data=benchmark_series)
         TechnicalIndicators.add_all_indicators(weekly_df, is_weekly=True)
 
-        # 4. Run Scans
+        # 4. Run Scans (New Logic: Returns Bullish/Bearish/Neutral buckets)
         scanner = TechnicalScans(daily_df, weekly_df)
         results = scanner.run_all()
         
@@ -89,7 +93,6 @@ def process_stock(ticker: str, fetcher: TechnicalFetcher) -> Dict[str, Any]:
         results["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S")
         results["last_close"] = daily_df["Close"].iloc[-1]
         results["industry"] = industry_name
-        results["industry_beta_avg"] = industry_beta_avg
         
         return results
 
@@ -148,11 +151,13 @@ def main():
         if results:
             save_results(ticker, results)
             
-            # Print simplified summary to console
-            pass_count = len(results.get("pass", []))
-            fail_count = len(results.get("fail", []))
-            skip_count = len(results.get("skip", []))
-            logging.info(f"{ticker}: PASS={pass_count} | FAIL={fail_count} | SKIP={skip_count}")
+            # Updated Summary for Bullish/Bearish/Neutral
+            bull_count = len(results.get("Bullish", []))
+            bear_count = len(results.get("Bearish", []))
+            neut_count = len(results.get("Neutral", []))
+            skip_count = len(results.get("Pending", [])) # Assuming 'Pending' key from scans.py logic
+            
+            logging.info(f"{ticker}: Bullish={bull_count} | Bearish={bear_count} | Neutral={neut_count} | Pending={skip_count}")
 
         processed_count += 1
         

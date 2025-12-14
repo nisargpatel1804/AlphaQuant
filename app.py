@@ -3,30 +3,32 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-
 from typing import Any, Dict, List
 
 import nest_asyncio
 import streamlit as st
 
-# Allow importing modules from the `fundamentals/` folder when running:
-# `streamlit run fundamentals/app/app.py`
-_FUNDAMENTALS_DIR = Path(__file__).resolve().parent
-if str(_FUNDAMENTALS_DIR) not in sys.path:
-    sys.path.insert(0, str(_FUNDAMENTALS_DIR))
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-from db_manager import SupabaseManager
-from fundamentals.screener_scraper import ScreenerScraper, get_nifty_tickers
+# NEW IMPORTS (Refactored Structure)
+from fundamentals.database import SupabaseManager
+from fundamentals.fetcher import ScreenerScraper
+from fundamentals.utils import get_nifty_tickers
 from fundamentals.scans import FundamentalScans
 
+# Fix async conflict: Allow nested event loops for Playwright within Streamlit
+nest_asyncio.apply()
 
 def _load_master_industry_map() -> List[Dict[str, Any]]:
-    path = _FUNDAMENTALS_DIR / "fundamentals" / "source" / "master_industry_map.json"
+    # Update path to use the config or direct path
+    path = PROJECT_ROOT / "fundamentals" / "source" / "master_industry_map.json"
     if not path.exists():
         return []
     try:
         import json
-
         data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return []
@@ -81,9 +83,6 @@ def _apply_industry_context(
         metadata["industry_pe"] = pe
         payload["industry_pe"] = pe
 
-# Fix async conflict: Allow nested event loops for Playwright within Streamlit
-nest_asyncio.apply()
-
 
 @st.cache_data(show_spinner=False)
 def cached_tickers() -> List[str]:
@@ -96,6 +95,7 @@ def cached_tickers() -> List[str]:
 
 @st.cache_resource(show_spinner=False)
 def cached_industry_context() -> tuple[ScreenerScraper, Dict[str, str], Dict[str, float]]:
+    # Initialize scraper
     scraper = ScreenerScraper(use_industry_pe_map=False)
     master_map = _load_master_industry_map()
     ticker_to_industry, industry_to_pe = _build_ticker_to_industry_and_pe(master_map)

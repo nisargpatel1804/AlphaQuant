@@ -1,4 +1,5 @@
-"""Comprehensive logic layer that evaluates 101 fundamental scans.
+"""
+Comprehensive logic layer that evaluates 101 fundamental scans.
 
 Project rule (simplified):
 - Run every scan whenever the required data exists.
@@ -14,10 +15,6 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 NUMBER_OF_QUARTERS_IN_YEAR = 4
 MIN_SERIES_LENGTH = 3
-
-
-
- 
 
 @dataclass(frozen=True)
 class ScanDefinition:
@@ -206,7 +203,6 @@ class FundamentalScans:
         self.industry = self.metadata.get("industry", "Unknown")
 
         # Archetype is retained for backward compatibility with UI/verify output.
-        # For now, keep it simple.
         self.archetype = "Generic"
 
     # ------------------------------------------------------------------
@@ -553,8 +549,6 @@ class FundamentalScans:
                     metric = value
                     break
             if metric:
-                # Use the latest MIN_SERIES_LENGTH non-null values (not strictly the
-                # latest MIN_SERIES_LENGTH periods), since some years can be missing.
                 return self._has_metric_history(self.ratios, metric, MIN_SERIES_LENGTH)
         return True
 

@@ -1,0 +1,1181 @@
+{
+    "pass": [
+        {
+            "name": "Increasing Momentum Score (1M)",
+            "category": "Momentum Score",
+            "label": "Increasing Momentum Score (1M)",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Decreasing Momentum Score (3M)",
+            "category": "Momentum Score",
+            "label": "Decreasing Momentum Score (3M)",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Increasing Momentum Score (6M)",
+            "category": "Momentum Score",
+            "label": "Increasing Momentum Score (6M)",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Closing Near 20 SMA",
+            "category": "Simple Moving Averages",
+            "label": "Closing Near 20 SMA",
+            "value": 1543.345007324219
+        },
+        {
+            "name": "Close Near 5 Week SMA",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Near 5 Week SMA",
+            "value": 1546.0199951171876
+        },
+        {
+            "name": "Closing Near 20 EMA",
+            "category": "Exponential Moving Averages",
+            "label": "Closing Near 20 EMA",
+            "value": 1535.3722656661328
+        },
+        {
+            "name": "Close Near 5 Week EMA",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Near 5 Week EMA",
+            "value": 1537.2036942244329
+        },
+        {
+            "name": "CCI Bearish",
+            "category": "Commodity Channel Index",
+            "label": "CCI Bearish",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Trending Down",
+            "category": "Commodity Channel Index",
+            "label": "CCI Trending Down",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Oversold Zone",
+            "category": "Commodity Channel Index",
+            "label": "CCI Oversold Zone",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "RSI Bullish",
+            "category": "Relative Strength Index",
+            "label": "RSI Bullish",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Trending Up",
+            "category": "Relative Strength Index",
+            "label": "RSI Trending Up",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "Weekly RSI Bullish",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Bullish",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Trending Up",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Trending Up",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "MFI Bullish",
+            "category": "Money Flow Index",
+            "label": "MFI Bullish",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Trending Up",
+            "category": "Money Flow Index",
+            "label": "MFI Trending Up",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "William %R Bullish",
+            "category": "William %R",
+            "label": "William %R Bullish",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R Trending Up",
+            "category": "William %R",
+            "label": "William %R Trending Up",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "ROC Trending Up",
+            "category": "Rate of Change",
+            "label": "ROC Trending Up",
+            "value": 1.3412315423197079
+        },
+        {
+            "name": "Narrow Bollinger Band Width (Squeeze)",
+            "category": "Bollinger Bands",
+            "label": "Narrow Bollinger Band Width (Squeeze)",
+            "value": 4.0450039054069595
+        },
+        {
+            "name": "Stochastic Trending Up",
+            "category": "Stochastic",
+            "label": "Stochastic Trending Up",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic %K Crossing %D From Below",
+            "category": "Stochastic",
+            "label": "Stochastic %K Crossing %D From Below"
+        },
+        {
+            "name": "NR 4 (Narrowest Range in 4 Days)",
+            "category": "Narrow Range",
+            "label": "NR 4 (Narrowest Range in 4 Days)"
+        },
+        {
+            "name": "NR 7 (Narrowest Range in 7 Days)",
+            "category": "Narrow Range",
+            "label": "NR 7 (Narrowest Range in 7 Days)"
+        },
+        {
+            "name": "Price Near Tenkan Sen Support",
+            "category": "Ichimoku Cloud",
+            "label": "Price Near Tenkan Sen Support"
+        },
+        {
+            "name": "Close Crossing Tenkan Sen from Below",
+            "category": "Ichimoku Cloud",
+            "label": "Close Crossing Tenkan Sen from Below"
+        }
+    ],
+    "fail": [
+        {
+            "name": "Momentum Score (1M) Entering Bullish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M) Entering Bullish Zone",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Momentum Score (1M) Entering Bearish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M) Entering Bearish Zone",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Momentum Score (1M) Entering Neutral Zone From Bearish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M) Entering Neutral Zone From Bearish",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Momentum Score (1M) Entering Neutral Zone From Bullish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M) Entering Neutral Zone From Bullish",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Decreasing Momentum Score (1M)",
+            "category": "Momentum Score",
+            "label": "Decreasing Momentum Score (1M)",
+            "value": 3.018067036144334
+        },
+        {
+            "name": "Momentum Score (3M) Entering Bullish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (3M) Entering Bullish Zone",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Momentum Score (3M) Entering Bearish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (3M) Entering Bearish Zone",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Momentum Score (3M) Entering Neutral Zone From Bearish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (3M) Entering Neutral Zone From Bearish",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Momentum Score (3M) Entering Neutral Zone From Bullish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (3M) Entering Neutral Zone From Bullish",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Increasing Momentum Score (3M)",
+            "category": "Momentum Score",
+            "label": "Increasing Momentum Score (3M)",
+            "value": 11.577060931899652
+        },
+        {
+            "name": "Momentum Score (6M) Entering Bullish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (6M) Entering Bullish Zone",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Momentum Score (6M) Entering Bearish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (6M) Entering Bearish Zone",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Momentum Score (6M) Entering Neutral Zone From Bearish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (6M) Entering Neutral Zone From Bearish",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Momentum Score (6M) Entering Neutral Zone From Bullish",
+            "category": "Momentum Score",
+            "label": "Momentum Score (6M) Entering Neutral Zone From Bullish",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Decreasing Momentum Score (6M)",
+            "category": "Momentum Score",
+            "label": "Decreasing Momentum Score (6M)",
+            "value": 9.441588900356845
+        },
+        {
+            "name": "Momentum Score (1M 3M 6M) in Bullish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M 3M 6M) in Bullish Zone"
+        },
+        {
+            "name": "Momentum Score (1M 3M 6M) in Bearish Zone",
+            "category": "Momentum Score",
+            "label": "Momentum Score (1M 3M 6M) in Bearish Zone"
+        },
+        {
+            "name": "Close Crossing 20 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 20 SMA From Below",
+            "value": 1543.345007324219
+        },
+        {
+            "name": "Close Crossing 20 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 20 SMA From Above",
+            "value": 1543.345007324219
+        },
+        {
+            "name": "Closing Near 50 SMA",
+            "category": "Simple Moving Averages",
+            "label": "Closing Near 50 SMA",
+            "value": 1485.3680078125003
+        },
+        {
+            "name": "Close Crossing 50 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 50 SMA From Below",
+            "value": 1485.3680078125003
+        },
+        {
+            "name": "Close Crossing 50 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 50 SMA From Above",
+            "value": 1485.3680078125003
+        },
+        {
+            "name": "Closing Near 100 SMA",
+            "category": "Simple Moving Averages",
+            "label": "Closing Near 100 SMA",
+            "value": 1436.6728967285158
+        },
+        {
+            "name": "Close Crossing 100 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 100 SMA From Below",
+            "value": 1436.6728967285158
+        },
+        {
+            "name": "Close Crossing 100 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 100 SMA From Above",
+            "value": 1436.6728967285158
+        },
+        {
+            "name": "Closing Near 200 SMA",
+            "category": "Simple Moving Averages",
+            "label": "Closing Near 200 SMA",
+            "value": 1398.9615997314454
+        },
+        {
+            "name": "Close Crossing 200 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 200 SMA From Below",
+            "value": 1398.9615997314454
+        },
+        {
+            "name": "Close Crossing 200 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "Close Crossing 200 SMA From Above",
+            "value": 1398.9615997314454
+        },
+        {
+            "name": "5 SMA Crossing 20 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "5 SMA Crossing 20 SMA From Below"
+        },
+        {
+            "name": "5 SMA Crossing 20 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "5 SMA Crossing 20 SMA From Above"
+        },
+        {
+            "name": "20 SMA Crossing 50 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 50 SMA From Below"
+        },
+        {
+            "name": "20 SMA Crossing 50 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 50 SMA From Above"
+        },
+        {
+            "name": "20 SMA Crossing 100 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 100 SMA From Below"
+        },
+        {
+            "name": "20 SMA Crossing 100 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 100 SMA From Above"
+        },
+        {
+            "name": "20 SMA Crossing 200 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 200 SMA From Below"
+        },
+        {
+            "name": "20 SMA Crossing 200 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "20 SMA Crossing 200 SMA From Above"
+        },
+        {
+            "name": "50 SMA Crossing 100 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "50 SMA Crossing 100 SMA From Below"
+        },
+        {
+            "name": "50 SMA Crossing 100 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "50 SMA Crossing 100 SMA From Above"
+        },
+        {
+            "name": "50 SMA Crossing 200 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "50 SMA Crossing 200 SMA From Below"
+        },
+        {
+            "name": "50 SMA Crossing 200 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "50 SMA Crossing 200 SMA From Above"
+        },
+        {
+            "name": "100 SMA Crossing 200 SMA From Below",
+            "category": "Simple Moving Averages",
+            "label": "100 SMA Crossing 200 SMA From Below"
+        },
+        {
+            "name": "100 SMA Crossing 200 SMA From Above",
+            "category": "Simple Moving Averages",
+            "label": "100 SMA Crossing 200 SMA From Above"
+        },
+        {
+            "name": "Close Crossing 5 Week SMA From Below",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 5 Week SMA From Below"
+        },
+        {
+            "name": "Close Crossing 5 Week SMA From Above",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 5 Week SMA From Above"
+        },
+        {
+            "name": "Close Near 10 Week SMA",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Near 10 Week SMA",
+            "value": 1494.4599975585938
+        },
+        {
+            "name": "Close Crossing 10 Week SMA From Below",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 10 Week SMA From Below"
+        },
+        {
+            "name": "Close Crossing 10 Week SMA From Above",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 10 Week SMA From Above"
+        },
+        {
+            "name": "Close Near 20 Week SMA",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Near 20 Week SMA",
+            "value": 1437.6857299804688
+        },
+        {
+            "name": "Close Crossing 20 Week SMA From Below",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 20 Week SMA From Below"
+        },
+        {
+            "name": "Close Crossing 20 Week SMA From Above",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 20 Week SMA From Above"
+        },
+        {
+            "name": "Close Near 50 Week SMA",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Near 50 Week SMA",
+            "value": 1374.1030517578124
+        },
+        {
+            "name": "Close Crossing 50 Week SMA From Below",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 50 Week SMA From Below"
+        },
+        {
+            "name": "Close Crossing 50 Week SMA From Above",
+            "category": "Weekly Simple Moving Averages",
+            "label": "Close Crossing 50 Week SMA From Above"
+        },
+        {
+            "name": "Close Crossing 20 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 20 EMA From Below"
+        },
+        {
+            "name": "Close Crossing 20 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 20 EMA From Above"
+        },
+        {
+            "name": "Closing Near 50 EMA",
+            "category": "Exponential Moving Averages",
+            "label": "Closing Near 50 EMA",
+            "value": 1498.1911047614547
+        },
+        {
+            "name": "Close Crossing 50 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 50 EMA From Below"
+        },
+        {
+            "name": "Close Crossing 50 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 50 EMA From Above"
+        },
+        {
+            "name": "Closing Near 100 EMA",
+            "category": "Exponential Moving Averages",
+            "label": "Closing Near 100 EMA",
+            "value": 1459.041790508001
+        },
+        {
+            "name": "Close Crossing 100 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 100 EMA From Below"
+        },
+        {
+            "name": "Close Crossing 100 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 100 EMA From Above"
+        },
+        {
+            "name": "Closing Near 200 EMA",
+            "category": "Exponential Moving Averages",
+            "label": "Closing Near 200 EMA",
+            "value": 1398.92258463963
+        },
+        {
+            "name": "Close Crossing 200 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 200 EMA From Below"
+        },
+        {
+            "name": "Close Crossing 200 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "Close Crossing 200 EMA From Above"
+        },
+        {
+            "name": "5 EMA Crossing 20 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "5 EMA Crossing 20 EMA From Below"
+        },
+        {
+            "name": "5 EMA Crossing 20 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "5 EMA Crossing 20 EMA From Above"
+        },
+        {
+            "name": "20 EMA Crossing 50 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 50 EMA From Below"
+        },
+        {
+            "name": "20 EMA Crossing 50 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 50 EMA From Above"
+        },
+        {
+            "name": "20 EMA Crossing 100 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 100 EMA From Below"
+        },
+        {
+            "name": "20 EMA Crossing 100 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 100 EMA From Above"
+        },
+        {
+            "name": "20 EMA Crossing 200 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 200 EMA From Below"
+        },
+        {
+            "name": "20 EMA Crossing 200 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "20 EMA Crossing 200 EMA From Above"
+        },
+        {
+            "name": "50 EMA Crossing 100 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "50 EMA Crossing 100 EMA From Below"
+        },
+        {
+            "name": "50 EMA Crossing 100 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "50 EMA Crossing 100 EMA From Above"
+        },
+        {
+            "name": "50 EMA Crossing 200 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "50 EMA Crossing 200 EMA From Below"
+        },
+        {
+            "name": "50 EMA Crossing 200 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "50 EMA Crossing 200 EMA From Above"
+        },
+        {
+            "name": "100 EMA Crossing 200 EMA From Below",
+            "category": "Exponential Moving Averages",
+            "label": "100 EMA Crossing 200 EMA From Below"
+        },
+        {
+            "name": "100 EMA Crossing 200 EMA From Above",
+            "category": "Exponential Moving Averages",
+            "label": "100 EMA Crossing 200 EMA From Above"
+        },
+        {
+            "name": "Close Crossing 5 Week EMA From Below",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 5 Week EMA From Below"
+        },
+        {
+            "name": "Close Crossing 5 Week EMA From Above",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 5 Week EMA From Above"
+        },
+        {
+            "name": "Close Near 10 Week EMA",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Near 10 Week EMA",
+            "value": 1504.7402025056824
+        },
+        {
+            "name": "Close Crossing 10 Week EMA From Below",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 10 Week EMA From Below"
+        },
+        {
+            "name": "Close Crossing 10 Week EMA From Above",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 10 Week EMA From Above"
+        },
+        {
+            "name": "Close Near 20 Week EMA",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Near 20 Week EMA",
+            "value": 1464.1869606845232
+        },
+        {
+            "name": "Close Crossing 20 Week EMA From Below",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 20 Week EMA From Below"
+        },
+        {
+            "name": "Close Crossing 20 Week EMA From Above",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 20 Week EMA From Above"
+        },
+        {
+            "name": "Close Near 50 Week EMA",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Near 50 Week EMA",
+            "value": 1377.1447261615344
+        },
+        {
+            "name": "Close Crossing 50 Week EMA From Below",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 50 Week EMA From Below"
+        },
+        {
+            "name": "Close Crossing 50 Week EMA From Above",
+            "category": "Weekly Exponential Moving Averages",
+            "label": "Close Crossing 50 Week EMA From Above"
+        },
+        {
+            "name": "CCI Bullish",
+            "category": "Commodity Channel Index",
+            "label": "CCI Bullish",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Trending Up",
+            "category": "Commodity Channel Index",
+            "label": "CCI Trending Up",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Crossed Above 100",
+            "category": "Commodity Channel Index",
+            "label": "CCI Crossed Above 100",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Crossed Below -100",
+            "category": "Commodity Channel Index",
+            "label": "CCI Crossed Below -100",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "CCI Overbought Zone",
+            "category": "Commodity Channel Index",
+            "label": "CCI Overbought Zone",
+            "value": -7233.443190764253
+        },
+        {
+            "name": "RSI Crossed Above 70",
+            "category": "Relative Strength Index",
+            "label": "RSI Crossed Above 70",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Bearish",
+            "category": "Relative Strength Index",
+            "label": "RSI Bearish",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Trending Down",
+            "category": "Relative Strength Index",
+            "label": "RSI Trending Down",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Crossed Below 30",
+            "category": "Relative Strength Index",
+            "label": "RSI Crossed Below 30",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Overbought Zone",
+            "category": "Relative Strength Index",
+            "label": "RSI Overbought Zone",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "RSI Oversold Zone",
+            "category": "Relative Strength Index",
+            "label": "RSI Oversold Zone",
+            "value": 62.800981077562355
+        },
+        {
+            "name": "Weekly RSI Crossed Above 70",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Crossed Above 70",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Bearish",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Bearish",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Trending Down",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Trending Down",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Crossed Below 30",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Crossed Below 30",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Overbought Zone",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Overbought Zone",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "Weekly RSI Oversold Zone",
+            "category": "Weekly Relative Strength Index",
+            "label": "Weekly RSI Oversold Zone",
+            "value": 62.75310911140769
+        },
+        {
+            "name": "MFI Crossed 80 From Below",
+            "category": "Money Flow Index",
+            "label": "MFI Crossed 80 From Below",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Bearish",
+            "category": "Money Flow Index",
+            "label": "MFI Bearish",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Trending Down",
+            "category": "Money Flow Index",
+            "label": "MFI Trending Down",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Crossed 20 From Above",
+            "category": "Money Flow Index",
+            "label": "MFI Crossed 20 From Above",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Above 80 (Overbought)",
+            "category": "Money Flow Index",
+            "label": "MFI Above 80 (Overbought)",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "MFI Below 20 (Oversold)",
+            "category": "Money Flow Index",
+            "label": "MFI Below 20 (Oversold)",
+            "value": 56.336743463419786
+        },
+        {
+            "name": "William %R Crossed -20 From Below",
+            "category": "William %R",
+            "label": "William %R Crossed -20 From Below",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R Bearish",
+            "category": "William %R",
+            "label": "William %R Bearish",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R Trending Down",
+            "category": "William %R",
+            "label": "William %R Trending Down",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R Crossed -80 From Above",
+            "category": "William %R",
+            "label": "William %R Crossed -80 From Above",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R in Overbought Zone",
+            "category": "William %R",
+            "label": "William %R in Overbought Zone",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "William %R in Oversold Zone",
+            "category": "William %R",
+            "label": "William %R in Oversold Zone",
+            "value": -38.932527964034335
+        },
+        {
+            "name": "ROC Trending Down",
+            "category": "Rate of Change",
+            "label": "ROC Trending Down",
+            "value": 1.3412315423197079
+        },
+        {
+            "name": "MACD Crossing Signal Line From Below (Bullish)",
+            "category": "MACD",
+            "label": "MACD Crossing Signal Line From Below (Bullish)"
+        },
+        {
+            "name": "MACD Crossing Signal Line From Above (Bearish)",
+            "category": "MACD",
+            "label": "MACD Crossing Signal Line From Above (Bearish)"
+        },
+        {
+            "name": "MACD Moving Above Zero",
+            "category": "MACD",
+            "label": "MACD Moving Above Zero"
+        },
+        {
+            "name": "MACD Moving Below Zero",
+            "category": "MACD",
+            "label": "MACD Moving Below Zero"
+        },
+        {
+            "name": "ADX Crossing 25 From Below",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 25 From Below"
+        },
+        {
+            "name": "ADX Crossing 40 From Above",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 40 From Above"
+        },
+        {
+            "name": "ADX Crossing 10 From Below",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 10 From Below"
+        },
+        {
+            "name": "ADX Crossing 25 From Above",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 25 From Above"
+        },
+        {
+            "name": "ADX Crossing 40 From Below",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 40 From Below"
+        },
+        {
+            "name": "ADX Crossing 10 From Above",
+            "category": "Average Directional Index",
+            "label": "ADX Crossing 10 From Above"
+        },
+        {
+            "name": "+DI Crossing -DI From Below",
+            "category": "Average Directional Index",
+            "label": "+DI Crossing -DI From Below"
+        },
+        {
+            "name": "+DI Crossing -DI From Above",
+            "category": "Average Directional Index",
+            "label": "+DI Crossing -DI From Above"
+        },
+        {
+            "name": "+DI Crossing 25 From Below",
+            "category": "Average Directional Index",
+            "label": "+DI Crossing 25 From Below"
+        },
+        {
+            "name": "-DI Crossing 25 From Below",
+            "category": "Average Directional Index",
+            "label": "-DI Crossing 25 From Below"
+        },
+        {
+            "name": "ATR Increasing for 3 Days",
+            "category": "Average True Range",
+            "label": "ATR Increasing for 3 Days"
+        },
+        {
+            "name": "ATR Increasing for 5 Days",
+            "category": "Average True Range",
+            "label": "ATR Increasing for 5 Days"
+        },
+        {
+            "name": "ATR Increasing for 7 Days",
+            "category": "Average True Range",
+            "label": "ATR Increasing for 7 Days"
+        },
+        {
+            "name": "ATR Decreasing for 3 Days",
+            "category": "Average True Range",
+            "label": "ATR Decreasing for 3 Days"
+        },
+        {
+            "name": "ATR Decreasing for 5 Days",
+            "category": "Average True Range",
+            "label": "ATR Decreasing for 5 Days"
+        },
+        {
+            "name": "ATR Decreasing for 7 Days",
+            "category": "Average True Range",
+            "label": "ATR Decreasing for 7 Days"
+        },
+        {
+            "name": "Close Crossing Upper Bollinger Band From Below",
+            "category": "Bollinger Bands",
+            "label": "Close Crossing Upper Bollinger Band From Below"
+        },
+        {
+            "name": "Close Crossing Lower Bollinger Band From Above",
+            "category": "Bollinger Bands",
+            "label": "Close Crossing Lower Bollinger Band From Above"
+        },
+        {
+            "name": "Close Crossing Upper Bollinger Band From Above",
+            "category": "Bollinger Bands",
+            "label": "Close Crossing Upper Bollinger Band From Above"
+        },
+        {
+            "name": "Close Crossing Lower Bollinger Band From Below",
+            "category": "Bollinger Bands",
+            "label": "Close Crossing Lower Bollinger Band From Below"
+        },
+        {
+            "name": "Wide Bollinger Band Width (Expansion)",
+            "category": "Bollinger Bands",
+            "label": "Wide Bollinger Band Width (Expansion)",
+            "value": 4.0450039054069595
+        },
+        {
+            "name": "Close Above Upper Bollinger Band",
+            "category": "Bollinger Bands",
+            "label": "Close Above Upper Bollinger Band"
+        },
+        {
+            "name": "Close Below Lower Bollinger Band",
+            "category": "Bollinger Bands",
+            "label": "Close Below Lower Bollinger Band"
+        },
+        {
+            "name": "Stochastic Reversing From Oversold Zone From Below",
+            "category": "Stochastic",
+            "label": "Stochastic Reversing From Oversold Zone From Below",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic Entering Overbought Zone From Below",
+            "category": "Stochastic",
+            "label": "Stochastic Entering Overbought Zone From Below",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic Reversing From Overbought Zone",
+            "category": "Stochastic",
+            "label": "Stochastic Reversing From Overbought Zone",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic Trending Down",
+            "category": "Stochastic",
+            "label": "Stochastic Trending Down",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic Entering Oversold Zone From Above",
+            "category": "Stochastic",
+            "label": "Stochastic Entering Oversold Zone From Above",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic %K Crossing %D From Above",
+            "category": "Stochastic",
+            "label": "Stochastic %K Crossing %D From Above"
+        },
+        {
+            "name": "Stochastic In Overbought Zone",
+            "category": "Stochastic",
+            "label": "Stochastic In Overbought Zone",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "Stochastic In Oversold Zone",
+            "category": "Stochastic",
+            "label": "Stochastic In Oversold Zone",
+            "value": 44.79330153504359
+        },
+        {
+            "name": "PSAR Indicating Bullish Reversal",
+            "category": "Parabolic SAR",
+            "label": "PSAR Indicating Bullish Reversal"
+        },
+        {
+            "name": "PSAR Indicating Bearish Reversal",
+            "category": "Parabolic SAR",
+            "label": "PSAR Indicating Bearish Reversal"
+        },
+        {
+            "name": "Weekly PSAR Indicating Bullish Reversal",
+            "category": "Weekly Parabolic SAR",
+            "label": "Weekly PSAR Indicating Bullish Reversal"
+        },
+        {
+            "name": "Weekly PSAR Indicating Bearish Reversal",
+            "category": "Weekly Parabolic SAR",
+            "label": "Weekly PSAR Indicating Bearish Reversal"
+        },
+        {
+            "name": "NR 4 Breakout",
+            "category": "Narrow Range",
+            "label": "NR 4 Breakout"
+        },
+        {
+            "name": "NR 4 Breakdown",
+            "category": "Narrow Range",
+            "label": "NR 4 Breakdown"
+        },
+        {
+            "name": "NR 7 Breakout",
+            "category": "Narrow Range",
+            "label": "NR 7 Breakout"
+        },
+        {
+            "name": "NR 7 Breakdown",
+            "category": "Narrow Range",
+            "label": "NR 7 Breakdown"
+        },
+        {
+            "name": "SuperTrend Signal Changed To Buy",
+            "category": "SuperTrend",
+            "label": "SuperTrend Signal Changed To Buy"
+        },
+        {
+            "name": "SuperTrend Signal Changed To Sell",
+            "category": "SuperTrend",
+            "label": "SuperTrend Signal Changed To Sell"
+        },
+        {
+            "name": "Price Nearing SuperTrend Support",
+            "category": "SuperTrend",
+            "label": "Price Nearing SuperTrend Support",
+            "value": 1508.4441493881047
+        },
+        {
+            "name": "Price Nearing SuperTrend Resistance",
+            "category": "SuperTrend",
+            "label": "Price Nearing SuperTrend Resistance",
+            "value": 1508.4441493881047
+        },
+        {
+            "name": "Weekly SuperTrend Signal Changed To Buy",
+            "category": "Weekly SuperTrend",
+            "label": "Weekly SuperTrend Signal Changed To Buy"
+        },
+        {
+            "name": "Weekly SuperTrend Signal Changed To Sell",
+            "category": "Weekly SuperTrend",
+            "label": "Weekly SuperTrend Signal Changed To Sell"
+        },
+        {
+            "name": "Price Nearing Weekly SuperTrend Support",
+            "category": "Weekly SuperTrend",
+            "label": "Price Nearing Weekly SuperTrend Support",
+            "value": 1406.6494733757363
+        },
+        {
+            "name": "Price Nearing Weekly SuperTrend Resistance",
+            "category": "Weekly SuperTrend",
+            "label": "Price Nearing Weekly SuperTrend Resistance",
+            "value": 1406.6494733757363
+        },
+        {
+            "name": "High Beta - Benchmark Index",
+            "category": "Beta",
+            "label": "High Beta - Benchmark Index",
+            "value": 1.1454900447322547
+        },
+        {
+            "name": "Low Beta - Benchmark Index",
+            "category": "Beta",
+            "label": "Low Beta - Benchmark Index",
+            "value": 1.1454900447322547
+        },
+        {
+            "name": "Negative Beta - Benchmark Index",
+            "category": "Beta",
+            "label": "Negative Beta - Benchmark Index",
+            "value": 1.1454900447322547
+        },
+        {
+            "name": "High Beta - Sectoral Index",
+            "category": "Beta",
+            "label": "High Beta - Sectoral Index"
+        },
+        {
+            "name": "Low Beta - Sectoral Index",
+            "category": "Beta",
+            "label": "Low Beta - Sectoral Index"
+        },
+        {
+            "name": "Negative Beta - Sectoral Index",
+            "category": "Beta",
+            "label": "Negative Beta - Sectoral Index"
+        },
+        {
+            "name": "Price Near Tenkan Sen Resistance",
+            "category": "Ichimoku Cloud",
+            "label": "Price Near Tenkan Sen Resistance"
+        },
+        {
+            "name": "Close Crossing Tenkan Sen from Above",
+            "category": "Ichimoku Cloud",
+            "label": "Close Crossing Tenkan Sen from Above"
+        },
+        {
+            "name": "Price Near Kijun Sen Support",
+            "category": "Ichimoku Cloud",
+            "label": "Price Near Kijun Sen Support"
+        },
+        {
+            "name": "Price Near Kijun Sen Resistance",
+            "category": "Ichimoku Cloud",
+            "label": "Price Near Kijun Sen Resistance"
+        },
+        {
+            "name": "Close Crossing Kijun Sen from Below",
+            "category": "Ichimoku Cloud",
+            "label": "Close Crossing Kijun Sen from Below"
+        },
+        {
+            "name": "Close Crossing Kijun Sen from Above",
+            "category": "Ichimoku Cloud",
+            "label": "Close Crossing Kijun Sen from Above"
+        },
+        {
+            "name": "Tenkan Sen Crossing Kijun Sen from Below",
+            "category": "Ichimoku Cloud",
+            "label": "Tenkan Sen Crossing Kijun Sen from Below"
+        },
+        {
+            "name": "Tenkan Sen Crossing Kijun Sen from Above",
+            "category": "Ichimoku Cloud",
+            "label": "Tenkan Sen Crossing Kijun Sen from Above"
+        },
+        {
+            "name": "Senkou Span A crossing Senkou Span B from Below",
+            "category": "Ichimoku Cloud",
+            "label": "Senkou Span A crossing Senkou Span B from Below"
+        },
+        {
+            "name": "Senkou Span A crossing Senkou Span B from Above",
+            "category": "Ichimoku Cloud",
+            "label": "Senkou Span A crossing Senkou Span B from Above"
+        },
+        {
+            "name": "Chikou Span Crossing Price from Below",
+            "category": "Ichimoku Cloud",
+            "label": "Chikou Span Crossing Price from Below"
+        },
+        {
+            "name": "Chikou Span Crossing Price from Above",
+            "category": "Ichimoku Cloud",
+            "label": "Chikou Span Crossing Price from Above"
+        }
+    ],
+    "skip": [],
+    "ticker": "RELIANCE",
+    "timestamp": "2025-12-14 15:12:20",
+    "last_close": 1556.5
+}

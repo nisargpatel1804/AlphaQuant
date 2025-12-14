@@ -2,178 +2,188 @@
     {
         "industry": "Private Sector Bank",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050102/IN050102002/",
+        "industry_pe": 15.0,
         "stocks": [
-            "FEDERALBNK",
+            "RBLBANK",
             "AXISBANK",
-            "KARURVYSYA",
-            "BANDHANBNK",
-            "HDFCBANK",
-            "IDBI",
-            "INDUSINDBK",
             "J&KBANK",
-            "CUB",
+            "HDFCBANK",
             "IDFCFIRSTB",
+            "IDBI",
+            "FEDERALBNK",
+            "BANDHANBNK",
+            "CUB",
+            "KARURVYSYA",
             "ICICIBANK",
-            "KOTAKBANK",
             "YESBANK",
-            "RBLBANK"
+            "KOTAKBANK",
+            "INDUSINDBK"
         ]
     },
     {
         "industry": "Computers - Software & Consulting",
         "url": "https://www.screener.in/market/IN08/IN0801/IN080101/IN080101001/",
+        "industry_pe": 26.0,
         "stocks": [
-            "MPHASIS",
-            "LTIM",
-            "KPITTECH",
-            "ZENSARTECH",
-            "TCS",
-            "HEXT",
-            "HAPPSTMNDS",
-            "INFY",
-            "TECHM",
-            "NEWGEN",
-            "INTELLECT",
-            "HCLTECH",
             "COFORGE",
-            "LATENTVIEW",
             "BSOFT",
-            "SONATSOFTW",
-            "TATAELXSI",
+            "HCLTECH",
+            "INFY",
+            "HAPPSTMNDS",
+            "NEWGEN",
+            "LATENTVIEW",
             "PERSISTENT",
-            "WIPRO"
+            "TECHM",
+            "KPITTECH",
+            "WIPRO",
+            "TATAELXSI",
+            "MPHASIS",
+            "TCS",
+            "SONATSOFTW",
+            "HEXT",
+            "LTIM",
+            "ZENSARTECH",
+            "INTELLECT"
         ]
     },
     {
         "industry": "Refineries & Marketing",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030103/IN030103001/",
+        "industry_pe": 12.0,
         "stocks": [
-            "IOC",
-            "BPCL",
             "CHENNPETRO",
             "MRPL",
+            "BPCL",
+            "HINDPETRO",
             "RELIANCE",
-            "HINDPETRO"
+            "IOC"
         ]
     },
     {
         "industry": "Pharmaceuticals",
         "url": "https://www.screener.in/market/IN06/IN0601/IN060101/IN060101001/",
+        "industry_pe": 31.0,
         "stocks": [
-            "PPLPHARMA",
-            "AUROPHARMA",
-            "LUPIN",
-            "DRREDDY",
-            "IPCALAB",
-            "APLLTD",
-            "CIPLA",
-            "DIVISLAB",
-            "PFIZER",
-            "ABBOTINDIA",
+            "ZYDUSLIFE",
             "MANKIND",
-            "GLENMARK",
-            "AKUMS",
-            "GLAND",
             "SUNPHARMA",
-            "CONCORDBIO",
-            "AJANTPHARM",
-            "JUBLPHARMA",
-            "GRANULES",
-            "ERIS",
-            "SAILIFE",
-            "BIOCON",
-            "ALKEM",
-            "COHANCE",
+            "PFIZER",
+            "PPLPHARMA",
             "NEULANDLAB",
+            "DRREDDY",
+            "CONCORDBIO",
+            "CIPLA",
+            "IPCALAB",
+            "ALKEM",
+            "DIVISLAB",
+            "COHANCE",
+            "ONESOURCE",
+            "GLAND",
+            "GLAXO",
+            "APLLTD",
+            "BIOCON",
+            "JUBLPHARMA",
+            "SAILIFE",
+            "AUROPHARMA",
+            "EMCURE",
             "TORNTPHARM",
             "ASTRAZEN",
-            "EMCURE",
-            "NATCOPHARM",
-            "BLUEJET",
-            "ONESOURCE",
+            "AKUMS",
             "CAPLIPOINT",
-            "GLAXO",
             "LAURUSLABS",
-            "ZYDUSLIFE",
+            "GRANULES",
+            "ABBOTINDIA",
             "WOCKPHARMA",
-            "JBCHEPHARM"
+            "JBCHEPHARM",
+            "AJANTPHARM",
+            "BLUEJET",
+            "LUPIN",
+            "ERIS",
+            "NATCOPHARM",
+            "GLENMARK"
         ]
     },
     {
         "industry": "Non Banking Financial Company (NBFC)",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101004/",
+        "industry_pe": 21.0,
         "stocks": [
-            "CGCL",
-            "POONAWALLA",
-            "IIFL",
-            "BAJFINANCE",
             "FIVESTAR",
-            "CHOLAFIN",
-            "SUNDARMFIN",
-            "SBFC",
             "SBICARD",
+            "POONAWALLA",
+            "AIIL",
+            "CHOLAFIN",
+            "CGCL",
+            "LTF",
+            "SHRIRAMFIN",
+            "SBFC",
+            "SUNDARMFIN",
             "MUTHOOTFIN",
             "M&MFIN",
-            "AIIL",
             "MANAPPURAM",
-            "SHRIRAMFIN",
-            "LTF"
+            "IIFL",
+            "BAJFINANCE"
         ]
     },
     {
         "industry": "Public Sector Bank",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050102/IN050102001/",
+        "industry_pe": 8.0,
         "stocks": [
-            "BANKBARODA",
-            "PNB",
-            "IOB",
             "BANKINDIA",
             "UCOBANK",
-            "SBIN",
             "CANBK",
-            "CENTRALBK",
             "UNIONBANK",
+            "BANKBARODA",
+            "INDIANB",
             "MAHABANK",
-            "INDIANB"
+            "CENTRALBK",
+            "PNB",
+            "IOB",
+            "SBIN"
         ]
     },
     {
         "industry": "Telecom - Cellular & Fixed line services",
         "url": "https://www.screener.in/market/IN10/IN1001/IN100101/IN100101001/",
+        "industry_pe": 51.0,
         "stocks": [
-            "TTML",
             "IDEA",
-            "TATACOMM",
+            "BHARTIHEXA",
+            "TTML",
             "BHARTIARTL",
-            "BHARTIHEXA"
+            "TATACOMM"
         ]
     },
     {
         "industry": "Passenger Cars & Utility Vehicles",
         "url": "https://www.screener.in/market/IN02/IN0201/IN020101/IN020101001/",
+        "industry_pe": 35.0,
         "stocks": [
-            "FORCEMOT",
-            "MARUTI",
-            "M&M",
             "HYUNDAI",
             "OLECTRA",
-            "TMPV"
+            "TMPV",
+            "MARUTI",
+            "M&M",
+            "FORCEMOT"
         ]
     },
     {
         "industry": "Life Insurance",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050104/IN050104002/",
+        "industry_pe": 86.0,
         "stocks": [
-            "SBILIFE",
-            "LICI",
-            "ICICIPRULI",
             "MFSL",
-            "HDFCLIFE"
+            "SBILIFE",
+            "HDFCLIFE",
+            "ICICIPRULI",
+            "LICI"
         ]
     },
     {
         "industry": "Diversified FMCG",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040107/IN040107001/",
+        "industry_pe": 43.0,
         "stocks": [
             "ITC",
             "HINDUNILVR"
@@ -182,201 +192,215 @@
     {
         "industry": "Auto Components & Equipments",
         "url": "https://www.screener.in/market/IN02/IN0201/IN020102/IN020102001/",
+        "industry_pe": 30.0,
         "stocks": [
-            "BHARATFORG",
-            "EXIDEIND",
-            "MOTHERSON",
-            "BOSCHLTD",
-            "ZFCVINDIA",
-            "SUNDRMFAST",
-            "UNOMINDA",
-            "SCHAEFFLER",
-            "ENDURANCE",
-            "SONACOMS",
-            "MINDACORP",
             "ASAHIINDIA",
-            "RKFORGE",
-            "MSUMI",
-            "ARE&M",
+            "ENDURANCE",
+            "UNOMINDA",
+            "JBMA",
+            "BHARATFORG",
             "TIINDIA",
+            "MSUMI",
+            "ZFCVINDIA",
             "CRAFTSMAN",
-            "JBMA"
+            "SCHAEFFLER",
+            "EXIDEIND",
+            "SUNDRMFAST",
+            "BOSCHLTD",
+            "ARE&M",
+            "MINDACORP",
+            "SONACOMS",
+            "MOTHERSON",
+            "RKFORGE"
         ]
     },
     {
         "industry": "Cement & Cement Products",
         "url": "https://www.screener.in/market/IN01/IN0102/IN010203/IN010203001/",
+        "industry_pe": 33.0,
         "stocks": [
-            "RAMCOCEM",
-            "GRASIM",
             "JKCEMENT",
             "INDIACEM",
+            "ULTRACEMCO",
+            "DALBHARAT",
+            "RAMCOCEM",
+            "AMBUJACEM",
+            "GRASIM",
             "ACC",
             "NUVOCO",
-            "DALBHARAT",
-            "AMBUJACEM",
-            "SHREECEM",
-            "ULTRACEMCO"
+            "SHREECEM"
         ]
     },
     {
         "industry": "Civil Construction",
         "url": "https://www.screener.in/market/IN07/IN0701/IN070101/IN070101001/",
+        "industry_pe": 19.0,
         "stocks": [
-            "NBCC",
-            "KEC",
-            "LT",
             "AFCONS",
-            "RVNL",
-            "ENGINERSIN",
-            "TECHNOE",
             "KPIL",
-            "IRB",
-            "RITES",
+            "ENGINERSIN",
+            "NBCC",
+            "NCC",
+            "KEC",
+            "RVNL",
             "IRCON",
-            "NCC"
+            "LT",
+            "IRB",
+            "TECHNOE",
+            "RITES"
         ]
     },
     {
         "industry": "Heavy Electrical Equipment",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070203/IN070203001/",
+        "industry_pe": 42.0,
         "stocks": [
-            "SCHNEIDER",
+            "ENRIN",
+            "THERMAX",
+            "INOXWIND",
+            "ABB",
             "GVT&D",
             "SIEMENS",
-            "CGPOWER",
-            "THERMAX",
-            "BHEL",
-            "ABB",
-            "ENRIN",
-            "ELECON",
-            "INOXWIND",
             "POWERINDIA",
-            "SUZLON",
             "TRITURBINE",
-            "TARIL"
+            "TARIL",
+            "CGPOWER",
+            "BHEL",
+            "SUZLON",
+            "ELECON",
+            "SCHNEIDER"
         ]
     },
     {
         "industry": "Power Generation",
         "url": "https://www.screener.in/market/IN11/IN1101/IN110101/IN110101004/",
+        "industry_pe": 26.0,
         "stocks": [
+            "JPPOWER",
+            "RPOWER",
+            "NHPC",
             "NAVA",
             "JSWENERGY",
-            "NHPC",
-            "ADANIGREEN",
-            "ACMESOLAR",
-            "RPOWER",
+            "NTPC",
             "NLCINDIA",
             "NTPCGREEN",
-            "SJVN",
-            "NTPC",
-            "JPPOWER"
+            "ADANIGREEN",
+            "ACMESOLAR",
+            "SJVN"
         ]
     },
     {
         "industry": "2/3 Wheelers",
         "url": "https://www.screener.in/market/IN02/IN0201/IN020101/IN020101002/",
+        "industry_pe": 30.0,
         "stocks": [
-            "HEROMOTOCO",
-            "BAJAJ-AUTO",
+            "TVSMOTOR",
             "OLAELEC",
             "ATHERENERG",
-            "TVSMOTOR",
-            "EICHERMOT"
+            "EICHERMOT",
+            "BAJAJ-AUTO",
+            "HEROMOTOCO"
         ]
     },
     {
         "industry": "Residential, Commercial Projects",
         "url": "https://www.screener.in/market/IN02/IN0205/IN020501/IN020501001/",
+        "industry_pe": 34.0,
         "stocks": [
             "LODHA",
-            "ANANTRAJ",
-            "GODREJPROP",
-            "DLF",
-            "PHOENIXLTD",
             "OBEROIRLTY",
-            "PRESTIGE",
-            "SOBHA",
+            "ANANTRAJ",
+            "SIGNATURE",
+            "GODREJPROP",
             "BRIGADE",
-            "SIGNATURE"
+            "PRESTIGE",
+            "PHOENIXLTD",
+            "DLF",
+            "SOBHA"
         ]
     },
     {
         "industry": "Iron & Steel",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010301/IN010301004/",
+        "industry_pe": 22.0,
         "stocks": [
-            "NSLNISP",
+            "TATASTEEL",
             "SAIL",
+            "NSLNISP",
             "SARDAEN",
             "JINDALSTEL",
-            "JSWSTEEL",
-            "TATASTEEL",
-            "JSL"
+            "JSL",
+            "JSWSTEEL"
         ]
     },
     {
         "industry": "Aerospace & Defense",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070201/IN070201001/",
+        "industry_pe": 60.0,
         "stocks": [
-            "DATAPATTNS",
-            "GRSE",
-            "ZENTEC",
             "BDL",
+            "HAL",
             "BEL",
-            "HAL"
+            "DATAPATTNS",
+            "ZENTEC",
+            "GRSE"
         ]
     },
     {
         "industry": "E-Retail/ E-Commerce",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020603/IN020603004/",
+        "industry_pe": 42.0,
         "stocks": [
+            "NYKAA",
             "ETERNAL",
             "SWIGGY",
-            "NYKAA",
             "FIRSTCRY"
         ]
     },
     {
         "industry": "Holding Company",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101006/",
+        "industry_pe": 19.0,
         "stocks": [
-            "JMFINANCIL",
             "CHOICEIN",
             "BAJAJHLDNG",
-            "BAJAJFINSV"
+            "BAJAJFINSV",
+            "JMFINANCIL"
         ]
     },
     {
         "industry": "Integrated Power Utilities",
         "url": "https://www.screener.in/market/IN11/IN1101/IN110101/IN110101005/",
+        "industry_pe": 22.0,
         "stocks": [
-            "ADANIPOWER",
             "TATAPOWER",
             "RELINFRA",
-            "CESC",
-            "TORNTPOWER"
+            "TORNTPOWER",
+            "ADANIPOWER",
+            "CESC"
         ]
     },
     {
         "industry": "Specialty Chemicals",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101002/",
+        "industry_pe": 29.0,
         "stocks": [
-            "PIDILITIND",
+            "CLEAN",
+            "AARTIIND",
             "JUBLINGREA",
             "NAVINFLUOR",
-            "ALKYLAMINE",
+            "PIDILITIND",
             "ATUL",
-            "DEEPAKNTR",
             "FLUOROCHEM",
-            "CLEAN",
             "BASF",
-            "AARTIIND"
+            "ALKYLAMINE",
+            "DEEPAKNTR"
         ]
     },
     {
         "industry": "Gems, Jewellery And Watches",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201005/",
+        "industry_pe": 28.0,
         "stocks": [
             "TITAN",
             "KALYANKJIL"
@@ -385,54 +409,59 @@
     {
         "industry": "Hospital",
         "url": "https://www.screener.in/market/IN06/IN0601/IN060103/IN060103001/",
+        "industry_pe": 55.0,
         "stocks": [
-            "KIMS",
-            "MAXHEALTH",
-            "RAINBOW",
             "NH",
-            "AGARWALEYE",
-            "APOLLOHOSP",
             "ASTERDM",
+            "FORTIS",
+            "APOLLOHOSP",
+            "AGARWALEYE",
+            "RAINBOW",
+            "KIMS",
             "MEDANTA",
-            "FORTIS"
+            "MAXHEALTH"
         ]
     },
     {
         "industry": "Investment Company",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101003/",
+        "industry_pe": 34.0,
         "stocks": [
-            "CHOLAHLDNG",
+            "MAHSCOOTER",
             "JIOFIN",
+            "CHOLAHLDNG",
             "TATAINVEST",
-            "ABCAPITAL",
-            "MAHSCOOTER"
+            "ABCAPITAL"
         ]
     },
     {
         "industry": "Packaged Foods",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040104/IN040104004/",
+        "industry_pe": 55.0,
         "stocks": [
-            "BBTC",
-            "NESTLEIND",
             "BIKAJI",
+            "NESTLEIND",
+            "BBTC",
             "BRITANNIA"
         ]
     },
     {
         "industry": "Financial Institution",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101001/",
+        "industry_pe": 22.0,
         "stocks": [
-            "PFC",
             "HUDCO",
-            "IRFC",
+            "PFC",
             "IFCI",
-            "IREDA",
-            "RECLTD"
+            "RECLTD",
+            "IRFC",
+            "IREDA"
         ]
     },
     {
         "industry": "Port & Port services",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090103/IN090103002/",
+        "industry_pe": 26.0,
         "stocks": [
             "ADANIPORTS",
             "JSWINFRA"
@@ -441,28 +470,31 @@
     {
         "industry": "Personal Care",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040105/IN040105001/",
+        "industry_pe": 49.0,
         "stocks": [
-            "DABUR",
-            "HONASA",
-            "GILLETTE",
-            "EMAMILTD",
+            "GODREJCP",
             "COLPAL",
             "PGHH",
-            "GODREJCP"
+            "HONASA",
+            "DABUR",
+            "EMAMILTD",
+            "GILLETTE"
         ]
     },
     {
         "industry": "Paints",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201015/",
+        "industry_pe": 42.0,
         "stocks": [
-            "AKZOINDIA",
             "BERGEPAINT",
+            "AKZOINDIA",
             "ASIANPAINT"
         ]
     },
     {
         "industry": "Oil Exploration & Production",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030102/IN030102001/",
+        "industry_pe": 18.0,
         "stocks": [
             "OIL",
             "ONGC"
@@ -471,26 +503,29 @@
     {
         "industry": "Diversified Retail",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020603/IN020603003/",
+        "industry_pe": 46.0,
         "stocks": [
-            "DMART",
-            "VMM"
+            "VMM",
+            "DMART"
         ]
     },
     {
         "industry": "Household Appliances",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201007/",
+        "industry_pe": 50.0,
         "stocks": [
+            "AMBER",
+            "VGUARD",
+            "VOLTAS",
             "CROMPTON",
             "BLUESTARCO",
-            "VOLTAS",
-            "WHIRLPOOL",
-            "VGUARD",
-            "AMBER"
+            "WHIRLPOOL"
         ]
     },
     {
         "industry": "Trading - Minerals",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010305/IN010305002/",
+        "industry_pe": 119.0,
         "stocks": [
             "ADANIENT"
         ]
@@ -498,51 +533,56 @@
     {
         "industry": "Speciality Retail",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020603/IN020603001/",
+        "industry_pe": 47.0,
         "stocks": [
-            "MANYAVAR",
-            "ABFRL",
             "ABLBL",
+            "ABFRL",
+            "MANYAVAR",
             "TRENT"
         ]
     },
     {
         "industry": "Hotels & Resorts",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020601/IN020601001/",
+        "industry_pe": 38.0,
         "stocks": [
-            "LEMONTREE",
-            "INDHOTEL",
-            "ITCHOTELS",
-            "THELEELA",
-            "VENTIVE",
-            "DBREALTY",
             "CHALET",
-            "EIHOTEL"
+            "LEMONTREE",
+            "EIHOTEL",
+            "THELEELA",
+            "ITCHOTELS",
+            "DBREALTY",
+            "VENTIVE",
+            "INDHOTEL"
         ]
     },
     {
         "industry": "Industrial Products",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070204/IN070204008/",
+        "industry_pe": 33.0,
         "stocks": [
-            "SYRMA",
-            "KAYNES",
+            "HONAUT",
             "JYOTICNC",
             "PRAJIND",
-            "HONAUT"
+            "KAYNES",
+            "SYRMA"
         ]
     },
     {
         "industry": "Stockbroking & Allied",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050103/IN050103006/",
+        "industry_pe": 21.0,
         "stocks": [
-            "MOTILALOFS",
             "ANGELONE",
             "NUVAMA",
-            "360ONE"
+            "360ONE",
+            "MOTILALOFS"
         ]
     },
     {
         "industry": "Other Electrical Equipment",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070203/IN070203002/",
+        "industry_pe": 32.0,
         "stocks": [
             "WAAREEENER",
             "PREMIERENE",
@@ -552,6 +592,7 @@
     {
         "industry": "Power - Transmission",
         "url": "https://www.screener.in/market/IN11/IN1101/IN110101/IN110101003/",
+        "industry_pe": 16.0,
         "stocks": [
             "POWERGRID"
         ]
@@ -559,68 +600,74 @@
     {
         "industry": "Housing Finance Company",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101002/",
+        "industry_pe": 17.0,
         "stocks": [
-            "SAMMAANCAP",
+            "BAJAJHFL",
             "HOMEFIRST",
-            "CANFINHOME",
+            "PNBHOUSING",
             "LICHSGFIN",
+            "SAMMAANCAP",
+            "APTUS",
             "AAVAS",
             "AADHARHFC",
-            "APTUS",
-            "BAJAJHFL",
-            "PNBHOUSING"
+            "CANFINHOME"
         ]
     },
     {
         "industry": "General Insurance",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050104/IN050104001/",
+        "industry_pe": 43.0,
         "stocks": [
-            "ICICIGI",
-            "STARHEALTH",
             "NIVABUPA",
-            "GODIGIT",
+            "GICRE",
+            "STARHEALTH",
             "NIACL",
-            "GICRE"
+            "GODIGIT",
+            "ICICIGI"
         ]
     },
     {
         "industry": "Iron & Steel Products",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205015/",
+        "industry_pe": 21.0,
         "stocks": [
-            "USHAMART",
-            "WELCORP",
             "MAHSEAMLES",
-            "JINDALSAW",
             "GPIL",
             "APLAPOLLO",
-            "SHYAMMETL"
+            "WELCORP",
+            "USHAMART",
+            "SHYAMMETL",
+            "JINDALSAW"
         ]
     },
     {
         "industry": "IT Enabled Services",
         "url": "https://www.screener.in/market/IN08/IN0801/IN080102/IN080102001/",
+        "industry_pe": 32.0,
         "stocks": [
-            "SAGILITY",
-            "NETWEB",
+            "CYIENT",
             "LTTS",
             "TATATECH",
             "AFFLE",
-            "CYIENT",
-            "IKS"
+            "IKS",
+            "SAGILITY",
+            "NETWEB"
         ]
     },
     {
         "industry": "Breweries & Distilleries",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040102/IN040102001/",
+        "industry_pe": 37.0,
         "stocks": [
+            "UNITDSPR",
             "UBL",
-            "RADICO",
-            "UNITDSPR"
+            "RADICO"
         ]
     },
     {
         "industry": "Coal",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030104/IN030104001/",
+        "industry_pe": 13.0,
         "stocks": [
             "COALINDIA"
         ]
@@ -628,6 +675,7 @@
     {
         "industry": "Aluminium",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010302/IN010302001/",
+        "industry_pe": 21.0,
         "stocks": [
             "HINDALCO",
             "NATIONALUM"
@@ -636,6 +684,7 @@
     {
         "industry": "Commercial Vehicles",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070202/IN070202002/",
+        "industry_pe": 42.0,
         "stocks": [
             "ASHOKLEY"
         ]
@@ -643,6 +692,7 @@
     {
         "industry": "Zinc",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010302/IN010302003/",
+        "industry_pe": 39.0,
         "stocks": [
             "HINDZINC"
         ]
@@ -650,6 +700,7 @@
     {
         "industry": "Diversified Metals",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010303/IN010303001/",
+        "industry_pe": 47.0,
         "stocks": [
             "VEDL"
         ]
@@ -657,35 +708,39 @@
     {
         "industry": "Compressors, Pumps & Diesel Engines",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205017/",
+        "industry_pe": 40.0,
         "stocks": [
-            "CUMMINSIND",
+            "ELGIEQUIP",
             "KIRLOSENG",
+            "CUMMINSIND",
             "KSB",
-            "KIRLOSBROS",
-            "ELGIEQUIP"
+            "KIRLOSBROS"
         ]
     },
     {
         "industry": "Asset Management Company",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050103/IN050103001/",
+        "industry_pe": 28.0,
         "stocks": [
-            "HDFCAMC",
             "UTIAMC",
             "ABSLAMC",
+            "HDFCAMC",
             "NAM-INDIA"
         ]
     },
     {
         "industry": "Financial Technology (Fintech)",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050105/IN050105001/",
+        "industry_pe": 33.0,
         "stocks": [
-            "PAYTM",
-            "POLICYBZR"
+            "POLICYBZR",
+            "PAYTM"
         ]
     },
     {
         "industry": "Edible Oil",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040101/IN040101001/",
+        "industry_pe": 27.0,
         "stocks": [
             "MARICO",
             "AWL",
@@ -695,16 +750,18 @@
     {
         "industry": "Pesticides & Agrochemicals",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010102/IN010102002/",
+        "industry_pe": 29.0,
         "stocks": [
-            "UPL",
-            "PIIND",
+            "BAYERCROP",
             "SUMICHEM",
-            "BAYERCROP"
+            "PIIND",
+            "UPL"
         ]
     },
     {
         "industry": "Airline",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090102/IN090102001/",
+        "industry_pe": 20.0,
         "stocks": [
             "INDIGO"
         ]
@@ -712,18 +769,20 @@
     {
         "industry": "Consumer Electronics",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201003/",
+        "industry_pe": 29.0,
         "stocks": [
             "HAVELLS",
-            "DIXON",
-            "PGEL"
+            "PGEL",
+            "DIXON"
         ]
     },
     {
         "industry": "Fertilizers",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010102/IN010102001/",
+        "industry_pe": 19.0,
         "stocks": [
-            "RCF",
             "COROMANDEL",
+            "RCF",
             "FACT",
             "CHAMBLFERT"
         ]
@@ -731,45 +790,50 @@
     {
         "industry": "Cables - Electricals",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205003/",
+        "industry_pe": 21.0,
         "stocks": [
-            "RRKABEL",
             "FINCABLES",
-            "KEI",
-            "POLYCAB"
+            "RRKABEL",
+            "POLYCAB",
+            "KEI"
         ]
     },
     {
         "industry": "Industrial Minerals",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010304/IN010304001/",
+        "industry_pe": 20.0,
         "stocks": [
             "LLOYDSME",
             "GMDCLTD",
-            "GRAVITA",
-            "NMDC"
+            "NMDC",
+            "GRAVITA"
         ]
     },
     {
         "industry": "Telecom - Infrastructure",
         "url": "https://www.screener.in/market/IN10/IN1001/IN100101/IN100101002/",
+        "industry_pe": 18.0,
         "stocks": [
-            "INDUSTOWER",
-            "HFCL"
+            "HFCL",
+            "INDUSTOWER"
         ]
     },
     {
         "industry": "Tyres & Rubber Products",
         "url": "https://www.screener.in/market/IN02/IN0201/IN020102/IN020102006/",
+        "industry_pe": 31.0,
         "stocks": [
+            "APOLLOTYRE",
+            "JKTYRE",
             "MRF",
             "CEATLTD",
-            "APOLLOTYRE",
-            "BALKRISIND",
-            "JKTYRE"
+            "BALKRISIND"
         ]
     },
     {
         "industry": "Commodity Chemicals",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101001/",
+        "industry_pe": 21.0,
         "stocks": [
             "TATACHEM",
             "SRF",
@@ -779,6 +843,7 @@
     {
         "industry": "Exchange and Data Platform",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050103/IN050103005/",
+        "industry_pe": 62.0,
         "stocks": [
             "BSE",
             "IEX",
@@ -788,28 +853,31 @@
     {
         "industry": "LPG/CNG/PNG/LNG Supplier",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030101/IN030101003/",
+        "industry_pe": 20.0,
         "stocks": [
-            "GUJGASLTD",
-            "IGL",
-            "PETRONET",
             "MGL",
-            "ATGL"
+            "PETRONET",
+            "IGL",
+            "ATGL",
+            "GUJGASLTD"
         ]
     },
     {
         "industry": "Other Textile Products",
         "url": "https://www.screener.in/market/IN02/IN0203/IN020301/IN020301002/",
+        "industry_pe": 19.0,
         "stocks": [
-            "ALOKINDS",
             "VTL",
-            "TRIDENT",
             "KPRMILL",
+            "ALOKINDS",
+            "TRIDENT",
             "WELSPUNLIV"
         ]
     },
     {
         "industry": "Other Beverages",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040102/IN040102002/",
+        "industry_pe": 49.0,
         "stocks": [
             "VBL"
         ]
@@ -817,23 +885,26 @@
     {
         "industry": "Ship Building & Allied Services",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070204/IN070204006/",
+        "industry_pe": 42.0,
         "stocks": [
-            "MAZDOCK",
-            "COCHINSHIP"
+            "COCHINSHIP",
+            "MAZDOCK"
         ]
     },
     {
         "industry": "Plastic Products - Industrial",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205009/",
+        "industry_pe": 22.0,
         "stocks": [
-            "FINPIPE",
             "SUPREMEIND",
+            "FINPIPE",
             "ASTRAL"
         ]
     },
     {
         "industry": "Gas Transmission/Marketing",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030101/IN030101001/",
+        "industry_pe": 16.0,
         "stocks": [
             "GSPL",
             "GAIL"
@@ -842,6 +913,7 @@
     {
         "industry": "Tea & Coffee",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040101/IN040101003/",
+        "industry_pe": 15.0,
         "stocks": [
             "CCL",
             "TATACONSUM"
@@ -850,15 +922,17 @@
     {
         "industry": "Logistics Solution Provider",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090102/IN090102002/",
+        "industry_pe": 25.0,
         "stocks": [
             "BLUEDART",
-            "CONCOR",
-            "DELHIVERY"
+            "DELHIVERY",
+            "CONCOR"
         ]
     },
     {
         "industry": "Power Distribution",
         "url": "https://www.screener.in/market/IN11/IN1101/IN110101/IN110101006/",
+        "industry_pe": 54.0,
         "stocks": [
             "ADANIENSOL"
         ]
@@ -866,6 +940,7 @@
     {
         "industry": "Explosives",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101005/",
+        "industry_pe": 24.0,
         "stocks": [
             "SOLARINDS"
         ]
@@ -873,6 +948,7 @@
     {
         "industry": "Internet & Catalogue Retail",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020603/IN020603005/",
+        "industry_pe": 31.0,
         "stocks": [
             "INDIAMART",
             "NAUKRI"
@@ -881,6 +957,7 @@
     {
         "industry": "Software Products",
         "url": "https://www.screener.in/market/IN08/IN0801/IN080101/IN080101002/",
+        "industry_pe": 41.0,
         "stocks": [
             "MAPMYINDIA",
             "OFSS"
@@ -889,6 +966,7 @@
     {
         "industry": "Airport & Airport services",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090103/IN090103001/",
+        "industry_pe": 9.0,
         "stocks": [
             "GMRAIRPORT"
         ]
@@ -896,6 +974,7 @@
     {
         "industry": "Tour, Travel Related Services",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020601/IN020601005/",
+        "industry_pe": 41.0,
         "stocks": [
             "BLS",
             "IRCTC",
@@ -905,6 +984,7 @@
     {
         "industry": "Other Bank",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050102/IN050102003/",
+        "industry_pe": 23.0,
         "stocks": [
             "AUBANK"
         ]
@@ -912,33 +992,37 @@
     {
         "industry": "Diversified",
         "url": "https://www.screener.in/market/IN12/IN1201/IN120101/IN120101001/",
+        "industry_pe": 18.0,
         "stocks": [
-            "DCMSHRIRAM",
             "3MINDIA",
+            "DCMSHRIRAM",
             "GODREJIND"
         ]
     },
     {
         "industry": "Other Industrial Products",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205012/",
+        "industry_pe": 30.0,
         "stocks": [
+            "HBLENGINE",
             "PTCIL",
-            "INOXINDIA",
-            "HBLENGINE"
+            "INOXINDIA"
         ]
     },
     {
         "industry": "Restaurants",
         "url": "https://www.screener.in/market/IN02/IN0206/IN020601/IN020601002/",
+        "industry_pe": 129.0,
         "stocks": [
-            "JUBLFOOD",
             "DEVYANI",
-            "SAPPHIRE"
+            "SAPPHIRE",
+            "JUBLFOOD"
         ]
     },
     {
         "industry": "Diversified Commercial Services",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090104/IN090104004/",
+        "industry_pe": 22.0,
         "stocks": [
             "IGIL"
         ]
@@ -946,6 +1030,7 @@
     {
         "industry": "Garments & Apparels",
         "url": "https://www.screener.in/market/IN02/IN0203/IN020301/IN020301001/",
+        "industry_pe": 28.0,
         "stocks": [
             "PAGEIND"
         ]
@@ -953,24 +1038,27 @@
     {
         "industry": "Depositories, Clearing Houses and Other Intermediaries",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050103/IN050103002/",
+        "industry_pe": 52.0,
         "stocks": [
             "CDSL",
-            "KFINTECH",
-            "CAMS"
+            "CAMS",
+            "KFINTECH"
         ]
     },
     {
         "industry": "Abrasives & Bearings",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205016/",
+        "industry_pe": 51.0,
         "stocks": [
-            "SKFINDIA",
+            "TIMKEN",
             "CARBORUNIV",
-            "TIMKEN"
+            "SKFINDIA"
         ]
     },
     {
         "industry": "Footwear",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201017/",
+        "industry_pe": 38.0,
         "stocks": [
             "CAMPUS",
             "BATAINDIA"
@@ -979,6 +1067,7 @@
     {
         "industry": "Cigarettes & Tobacco Products",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040103/IN040103001/",
+        "industry_pe": 27.0,
         "stocks": [
             "GODFRYPHLP"
         ]
@@ -986,6 +1075,7 @@
     {
         "industry": "Other Financial Services",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101005/",
+        "industry_pe": 29.0,
         "stocks": [
             "CRISIL"
         ]
@@ -993,6 +1083,7 @@
     {
         "industry": "Industrial Gases",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101009/",
+        "industry_pe": 49.0,
         "stocks": [
             "LINDEINDIA"
         ]
@@ -1000,6 +1091,7 @@
     {
         "industry": "Castings & Forgings",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205004/",
+        "industry_pe": 28.0,
         "stocks": [
             "AIAENG"
         ]
@@ -1007,6 +1099,7 @@
     {
         "industry": "Healthcare Service Provider",
         "url": "https://www.screener.in/market/IN06/IN0601/IN060103/IN060103002/",
+        "industry_pe": 28.0,
         "stocks": [
             "METROPOLIS",
             "VIJAYA",
@@ -1016,6 +1109,7 @@
     {
         "industry": "Trading & Distributors",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090104/IN090104001/",
+        "industry_pe": 34.0,
         "stocks": [
             "MMTC",
             "REDINGTON"
@@ -1024,6 +1118,7 @@
     {
         "industry": "Business Process Outsourcing (BPO)/ Knowledge Process Outsourcing (KPO)",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090104/IN090104005/",
+        "industry_pe": 36.0,
         "stocks": [
             "FSL",
             "ECLERX"
@@ -1032,6 +1127,7 @@
     {
         "industry": "Other Agricultural Products",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040101/IN040101004/",
+        "industry_pe": 19.0,
         "stocks": [
             "LTFOODS"
         ]
@@ -1039,6 +1135,7 @@
     {
         "industry": "Telecom -  Equipment & Accessories",
         "url": "https://www.screener.in/market/IN10/IN1001/IN100102/IN100102001/",
+        "industry_pe": 51.0,
         "stocks": [
             "TEJASNET",
             "ITI"
@@ -1047,23 +1144,26 @@
     {
         "industry": "Electrodes & Refractories",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070205/IN070205018/",
+        "industry_pe": 40.0,
         "stocks": [
+            "HEG",
             "GRAPHITE",
-            "RHIM",
-            "HEG"
+            "RHIM"
         ]
     },
     {
         "industry": "Healthcare Research, Analytics & Technology",
         "url": "https://www.screener.in/market/IN06/IN0601/IN060103/IN060103003/",
+        "industry_pe": 46.0,
         "stocks": [
-            "INDGN",
-            "SYNGENE"
+            "SYNGENE",
+            "INDGN"
         ]
     },
     {
         "industry": "Tractors",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070202/IN070202001/",
+        "industry_pe": 34.0,
         "stocks": [
             "ESCORTS"
         ]
@@ -1071,14 +1171,16 @@
     {
         "industry": "Sugar",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040101/IN040101002/",
+        "industry_pe": 15.0,
         "stocks": [
-            "TRIVENI",
-            "BALRAMCHIN"
+            "BALRAMCHIN",
+            "TRIVENI"
         ]
     },
     {
         "industry": "TV Broadcasting & Software Production",
         "url": "https://www.screener.in/market/IN02/IN0204/IN020402/IN020402004/",
+        "industry_pe": 20.0,
         "stocks": [
             "ZEEL",
             "SUNTV"
@@ -1087,6 +1189,7 @@
     {
         "industry": "Other Food Products",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040104/IN040104003/",
+        "industry_pe": 25.0,
         "stocks": [
             "EIDPARRY"
         ]
@@ -1094,6 +1197,7 @@
     {
         "industry": "Paper & Paper Products",
         "url": "https://www.screener.in/market/IN01/IN0104/IN010401/IN010401001/",
+        "industry_pe": 19.0,
         "stocks": [
             "ABREL"
         ]
@@ -1101,6 +1205,7 @@
     {
         "industry": "Media & Entertainment",
         "url": "https://www.screener.in/market/IN02/IN0204/IN020402/IN020402003/",
+        "industry_pe": 40.0,
         "stocks": [
             "SAREGAMA"
         ]
@@ -1108,6 +1213,7 @@
     {
         "industry": "Copper",
         "url": "https://www.screener.in/market/IN01/IN0103/IN010302/IN010302002/",
+        "industry_pe": 64.0,
         "stocks": [
             "HINDCOPPER"
         ]
@@ -1115,6 +1221,7 @@
     {
         "industry": "Plywood Boards/ Laminates",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201012/",
+        "industry_pe": 44.0,
         "stocks": [
             "CENTURYPLY"
         ]
@@ -1122,6 +1229,7 @@
     {
         "industry": "Petrochemicals",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101006/",
+        "industry_pe": 19.0,
         "stocks": [
             "SWANCORP"
         ]
@@ -1129,6 +1237,7 @@
     {
         "industry": "Shipping",
         "url": "https://www.screener.in/market/IN09/IN0901/IN090102/IN090102005/",
+        "industry_pe": 13.0,
         "stocks": [
             "GESHIP",
             "SCI"
@@ -1137,6 +1246,7 @@
     {
         "industry": "Carbon Black",
         "url": "https://www.screener.in/market/IN01/IN0101/IN010101/IN010101003/",
+        "industry_pe": 36.0,
         "stocks": [
             "HSCL",
             "PCBL"
@@ -1145,6 +1255,7 @@
     {
         "industry": "Financial Products Distributor",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050103/IN050103003/",
+        "industry_pe": 53.0,
         "stocks": [
             "ANANDRATHI"
         ]
@@ -1152,14 +1263,16 @@
     {
         "industry": "Construction Vehicles",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070202/IN070202003/",
+        "industry_pe": 34.0,
         "stocks": [
-            "ACE",
-            "BEML"
+            "BEML",
+            "ACE"
         ]
     },
     {
         "industry": "Lubricants",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030103/IN030103002/",
+        "industry_pe": 15.0,
         "stocks": [
             "CASTROLIND"
         ]
@@ -1167,6 +1280,7 @@
     {
         "industry": "Medical Equipment & Supplies",
         "url": "https://www.screener.in/market/IN06/IN0601/IN060102/IN060102001/",
+        "industry_pe": 44.0,
         "stocks": [
             "POLYMED"
         ]
@@ -1174,6 +1288,7 @@
     {
         "industry": "Microfinance Institutions",
         "url": "https://www.screener.in/market/IN05/IN0501/IN050101/IN050101007/",
+        "industry_pe": 82.0,
         "stocks": [
             "CREDITACC"
         ]
@@ -1181,6 +1296,7 @@
     {
         "industry": "Oil Storage & Transportation",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030102/IN030102003/",
+        "industry_pe": 80.0,
         "stocks": [
             "AEGISVOPAK"
         ]
@@ -1188,6 +1304,7 @@
     {
         "industry": "Trading - Gas",
         "url": "https://www.screener.in/market/IN03/IN0301/IN030101/IN030101004/",
+        "industry_pe": 37.0,
         "stocks": [
             "AEGISLOG"
         ]
@@ -1195,6 +1312,7 @@
     {
         "industry": "Animal Feed",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040104/IN040104001/",
+        "industry_pe": 18.0,
         "stocks": [
             "GODREJAGRO"
         ]
@@ -1202,6 +1320,7 @@
     {
         "industry": "Ceramics",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201019/",
+        "industry_pe": 44.0,
         "stocks": [
             "KAJARIACER"
         ]
@@ -1209,14 +1328,16 @@
     {
         "industry": "Railway Wagons",
         "url": "https://www.screener.in/market/IN07/IN0702/IN070204/IN070204005/",
+        "industry_pe": 46.0,
         "stocks": [
-            "JWL",
-            "TITAGARH"
+            "TITAGARH",
+            "JWL"
         ]
     },
     {
         "industry": "Stationary",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040106/IN040106004/",
+        "industry_pe": 38.0,
         "stocks": [
             "DOMS"
         ]
@@ -1224,6 +1345,7 @@
     {
         "industry": "Other Telecom Services",
         "url": "https://www.screener.in/market/IN10/IN1001/IN100101/IN100101003/",
+        "industry_pe": 15.0,
         "stocks": [
             "RAILTEL"
         ]
@@ -1231,6 +1353,7 @@
     {
         "industry": "Film Production, Distribution & Exhibition",
         "url": "https://www.screener.in/market/IN02/IN0204/IN020402/IN020402001/",
+        "industry_pe": 29.0,
         "stocks": [
             "PVRINOX"
         ]
@@ -1238,6 +1361,7 @@
     {
         "industry": "Household Products",
         "url": "https://www.screener.in/market/IN04/IN0401/IN040106/IN040106001/",
+        "industry_pe": 30.0,
         "stocks": [
             "JYOTHYLAB"
         ]
@@ -1245,6 +1369,7 @@
     {
         "industry": "Sanitary Ware",
         "url": "https://www.screener.in/market/IN02/IN0202/IN020201/IN020201013/",
+        "industry_pe": 29.0,
         "stocks": [
             "CERA"
         ]

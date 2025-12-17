@@ -1,9 +1,9 @@
 requests
 beautifulsoup4
 playwright
-supabase
 python-dotenv
 streamlit
-psycopg2-binary
 nest-asyncio
 yfinance
+
+cd /mnt/d/Projects/ReScanX && /mnt/c/Windows/System32/cmd.exe /c "D:\Projects\ReScanX\venv\Scripts\streamlit.exe run D:\Projects\ReScanX\app.py"

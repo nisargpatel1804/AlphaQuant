@@ -1,364 +1,372 @@
-"""Streamlit dashboard for ReScanX (Fundamentals + Technicals)."""
+"""
+ReScanX Master Dashboard.
+Integrates Fundamentals, Technicals, and Price Scans into a unified Streamlit interface.
+"""
 from __future__ import annotations
 
 import sys
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import nest_asyncio
 import streamlit as st
 
-# Add project root to sys.path
+# 1. Setup Project Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# FUNDAMENTALS IMPORTS
-from fundamentals.fetcher import ScreenerScraper
-from fundamentals.utils import get_nifty_tickers
-from fundamentals.scans import FundamentalScans
+# 2. Configure Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
-# TECHNICALS IMPORTS
-# Ensure technicals module is reachable
+# 3. Conditional Imports (Graceful Degradation)
+HAS_FUNDAMENTALS = False
+HAS_TECHNICALS = False
+HAS_PRICESCANS = False
+
+# --- Fundamentals ---
+try:
+    from fundamentals.fetcher import ScreenerScraper
+    from fundamentals.utils import get_nifty_tickers, load_master_industry_map, build_ticker_to_industry_and_pe, apply_industry_context
+    from fundamentals.scans import FundamentalScans
+    HAS_FUNDAMENTALS = True
+except ImportError as e:
+    logger.warning(f"Fundamentals module not loaded: {e}")
+
+# --- Technicals ---
 try:
     from technicals.fetcher import TechnicalFetcher
     from technicals.indicators import TechnicalIndicators
     from technicals.scans import TechnicalScans
     HAS_TECHNICALS = True
-except ImportError:
-    HAS_TECHNICALS = False
+except ImportError as e:
+    logger.warning(f"Technicals module not loaded: {e}")
 
-# Fix async conflict: Allow nested event loops for Playwright within Streamlit
-# nest_asyncio.apply()  # Commented out as it conflicts with Playwright
+# --- Price Scans ---
+try:
+    from pricescan.main import PriceScanEngine
+    from pricescan.models import TickerPriceScanData
+    HAS_PRICESCANS = True
+except ImportError as e:
+    logger.warning(f"Price Scan module not loaded: {e}")
 
-# --- Helper Functions (Fundamentals) ---
 
-def _load_master_industry_map() -> List[Dict[str, Any]]:
-    path = PROJECT_ROOT / "fundamentals" / "source" / "master_industry_map.json"
-    if not path.exists():
-        return []
-    try:
-        import json
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return []
-    return [row for row in data if isinstance(row, dict)] if isinstance(data, list) else []
+# 4. Page Configuration
+st.set_page_config(
+    page_title="ReScanX Analytics",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-def _build_ticker_to_industry_and_pe(master_map: List[Dict[str, Any]]) -> tuple[Dict[str, str], Dict[str, float]]:
-    ticker_to_industry: Dict[str, str] = {}
-    industry_to_pe: Dict[str, float] = {}
-
-    for entry in master_map:
-        industry = (entry.get("industry") or "").strip()
-        tickers = entry.get("stocks") or []
-        pe = entry.get("industry_pe")
-
-        if industry:
-            try:
-                if pe is not None:
-                    industry_to_pe[industry] = float(pe)
-            except Exception:
-                pass
-
-        if industry and isinstance(tickers, list):
-            for ticker in tickers:
-                t = str(ticker).strip().upper()
-                if t:
-                    ticker_to_industry[t] = industry
-
-    return ticker_to_industry, industry_to_pe
-
-def _apply_industry_context(
-    payload: Dict[str, Any],
-    *,
-    ticker: str,
-    ticker_to_industry: Dict[str, str],
-    industry_to_pe: Dict[str, float],
-) -> None:
-    t = ticker.strip().upper()
-    industry = ticker_to_industry.get(t)
-    if not industry:
-        return
-
-    metadata = payload.get("metadata")
-    if not isinstance(metadata, dict):
-        metadata = {}
-        payload["metadata"] = metadata
-
-    metadata["industry"] = industry
-    pe = industry_to_pe.get(industry)
-    if pe is not None:
-        metadata["industry_pe"] = pe
-        payload["industry_pe"] = pe
-
-# --- Caching ---
+# --------------------------------------------------------------------------
+# Resource Caching
+# --------------------------------------------------------------------------
 
 @st.cache_data(show_spinner=False)
-def cached_tickers() -> List[str]:
-    """Cache the Nifty 500 list to avoid re-fetching on every interaction."""
-    try:
-        return get_nifty_tickers()
-    except Exception:
-        return []
+def get_cached_tickers() -> List[str]:
+    """Cache the Nifty 500 list."""
+    if HAS_FUNDAMENTALS:
+        try:
+            return get_nifty_tickers()
+        except Exception:
+            return []
+    return []
 
 @st.cache_resource(show_spinner=False)
-def cached_fundamental_context() -> tuple[ScreenerScraper, Dict[str, str], Dict[str, float]]:
+def get_fundamental_resources():
+    """Cache the scraper and industry maps."""
+    if not HAS_FUNDAMENTALS: return None, {}, {}
     scraper = ScreenerScraper(use_industry_pe_map=False)
-    master_map = _load_master_industry_map()
-    ticker_to_industry, industry_to_pe = _build_ticker_to_industry_and_pe(master_map)
-    return scraper, ticker_to_industry, industry_to_pe
+    master_map = load_master_industry_map()
+    ticker_to_ind, ind_to_pe = build_ticker_to_industry_and_pe(master_map)
+    return scraper, ticker_to_ind, ind_to_pe
 
 @st.cache_resource(show_spinner=False)
-def cached_technical_fetcher() -> Optional[Any]:
+def get_technical_fetcher():
+    """Cache the Technical Fetcher."""
     if HAS_TECHNICALS:
         return TechnicalFetcher()
     return None
 
-# --- Main Logic ---
+@st.cache_resource(show_spinner="Initializing Sector Engine...")
+def get_pricescan_engine():
+    """
+    Cache the PriceScanEngine.
+    CRITICAL: This builds/loads Sector Indices on first run.
+    """
+    if HAS_PRICESCANS:
+        # update_sectors=False ensures we rely on existing data if available for speed
+        return PriceScanEngine(update_sectors=False)
+    return None
 
-def main() -> None:
-    st.set_page_config(
-        page_title="ReScanX Dashboard",
-        page_icon="📈",
-        layout="wide"
-    )
+# --------------------------------------------------------------------------
+# Main UI Logic
+# --------------------------------------------------------------------------
 
-    # Initialize Services (no database)
-    fund_scraper, ticker_to_industry, industry_pe_map = cached_fundamental_context()
-    tech_fetcher = cached_technical_fetcher()
-
-    # --- Sidebar Controls ---
+def main():
+    # --- Sidebar ---
     with st.sidebar:
         st.title("ReScanX")
-        st.markdown("### Nifty 500 Screener")
+        st.caption("v2.0 | Integrated Analytics")
         
-        tickers = cached_tickers()
+        # Ticker Selection
+        tickers = get_cached_tickers()
         if not tickers:
-            st.error("Failed to load ticker list.")
+            st.error("Ticker list unavailable.")
             return
 
-        # Search and select stock
-        ticker = st.selectbox(
-            "Select Stock", 
-            tickers, 
-            index=tickers.index("RELIANCE") if "RELIANCE" in tickers else 0
-        )
+        default_idx = tickers.index("RELIANCE") if "RELIANCE" in tickers else 0
+        selected_ticker = st.selectbox("Select Ticker", tickers, index=default_idx)
         
-        st.markdown("---")
-        scan_type = st.radio(
-            "Choose Scan Type",
-            ["Fundamentals", "Technicals"],
-            index=0,
-            help="Fundamentals: Financial health check\nTechnicals: Trend & momentum check"
-        )
+        st.divider()
         
-        # Data is always fetched fresh (no database cache).
-        force_refresh = st.button("Refresh Data", help="Re-fetch data now")
+        # Module Selection
+        available_modules = []
+        if HAS_FUNDAMENTALS: available_modules.append("Fundamentals")
+        if HAS_TECHNICALS: available_modules.append("Technicals")
+        if HAS_PRICESCANS: available_modules.append("Price Scans")
         
-        st.markdown("---")
-        st.markdown("### Legend")
-        if scan_type == "Fundamentals":
-            st.success("High Quality")
-            st.warning("Moderate")
-            st.error("Low Quality")
-        else:
-            st.success("Bullish")
-            st.error("Bearish")
-            st.info("Neutral")
+        if not available_modules:
+            st.error("No analysis modules found.")
+            return
 
-    if not ticker:
-        return
+        scan_type = st.radio("Analysis Type", available_modules)
+        
+        st.divider()
+        force_refresh = st.button("Refresh Data", icon="🔄", help="Force re-fetch of live data")
 
     # --- Routing ---
     if scan_type == "Fundamentals":
-        render_fundamentals(ticker, fund_scraper, ticker_to_industry, industry_pe_map, force_refresh)
+        scraper, t_map, p_map = get_fundamental_resources()
+        render_fundamentals(selected_ticker, scraper, t_map, p_map, force_refresh)
+        
     elif scan_type == "Technicals":
-        if not HAS_TECHNICALS:
-            st.error("Technical Analysis module not found. Check installation.")
-        else:
-            render_technicals(ticker, tech_fetcher, force_refresh)
+        fetcher = get_technical_fetcher()
+        render_technicals(selected_ticker, fetcher, force_refresh)
+        
+    elif scan_type == "Price Scans":
+        engine = get_pricescan_engine()
+        render_price_scans(selected_ticker, engine, force_refresh)
 
-# --- Renderers ---
+# --------------------------------------------------------------------------
+# Renderers
+# --------------------------------------------------------------------------
 
-def render_fundamentals(
-    ticker: str, 
-    scraper: ScreenerScraper,
-    ticker_map: Dict, 
-    pe_map: Dict, 
-    force: bool
-) -> None:
-    # NOTE (Dec 2025): No database mode.
-    # Always scrape fresh fundamentals for the selected ticker.
-    #
-    # Future fallback (commented): enable Supabase caching.
-    # from fundamentals.database import SupabaseManager
-    # manager = SupabaseManager()
-    # data = manager.fetch_ticker(ticker)
-    # if force or not data or SupabaseManager.needs_refresh(data):
-    #     payload = scraper.fetch_company_payload(ticker)
-    #     payload["ticker"] = ticker
-    #     manager.upsert_record(payload)
-    #     data = payload
+def render_fundamentals(ticker: str, scraper: Any, t_map: Dict, p_map: Dict, force: bool):
+    st.title(f"Fundamentals: {ticker}")
+    
+    if not scraper:
+        st.error("Fundamentals engine not initialized.")
+        return
 
-    with st.spinner(f"Scraping Fundamentals for {ticker}..."):
-        try:
-            payload = scraper.fetch_company_payload(ticker)
-            payload["ticker"] = ticker
-            _apply_industry_context(payload, ticker=ticker, ticker_to_industry=ticker_map, industry_to_pe=pe_map)
-            data = payload
-            if force:
-                st.toast("Data refreshed!", icon="✅")
-        except Exception as e:
-            st.error(f"Scraping failed: {e}")
-            return
+    # Session State Caching for Live Scrape
+    cache_key = f"fund_{ticker}"
+    if force or cache_key not in st.session_state:
+        with st.spinner(f"Scraping Fundamentals for {ticker}..."):
+            try:
+                payload = scraper.fetch_company_payload(ticker)
+                payload["ticker"] = ticker
+                apply_industry_context(payload, ticker=ticker, ticker_to_industry=t_map, industry_to_pe=p_map)
+                
+                scanner = FundamentalScans(payload)
+                results = scanner.run_scans()
+                
+                st.session_state[cache_key] = {
+                    "data": payload,
+                    "results": results,
+                    "meta": scanner.metadata
+                }
+            except Exception as e:
+                st.error(f"Analysis failed: {e}")
+                return
 
-    # 2. Run Scans
-    scanner = FundamentalScans(data)
-    results = scanner.run_scans()
-    metadata = scanner.metadata
+    # Render
+    data = st.session_state[cache_key]
+    meta = data["meta"]
+    results = data["results"]
 
-    # 3. Header
-    st.header(f"{ticker} - Fundamentals")
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Current Price", f"₹{metadata.get('current_price', 0):,.2f}")
-    m2.metric("Market Cap", f"₹{metadata.get('market_cap', 0):,.0f} Cr")
-    m3.metric("Stock P/E", f"{metadata.get('stock_pe', 0):.1f}")
-    m4.metric("Industry P/E", f"{metadata.get('industry_pe', 0):.1f}")
-    st.caption(f"**Sector:** {metadata.get('industry', 'Unknown')}")
+    # Metrics
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Price", f"₹{meta.get('current_price', 0):,.2f}")
+    c2.metric("Market Cap", f"₹{meta.get('market_cap', 0):,.0f} Cr")
+    c3.metric("Stock P/E", f"{meta.get('stock_pe', 0):.1f}")
+    c4.metric("Industry P/E", f"{meta.get('industry_pe', 0):.1f}")
+    st.caption(f"Sector: **{meta.get('industry', 'N/A')}**")
 
     st.divider()
 
-    # 4. Scorecard & Tabs
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("High Quality", len(results.get("High", [])), delta="Strong", delta_color="normal")
-    c2.metric("Moderate", len(results.get("Moderate", [])), delta="Avg", delta_color="off")
-    c3.metric("Low Quality", len(results.get("Low", [])), delta="Weak", delta_color="inverse")
-    c4.metric("Pending", len(results.get("Pending", [])))
+    # Tabs
+    tabs = st.tabs(["High Quality", "Moderate", "Low Quality", "Pending", "Raw JSON"])
+    with tabs[0]: _render_scan_group(results.get("High", []), "fund", "High")
+    with tabs[1]: _render_scan_group(results.get("Moderate", []), "fund", "Moderate")
+    with tabs[2]: _render_scan_group(results.get("Low", []), "fund", "Low")
+    with tabs[3]: _render_scan_group(results.get("Pending", []), "fund", "Pending")
+    with tabs[4]: st.json(data["data"])
 
-    tabs = st.tabs(["High Quality", "Moderate", "Low Quality", "Pending", "Raw Data"])
+
+def render_technicals(ticker: str, fetcher: Any, force: bool):
+    st.title(f"Technicals: {ticker}")
     
-    with tabs[0]: _display_grouped(results.get("High", []), "No high quality metrics found.", "High", mode="fund")
-    with tabs[1]: _display_grouped(results.get("Moderate", []), "No moderate metrics found.", "Moderate", mode="fund")
-    with tabs[2]: _display_grouped(results.get("Low", []), "No low quality metrics found.", "Low", mode="fund")
-    with tabs[3]: _display_grouped(results.get("Pending", []), "No pending metrics.", "Pending", mode="fund")
-    with tabs[4]: st.json(data)
+    if not fetcher:
+        st.error("Technical engine not initialized.")
+        return
 
-
-def render_technicals(ticker: str, fetcher: TechnicalFetcher, force: bool) -> None:
-    # 1. Fetch & Calculate (No database for technicals yet, live fetch usually preferred)
-    # Ideally we'd cache this in session_state to avoid re-fetching on slight interactions
-    
-    if force or f"tech_data_{ticker}" not in st.session_state:
-        with st.spinner(f"Fetching Technicals for {ticker}..."):
+    cache_key = f"tech_{ticker}"
+    if force or cache_key not in st.session_state:
+        with st.spinner(f"Analyzing Technicals for {ticker}..."):
             try:
-                daily_df, weekly_df = fetcher.fetch_stock_data(ticker)
-                if daily_df.empty:
-                    st.error("No data found.")
+                d_df, w_df = fetcher.fetch_stock_data(ticker)
+                if d_df.empty:
+                    st.warning("No data returned.")
                     return
                 
                 bench = fetcher.fetch_benchmark()
                 
                 # Industry Beta
-                ind_name, ind_beta = None, None
+                ind_name = None
                 if hasattr(fetcher, 'fetch_industry_beta_avg'):
                     ind_name, ind_beta = fetcher.fetch_industry_beta_avg(ticker, bench)
-                    daily_df["INDUSTRY_BETA_AVG"] = ind_beta
+                    d_df["INDUSTRY_BETA_AVG"] = ind_beta
 
-                TechnicalIndicators.add_all_indicators(daily_df, is_weekly=False, benchmark_data=bench)
-                TechnicalIndicators.add_all_indicators(weekly_df, is_weekly=True)
+                TechnicalIndicators.add_all_indicators(d_df, is_weekly=False, benchmark_data=bench)
+                TechnicalIndicators.add_all_indicators(w_df, is_weekly=True)
                 
-                scanner = TechnicalScans(daily_df, weekly_df)
+                scanner = TechnicalScans(d_df, w_df)
                 results = scanner.run_all()
                 
-                # Store in session state
-                st.session_state[f"tech_data_{ticker}"] = {
+                st.session_state[cache_key] = {
                     "results": results,
-                    "daily": daily_df,
-                    "meta": {"last_close": daily_df['Close'].iloc[-1], "industry": ind_name}
+                    "last_close": d_df['Close'].iloc[-1],
+                    "industry": ind_name
                 }
-                
             except Exception as e:
-                st.error(f"Technical Analysis failed: {e}")
+                st.error(f"Technical analysis failed: {e}")
                 return
 
-    # 2. Retrieve from Cache
-    cached = st.session_state[f"tech_data_{ticker}"]
-    results = cached["results"]
-    meta = cached["meta"]
+    data = st.session_state[cache_key]
+    results = data["results"]
     
-    # 3. Header
-    st.header(f"{ticker} - Technicals")
-    st.metric("Last Close", f"₹{meta['last_close']:,.2f}")
-    if meta.get("industry"):
-        st.caption(f"**Sector:** {meta['industry']}")
-
+    st.metric("Last Close", f"₹{data['last_close']:,.2f}")
+    if data['industry']: st.caption(f"Sector: **{data['industry']}**")
+    
     st.divider()
-
-    # 4. Scorecard & Tabs
-    bull_count = len(results.get("Bullish", []))
-    bear_count = len(results.get("Bearish", []))
-    neut_count = len(results.get("Neutral", []))
     
+    # Scorecard
     c1, c2, c3 = st.columns(3)
-    c1.metric("Bullish Signals", bull_count, delta="Buy", delta_color="normal")
-    c2.metric("Bearish Signals", bear_count, delta="Sell", delta_color="inverse")
-    c3.metric("Neutral Signals", neut_count, delta="Hold", delta_color="off")
+    c1.metric("Bullish", len(results.get("Bullish", [])), delta="Signals")
+    c2.metric("Bearish", len(results.get("Bearish", [])), delta_color="inverse", delta="Signals")
+    c3.metric("Neutral", len(results.get("Neutral", [])), delta_color="off", delta="Signals")
 
     tabs = st.tabs(["Bullish", "Bearish", "Neutral", "Pending"])
+    with tabs[0]: _render_scan_group(results.get("Bullish", []), "tech", "Bullish")
+    with tabs[1]: _render_scan_group(results.get("Bearish", []), "tech", "Bearish")
+    with tabs[2]: _render_scan_group(results.get("Neutral", []), "tech", "Neutral")
+    with tabs[3]: _render_scan_group(results.get("Pending", []), "tech", "Pending")
+
+
+def render_price_scans(ticker: str, engine: Any, force: bool):
+    st.title(f"Price Scans: {ticker}")
     
-    with tabs[0]: _display_grouped(results.get("Bullish", []), "No bullish signals.", "Bullish", mode="tech")
-    with tabs[1]: _display_grouped(results.get("Bearish", []), "No bearish signals.", "Bearish", mode="tech")
-    with tabs[2]: _display_grouped(results.get("Neutral", []), "No neutral signals.", "Neutral", mode="tech")
-    with tabs[3]: _display_grouped(results.get("Pending", []), "No pending scans.", "Pending", mode="tech")
-
-
-# --- Helper Rendering Functions ---
-
-def _display_grouped(items: List[Dict[str, Any]], empty_msg: str, status_type: str, mode: str) -> None:
-    if not items:
-        st.info(empty_msg)
+    if not engine:
+        st.error("Price Scan engine not initialized.")
         return
+
+    cache_key = f"price_{ticker}"
+    if force or cache_key not in st.session_state:
+        with st.spinner(f"Running Price Scans for {ticker}..."):
+            try:
+                # engine.process_ticker returns a TickerPriceScanData dataclass
+                result_obj = engine.process_ticker(ticker)
+                
+                if result_obj is None:
+                    st.warning("No data processed.")
+                    return
+
+                st.session_state[cache_key] = result_obj
+            except Exception as e:
+                st.error(f"Price scan failed: {e}")
+                return
+
+    data = st.session_state[cache_key] # This is TickerPriceScanData object
+    results = data.scan_results # Dict[str, List[Dict]]
+    summary = getattr(data, "scan_summary", {}) or {}
     
+    st.metric("Last Close", f"₹{data.last_close:,.2f}")
+    st.caption(f"Sector: **{data.industry}**")
+    
+    st.divider()
+    
+    # Scorecard
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Bullish Scans", len(results.get("Bullish", [])), delta="Triggered")
+    c2.metric("Bearish Scans", len(results.get("Bearish", [])), delta_color="inverse", delta="Triggered")
+    c3.metric("Neutral / Range", len(results.get("Neutral", [])), delta_color="off", delta="Triggered")
+
+    # Coverage / completion info (answers: "do these sum to 117?")
+    expected_total = summary.get("expected_total")
+    implemented_total = summary.get("implemented_total")
+    triggered_total = summary.get("triggered_total")
+    if expected_total and implemented_total is not None and triggered_total is not None:
+        st.caption(
+            f"Coverage: Triggered **{triggered_total}** / Implemented **{implemented_total}** (Target: **{expected_total}**). "
+            f"Counts in the tabs reflect *triggered* scans only."
+        )
+
+    tabs = st.tabs(["Bullish", "Bearish", "Neutral", "Pending"])
+    with tabs[0]: _render_scan_group(results.get("Bullish", []), "price", "Bullish")
+    with tabs[1]: _render_scan_group(results.get("Bearish", []), "price", "Bearish")
+    with tabs[2]: _render_scan_group(results.get("Neutral", []), "price", "Neutral")
+    with tabs[3]: _render_scan_group(results.get("Pending", []), "price", "Pending")
+
+
+# --------------------------------------------------------------------------
+# UI Helpers
+# --------------------------------------------------------------------------
+
+def _render_scan_group(items: List[Dict[str, Any]], mode: str, group_name: str):
+    """
+    Renders a list of scan results grouped by their Category/Subtype.
+    """
+    if not items:
+        st.info(f"No {group_name.lower()} scans found.")
+        return
+
+    # Group items by 'category' (which is mapped from 'subtype' in Price Scans)
     grouped = {}
     for item in items:
-        grouped.setdefault(item["category"], []).append(item)
-        
-    for cat, rows in grouped.items():
-        with st.expander(f"{cat} ({len(rows)})", expanded=True):
+        cat = item.get("category", "Uncategorized")
+        grouped.setdefault(cat, []).append(item)
+    
+    # Render Expanders
+    for category, rows in grouped.items():
+        with st.expander(f"{category} ({len(rows)})", expanded=True):
             for row in rows:
+                label = row.get("label", "Unknown")
                 val = row.get("value")
-                val_str = _format_value(val)
-                status_text = row.get('status', status_type)
+                status = row.get("status", "")
                 
-                # Icons
-                prefix = "⚪"
+                # Format Value
+                val_display = ""
+                if val is not None:
+                    if isinstance(val, (int, float)):
+                        val_display = f"({val:,.2f})"
+                    else:
+                        val_display = f"({val})"
+
+                # Icon Logic
+                icon = "⚪"
                 if mode == "fund":
-                    if status_type == "High": prefix = "✅"
-                    elif status_type == "Moderate": prefix = "⚠️"
-                    elif status_type == "Low": prefix = "🔻"
-                else: # tech
-                    if status_type == "Bullish": prefix = "🟢"
-                    elif status_type == "Bearish": prefix = "🔴"
-                    elif status_type == "Neutral": prefix = "⚪"
+                    if group_name == "High": icon = "✅"
+                    elif group_name == "Moderate": icon = "⚠️"
+                    elif group_name == "Low": icon = "🔻"
+                elif mode in ["tech", "price"]:
+                    if group_name == "Bullish": icon = "🟢"
+                    elif group_name == "Bearish": icon = "🔴"
+                    elif group_name == "Neutral": icon = "🔵"
 
-                st.markdown(f"{prefix} **{row['label']}**: {status_text} {val_str}")
-
-
-def _display_list(items: List[Dict[str, Any]], empty_message: str) -> None:
-    if not items:
-        st.info(empty_message)
-        return
-    for item in items:
-        st.markdown(f"- **{item['label']}** ({item['category']})")
-
-
-def _format_value(value: Any) -> str:
-    if value is None: return ""
-    if isinstance(value, (int, float)):
-        if abs(value) > 1000: return f"({value:,.0f})"
-        return f"({value:,.2f})"
-    return f"({value})"
-
+                st.markdown(f"{icon} **{label}** : {status} {val_display}")
 
 if __name__ == "__main__":
     main()

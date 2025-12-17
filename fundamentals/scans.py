@@ -446,8 +446,67 @@ class FundamentalScans:
         return "Premium"
 
     def check_ev_ebitda_trend(self) -> str:
-        # Too complex to calc trend reliably without EV history. Returning placeholder.
-        return "Pending"
+        # Compute a best-effort EV/EBITDA snapshot from available statements.
+        # Inputs are sourced from:
+        # - Market Cap (metadata)
+        # - Debt/Cash (latest balance sheet)
+        # - EBITDA proxy (TTM): sum(last 4 quarters of (Operating Profit + Depreciation))
+
+        market_cap = self.metadata.get("market_cap")
+        if market_cap is None:
+            return "Pending"
+
+        op = self._get_series(self.quarterly, "operating_profit", NUMBER_OF_QUARTERS_IN_YEAR)
+        dep = self._get_series(self.quarterly, "depreciation", NUMBER_OF_QUARTERS_IN_YEAR)
+        if len(op) < NUMBER_OF_QUARTERS_IN_YEAR or len(dep) < NUMBER_OF_QUARTERS_IN_YEAR:
+            return "Pending"
+        if any(v is None for v in op) or any(v is None for v in dep):
+            return "Pending"
+
+        ebitda_ttm = float(sum((float(o) + float(d)) for o, d in zip(op, dep)))
+        if ebitda_ttm <= 0:
+            return "Pending"
+
+        cash = self._get_value(self.balance_sheet, 0, "cash_equivalents")
+        lt = self._get_value(self.balance_sheet, 0, "long_term_borrowings")
+        st = self._get_value(self.balance_sheet, 0, "short_term_borrowings")
+        lease = self._get_value(self.balance_sheet, 0, "lease_liabilities")
+        borrowings = self._get_value(self.balance_sheet, 0, "borrowings")
+
+        # Prefer long+short(+lease) when present; Screener's "borrowings" field can be partial for some companies.
+        debt_long_short = None
+        if lt is not None or st is not None or lease is not None:
+            debt_long_short = float(lt or 0) + float(st or 0) + float(lease or 0)
+
+        total_debt: Optional[float]
+        if debt_long_short is not None and borrowings is not None:
+            total_debt = max(float(borrowings), debt_long_short)
+        elif debt_long_short is not None:
+            total_debt = debt_long_short
+        elif borrowings is not None:
+            total_debt = float(borrowings)
+        else:
+            total_debt = None
+
+        cash_f = float(cash or 0)
+        debt_f = float(total_debt or 0)
+
+        ev = float(market_cap) + debt_f - cash_f
+        ev_ebitda = self._safe_divide(ev, ebitda_ttm)
+        if ev_ebitda is None:
+            return "Pending"
+
+        ev_ebitda = float(ev_ebitda)
+        self._record_value(ev_ebitda)
+
+        # Simple valuation buckets (rule-of-thumb ranges; sector-specific nuances exist).
+        if ev_ebitda < 8:
+            return f"Undervalued (EV/EBITDA {ev_ebitda:.1f}x)"
+        if ev_ebitda < 12:
+            return f"Fair Value (EV/EBITDA {ev_ebitda:.1f}x)"
+        if ev_ebitda < 18:
+            return f"Premium Valuation (EV/EBITDA {ev_ebitda:.1f}x)"
+        return f"Expensive (EV/EBITDA {ev_ebitda:.1f}x)"
 
     # ------------------------------------------------------------------
     # Dividends

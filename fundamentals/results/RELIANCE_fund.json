@@ -1,18 +1,18 @@
 {
     "ticker": "RELIANCE",
-    "timestamp": "2025-12-14T22:21:25.237751",
+    "timestamp": "2025-12-16T22:43:59.990379",
     "industry_context": {
         "industry": "Refineries & Marketing",
-        "current_price": 1556.0,
-        "pe": 27.5,
+        "current_price": 1542.0,
+        "pe": 27.2,
         "industry_pe": 12.0,
-        "market_cap": 2106329.0
+        "market_cap": 2087314.0
     },
     "scan_summary": {
         "High": 9,
-        "Moderate": 7,
+        "Moderate": 8,
         "Low": 5,
-        "Pending": 1
+        "Pending": 0
     },
     "results": {
         "High": [
@@ -100,13 +100,19 @@
                 "label": "P/E Valuation",
                 "category": "Valuation",
                 "status": "Fair Value",
-                "value": 27.5
+                "value": 27.2
             },
             {
                 "label": "PEG Valuation",
                 "category": "Valuation",
                 "status": "Fair Value",
-                "value": 1.3882147513503447
+                "value": 1.3730705904265228
+            },
+            {
+                "label": "EV/EBITDA Trend",
+                "category": "Valuation",
+                "status": "Fair Value (EV/EBITDA 10.2x)",
+                "value": 10.160451132369914
             },
             {
                 "label": "Promoter Holding Status",
@@ -144,17 +150,10 @@
                 "label": "Dividend Yield Status",
                 "category": "Dividends",
                 "status": "Low Yield",
-                "value": 0.35
+                "value": 0.36
             }
         ],
-        "Pending": [
-            {
-                "label": "EV/EBITDA Trend",
-                "category": "Valuation",
-                "status": "Pending",
-                "value": null
-            }
-        ],
+        "Pending": [],
         "Info": [
             {
                 "label": "Current Ratio Status",
@@ -166,13 +165,13 @@
                 "label": "P/E vs Industry",
                 "category": "Valuation",
                 "status": "Premium to Industry",
-                "value": 27.5
+                "value": 27.2
             },
             {
                 "label": "Price to Book Value",
                 "category": "Valuation",
                 "status": "Reasonable",
-                "value": 2.4012345679012346
+                "value": 2.3796296296296298
             },
             {
                 "label": "Dividend Consistency",

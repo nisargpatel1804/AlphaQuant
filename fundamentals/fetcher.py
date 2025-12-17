@@ -5,6 +5,7 @@ Handles HTML parsing, strict URL logic, and financial table extraction.
 from __future__ import annotations
 
 import asyncio
+import sys
 import json
 import os
 import random
@@ -13,9 +14,16 @@ import requests
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Set
 
-# Set event loop policy for Windows compatibility with Playwright
-if asyncio.get_event_loop_policy().__class__.__name__ == 'WindowsSelectorEventLoopPolicy':
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+# Ensure Windows uses the Proactor event loop so subprocesses work
+if sys.platform.startswith("win"):
+    policy = asyncio.get_event_loop_policy()
+    if not isinstance(policy, asyncio.WindowsProactorEventLoopPolicy):
+        try:
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        except Exception:
+            # Best-effort: if this fails, allow the import to proceed and
+            # let runtime errors surface where appropriate.
+            pass
 
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeout

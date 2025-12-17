@@ -10,6 +10,15 @@ import requests
 from bs4 import BeautifulSoup
 from typing import Dict, Set, Optional
 
+# Ensure subprocess support on Windows by preferring the Proactor event loop
+if sys.platform.startswith("win"):
+    policy = asyncio.get_event_loop_policy()
+    if not isinstance(policy, asyncio.WindowsProactorEventLoopPolicy):
+        try:
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        except Exception:
+            pass
+
 from playwright.async_api import async_playwright
 
 # Ensure we can import from the `fundamentals/` folder.

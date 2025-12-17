@@ -160,7 +160,9 @@ class TechnicalFetcher:
         start_date = (datetime.now() - timedelta(days=BETA_LOOKBACK_YEARS * 365 + 30)).strftime('%Y-%m-%d')
         
         try:
-            data = yf.download(BENCHMARK_TICKER, start=start_date, progress=False)
+            # yfinance (Dec 2025): auto_adjust default changed to True.
+            # Make it explicit so behavior + warnings are stable across versions.
+            data = yf.download(BENCHMARK_TICKER, start=start_date, progress=False, auto_adjust=True, threads=False)
             
             if data.empty:
                 raise ValueError(f"Benchmark data for {BENCHMARK_TICKER} is empty.")

@@ -7,8 +7,9 @@ from pathlib import Path
 # --------------------------------------------------------------------------
 # 1. File Path Configuration
 # --------------------------------------------------------------------------
-# Resolves to D:\Projects\ReScanX (or equivalent root)
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Resolves to D:\Projects\ReScanX (project root)
+# Use parents[2] to go from scans/pricescan/config.py -> project root
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Source Directory for Fundamentals (Data Source)
 FUNDAMENTALS_SOURCE_DIR = PROJECT_ROOT / "source"
@@ -22,8 +23,8 @@ TICKER_MAPPING_PATH = FUNDAMENTALS_SOURCE_DIR / "ticker_mapping.json"
 # Note: run_industry_check.py is a script, usually not read as data, but path defined if needed
 INDUSTRY_CHECK_SCRIPT_PATH = FUNDAMENTALS_SOURCE_DIR / "run_industry_check.py"
 
-# Output Directory for Price Scan Results
-PRICESCAN_RESULTS_DIR = PROJECT_ROOT / "scans" / "pricescan" / "results"
+# Output Directory for Price Scan Results (centralized under project RESULTS)
+PRICESCAN_RESULTS_DIR = Path(__file__).resolve().parents[2] / "RESULTS" / "scans" / Path(__file__).resolve().parent.name
 PRICESCAN_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # --------------------------------------------------------------------------

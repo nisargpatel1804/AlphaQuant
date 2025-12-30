@@ -36,8 +36,8 @@ logging.basicConfig(
     datefmt="%H:%M:%S"
 )
 
-# Output directory for local JSON dumps (debugging/verify)
-RESULTS_DIR = PROJECT_ROOT / "scans" / "fundamentals" / "results"
+# Output directory for local JSON dumps (centralized under RESULTS/scans/fundamentals)
+RESULTS_DIR = Path(__file__).resolve().parents[2] / "RESULTS" / "scans" / Path(__file__).resolve().parent.name
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 

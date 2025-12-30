@@ -28,7 +28,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S"
 )
 
-OUTPUT_DIR = PROJECT_ROOT / "scans" / "technicals" / "results"
+OUTPUT_DIR = Path(__file__).resolve().parents[2] / "RESULTS" / "scans" / "technicals"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def load_master_industry_map() -> List[Dict[str, Any]]:

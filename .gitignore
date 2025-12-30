@@ -2,6 +2,7 @@
 .env
 
 # Virtual environment
+venv/
 .venv/
 
 # Python cache

@@ -5,10 +5,10 @@ Defines constants, thresholds, and lookback periods.
 from pathlib import Path
 
 # --------------------------------------------------------------------------
-# Paths
+# Paths (centralized RESULTS folder)
 # --------------------------------------------------------------------------
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-OUTPUT_DIR = PROJECT_ROOT / "scans" / "volumedelivery" / "results"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "RESULTS" / "scans" / Path(__file__).resolve().parent.name
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # --------------------------------------------------------------------------

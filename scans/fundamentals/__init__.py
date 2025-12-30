@@ -12,7 +12,11 @@ from .utils import (
     build_ticker_to_industry_and_pe,
     apply_industry_context
 )
-from .database import SupabaseManager
+try:
+    from .database import SupabaseManager
+except Exception:
+    # SupabaseManager is optional (may not be present in all environments).
+    SupabaseManager = None
 from .main import process_ticker
 
 __all__ = [

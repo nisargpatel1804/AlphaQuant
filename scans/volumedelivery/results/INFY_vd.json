@@ -1,0 +1,57 @@
+{
+    "ticker": "INFY",
+    "timestamp": "2025-12-20 11:12:15",
+    "last_close": 1638.699951171875,
+    "last_volume": 13149023.0,
+    "industry": null,
+    "categories": {
+        "Daily Volume & Delivery": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "High Trade Quantity",
+                    "category": "Daily Volume & Delivery",
+                    "status": "Volume Spike",
+                    "value": 13149023.0,
+                    "action": "Buy",
+                    "condition_met": true
+                },
+                {
+                    "label": "Higher Trade Quantity",
+                    "category": "Daily Volume & Delivery",
+                    "status": "Higher than Prev",
+                    "value": 13149023.0,
+                    "action": "Buy",
+                    "condition_met": true
+                }
+            ]
+        },
+        "Weekly Volume & Delivery": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Higher Trade Quantity",
+                    "category": "Weekly Volume & Delivery",
+                    "status": "Higher than Prev",
+                    "value": 34233760.0,
+                    "action": "Buy",
+                    "condition_met": true
+                }
+            ]
+        },
+        "Monthly Volume & Delivery": {
+            "signal": "Neutral",
+            "scans": []
+        }
+    },
+    "scan_summary": {
+        "triggered_total": 3,
+        "signals": {
+            "Strong Buy": 1,
+            "Buy": 1,
+            "Neutral": 1,
+            "Sell": 0,
+            "Strong Sell": 0
+        }
+    }
+}

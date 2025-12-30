@@ -1,0 +1,714 @@
+{
+    "ticker": "INFY",
+    "timestamp": "2025-12-20 10:50:12",
+    "last_close": 1638.699951171875,
+    "industry": "Computers - Software & Consulting",
+    "categories": {
+        "Momentum": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Momentum (1M)",
+                    "status": "Bullish Zone",
+                    "value": 6.651477459933286,
+                    "min_value": -18.39029832267115,
+                    "max_value": 21.951059937353044,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Momentum (3M)",
+                    "status": "Bullish Zone",
+                    "value": 8.024061013879846,
+                    "min_value": -27.983899367588617,
+                    "max_value": 39.63323892622918,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Momentum (6M)",
+                    "status": "Neutral Zone",
+                    "value": 2.51934843899706,
+                    "min_value": -27.141589810427323,
+                    "max_value": 40.41405408807268,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Momentum (10)",
+                    "status": "Buy",
+                    "value": 22.5,
+                    "min_value": -218.289794921875,
+                    "max_value": 217.2249755859375,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Simple Moving Averages": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Price vs SMA 10",
+                    "status": "Buy",
+                    "value": 1605.8000122070312,
+                    "min_value": 1342.3172973632813,
+                    "max_value": 1907.33857421875,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs SMA 20",
+                    "status": "Buy",
+                    "value": 1586.925,
+                    "min_value": 1343.1363830566406,
+                    "max_value": 1884.4727600097656,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs SMA 30",
+                    "status": "Buy",
+                    "value": 1566.5066691080729,
+                    "min_value": 1351.758809407552,
+                    "max_value": 1883.7030436197917,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs SMA 50",
+                    "status": "Buy",
+                    "value": 1529.98314453125,
+                    "min_value": 1369.2641259765626,
+                    "max_value": 1855.0859448242188,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs SMA 100",
+                    "status": "Buy",
+                    "value": 1493.9874890136718,
+                    "min_value": 1447.760947265625,
+                    "max_value": 1839.480244140625,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs SMA 200",
+                    "status": "Buy",
+                    "value": 1512.9713415527344,
+                    "min_value": 1512.9713415527344,
+                    "max_value": 1759.5072631835938,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Golden/Death Cross",
+                    "status": "Golden Alignment",
+                    "value": null,
+                    "min_value": null,
+                    "max_value": null,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Price Crossover SMA 20",
+                    "status": "No Crossover",
+                    "value": null,
+                    "min_value": null,
+                    "max_value": null,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Exponential Moving Averages": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Price vs EMA 10",
+                    "status": "Buy",
+                    "value": 1606.7437747285876,
+                    "min_value": 1343.6303162226,
+                    "max_value": 1903.7875286720523,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs EMA 20",
+                    "status": "Buy",
+                    "value": 1587.029717680887,
+                    "min_value": 1354.8102363638216,
+                    "max_value": 1878.4258295629381,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs EMA 30",
+                    "status": "Buy",
+                    "value": 1570.1942233876746,
+                    "min_value": 1365.9401079414379,
+                    "max_value": 1871.6156576384035,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs EMA 50",
+                    "status": "Buy",
+                    "value": 1547.1532245029948,
+                    "min_value": 1385.5688695932874,
+                    "max_value": 1857.7099497675774,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs EMA 100",
+                    "status": "Buy",
+                    "value": 1529.5373871904887,
+                    "min_value": 1420.9107070010625,
+                    "max_value": 1813.8212250917593,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Price vs EMA 200",
+                    "status": "Buy",
+                    "value": 1546.710960881655,
+                    "min_value": 1537.4029178166104,
+                    "max_value": 1746.2112202802084,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Hull Moving Average": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Hull Moving Average (9)",
+                    "status": "Near Support/Res",
+                    "value": 1623.0966769748266,
+                    "min_value": 1318.0761352539064,
+                    "max_value": 1948.0556202076098,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Volume Weighted MA": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "VWMA (20)",
+                    "status": "Buy",
+                    "value": 1585.9016891097203,
+                    "min_value": 1340.2033833042053,
+                    "max_value": 1887.0125358252874,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "RSI": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "RSI Zone",
+                    "status": "Neutral",
+                    "value": 68.59117269519092,
+                    "min_value": 0.0,
+                    "max_value": 88.50670725378875,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "RSI Trend",
+                    "status": "Rising",
+                    "value": 68.59117269519092,
+                    "min_value": 0.0,
+                    "max_value": 88.50670725378875,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "CCI": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "CCI Zone",
+                    "status": "Overbought",
+                    "value": 169.31174237814614,
+                    "min_value": -282.024610413533,
+                    "max_value": 309.0315156944288,
+                    "action": "Strong Buy"
+                }
+            ]
+        },
+        "MFI": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "MFI Zone",
+                    "status": "Neutral",
+                    "value": 71.91176985991832,
+                    "min_value": 6.038650206701959,
+                    "max_value": 95.29265842499314,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Stochastic": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Stochastic %K",
+                    "status": "Neutral",
+                    "value": 79.71361371379909,
+                    "min_value": 3.5026349380905835,
+                    "max_value": 95.39068692569572,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Stoch RSI": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Stochastic RSI Fast",
+                    "status": "Neutral",
+                    "value": 56.48159988508036,
+                    "min_value": 0.0,
+                    "max_value": 100.0,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Williams %R": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "Williams %R",
+                    "status": "Overbought",
+                    "value": -16.071493447200982,
+                    "min_value": -98.86941904985818,
+                    "max_value": -1.2090015748961136,
+                    "action": "Strong Buy"
+                }
+            ]
+        },
+        "Awesome Oscillator": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Awesome Oscillator",
+                    "status": "Buy",
+                    "value": 56.35382582720581,
+                    "min_value": -202.67360137698188,
+                    "max_value": 195.05932560315114,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Ultimate Oscillator": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Ultimate Oscillator",
+                    "status": "Neutral",
+                    "value": 63.36647910948685,
+                    "min_value": 26.84827119590429,
+                    "max_value": 69.9962515723907,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Bull/Bear Power": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Bull Bear Power",
+                    "status": "Buy",
+                    "value": 83.42999223114202,
+                    "min_value": -355.45744107916266,
+                    "max_value": 249.2769100891437,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "MACD": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "MACD Level",
+                    "status": "Buy",
+                    "value": 26.15931768847372,
+                    "min_value": -78.6263030835471,
+                    "max_value": 82.01226144518591,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "ADX": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "ADX Trend Strength",
+                    "status": "Buy",
+                    "value": 34.262743056180035,
+                    "min_value": 9.925877933042973,
+                    "max_value": 66.58522369906532,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "SuperTrend": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "SuperTrend Status",
+                    "status": "Buy",
+                    "value": 1565.0634020943498,
+                    "min_value": 0.0,
+                    "max_value": 1935.0060998356553,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Parabolic SAR": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Parabolic SAR",
+                    "status": "Buy",
+                    "value": 1606.743774728588,
+                    "min_value": 1343.6303158670514,
+                    "max_value": 1903.787528672053,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Bollinger Bands": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Bollinger Bands Position",
+                    "status": "Within Bands",
+                    "value": 1642.7556059381434,
+                    "min_value": 1360.8828341442083,
+                    "max_value": 1962.7611721957073,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Bollinger Bands Width",
+                    "status": "Neutral",
+                    "value": 7.036325716482309,
+                    "min_value": 2.6425389575377687,
+                    "max_value": 22.831035929081317,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Ichimoku": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Cloud Status",
+                    "status": "Above Cloud",
+                    "value": 1494.9695123523456,
+                    "min_value": 1348.7370812342576,
+                    "max_value": 1874.3182747566784,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Ichimoku Base Line",
+                    "status": "Neutral",
+                    "value": 1569.0499877929688,
+                    "min_value": 1344.863939680127,
+                    "max_value": 1867.944378341374,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "TK Cross",
+                    "status": "No Cross",
+                    "value": null,
+                    "min_value": null,
+                    "max_value": null,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Beta": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Beta Status",
+                    "status": "Neutral",
+                    "value": 1.1558836921949347,
+                    "min_value": 1.1558836921949347,
+                    "max_value": 1.1558836921949347,
+                    "action": "Neutral"
+                }
+            ]
+        },
+        "Pivots - Classic": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Pivot Classic P",
+                    "status": "Near Level",
+                    "value": 1621.1666666666667,
+                    "min_value": 1323.366704843021,
+                    "max_value": 1929.546328205072,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Classic R1",
+                    "status": "Near Level",
+                    "value": 1635.6333821614585,
+                    "min_value": 1338.4933244131273,
+                    "max_value": 1961.4520346854936,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Classic S1",
+                    "status": "Buy",
+                    "value": 1612.3333333333335,
+                    "min_value": 1295.526450746185,
+                    "max_value": 1915.4146488440842,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Pivot Classic R2",
+                    "status": "Near Level",
+                    "value": 1644.4667154947917,
+                    "min_value": 1345.3034212871921,
+                    "max_value": 1980.6828779647374,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Classic S2",
+                    "status": "Buy",
+                    "value": 1597.8666178385417,
+                    "min_value": 1234.450606570495,
+                    "max_value": 1907.3045830849346,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Pivot Classic R3",
+                    "status": "Near Level",
+                    "value": 1658.9334309895835,
+                    "min_value": 1349.9323885616975,
+                    "max_value": 2012.5885844451589,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Classic S3",
+                    "status": "Buy",
+                    "value": 1589.0332845052085,
+                    "min_value": 1199.4691748643545,
+                    "max_value": 1893.8527068732615,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Pivots - Fibonacci": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Pivot Fibonacci P",
+                    "status": "Near Level",
+                    "value": 1621.1666666666667,
+                    "min_value": 1323.366704843021,
+                    "max_value": 1929.546328205072,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Fibonacci R1",
+                    "status": "Near Level",
+                    "value": 1630.0672853190106,
+                    "min_value": 1338.2340796433757,
+                    "max_value": 1949.0804902132643,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Fibonacci S1",
+                    "status": "Buy",
+                    "value": 1612.266048014323,
+                    "min_value": 1293.8140030654663,
+                    "max_value": 1920.509783905621,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Pivot Fibonacci R2",
+                    "status": "Near Level",
+                    "value": 1635.566096842448,
+                    "min_value": 1340.9336987824383,
+                    "max_value": 1961.1487159565452,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Fibonacci S2",
+                    "status": "Buy",
+                    "value": 1606.7672364908856,
+                    "min_value": 1271.1444859573542,
+                    "max_value": 1915.467021132673,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Pivot Fibonacci R3",
+                    "status": "Near Level",
+                    "value": 1644.4667154947917,
+                    "min_value": 1345.3034212871921,
+                    "max_value": 1980.6828779647374,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Fibonacci S3",
+                    "status": "Buy",
+                    "value": 1597.8666178385417,
+                    "min_value": 1234.450606570495,
+                    "max_value": 1907.3045830849346,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Pivots - Camarilla": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Pivot Camarilla R1",
+                    "status": "Near Level",
+                    "value": 1628.9358866373698,
+                    "min_value": 1332.731808419348,
+                    "max_value": 1946.9087084675527,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla R2",
+                    "status": "Near Level",
+                    "value": 1631.0717244466146,
+                    "min_value": 1333.7803892996337,
+                    "max_value": 1951.5962255288553,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla R3",
+                    "status": "Near Level",
+                    "value": 1633.2075622558593,
+                    "min_value": 1334.8289701799192,
+                    "max_value": 1956.283742590158,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla R4",
+                    "status": "Near Level",
+                    "value": 1639.6150756835937,
+                    "min_value": 1337.9747128207762,
+                    "max_value": 1970.346293774066,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla S1",
+                    "status": "Near Level",
+                    "value": 1624.6642110188802,
+                    "min_value": 1324.5192489091698,
+                    "max_value": 1937.5336743449473,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla S2",
+                    "status": "Near Level",
+                    "value": 1622.5283732096354,
+                    "min_value": 1320.36808766209,
+                    "max_value": 1932.8461572836447,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla S3",
+                    "status": "Near Level",
+                    "value": 1620.3925354003907,
+                    "min_value": 1316.2169264150098,
+                    "max_value": 1928.158640222342,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Camarilla S4",
+                    "status": "Buy",
+                    "value": 1613.9850219726563,
+                    "min_value": 1303.7634426737698,
+                    "max_value": 1914.7954571175349,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Pivots - Woodie": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Pivot Woodie P",
+                    "status": "Near Level",
+                    "value": 1622.5750122070312,
+                    "min_value": 1324.6926311713282,
+                    "max_value": 1932.7150440053665,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Woodie R1",
+                    "status": "Near Level",
+                    "value": 1638.4500732421875,
+                    "min_value": 1337.4027596133476,
+                    "max_value": 1967.7894662860824,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Woodie S1",
+                    "status": "Near Level",
+                    "value": 1615.1500244140625,
+                    "min_value": 1306.0277124449042,
+                    "max_value": 1916.6529165264171,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Woodie R2",
+                    "status": "Near Level",
+                    "value": 1645.8750610351562,
+                    "min_value": 1344.7581388873023,
+                    "max_value": 1983.8515937650318,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Woodie S2",
+                    "status": "Buy",
+                    "value": 1599.2749633789062,
+                    "min_value": 1240.9742096878824,
+                    "max_value": 1905.9205546962041,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Pivot Woodie R3",
+                    "status": "Near Level",
+                    "value": 1661.7501220703125,
+                    "min_value": 1348.8418237619178,
+                    "max_value": 2018.9260160457477,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot Woodie S3",
+                    "status": "Buy",
+                    "value": 1591.8499755859375,
+                    "min_value": 1212.5163810991294,
+                    "max_value": 1891.0846500958005,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Pivots - DeMark": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Pivot DeMark P",
+                    "status": "Near Level",
+                    "value": 1623.375,
+                    "min_value": 1326.5286682401868,
+                    "max_value": 1934.3540390248831,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot DeMark R1",
+                    "status": "Near Level",
+                    "value": 1640.050048828125,
+                    "min_value": 1337.4263594700392,
+                    "max_value": 1971.0674563251157,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Pivot DeMark S1",
+                    "status": "Near Level",
+                    "value": 1616.75,
+                    "min_value": 1294.201825894684,
+                    "max_value": 1921.897792834348,
+                    "action": "Neutral"
+                }
+            ]
+        }
+    }
+}

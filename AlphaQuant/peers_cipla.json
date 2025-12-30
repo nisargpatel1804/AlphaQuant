@@ -1,0 +1,101 @@
+{
+  "company_symbol": "CIPLA",
+  "peers": [
+    {
+      "name": "Sun Pharma.Inds.",
+      "symbol": "SUNPHARMA"
+    },
+    {
+      "name": "Divi's Lab.",
+      "symbol": "DIVISLAB"
+    },
+    {
+      "name": "Torrent Pharma.",
+      "symbol": "TORNTPHARM"
+    },
+    {
+      "name": "Dr Reddy's Labs",
+      "symbol": "DRREDDY"
+    },
+    {
+      "name": "Mankind Pharma",
+      "symbol": "MANKIND"
+    },
+    {
+      "name": "Zydus Lifesci.",
+      "symbol": "ZYDUSLIFE"
+    },
+    {
+      "name": "Lupin",
+      "symbol": "LUPIN"
+    },
+    {
+      "name": "Abbott India",
+      "symbol": "ABBOTINDIA"
+    },
+    {
+      "name": "Alkem Lab",
+      "symbol": "ALKEM"
+    },
+    {
+      "name": "Aurobindo Pharma",
+      "symbol": "AUROPHARMA"
+    },
+    {
+      "name": "Glenmark Pharma.",
+      "symbol": "GLENMARK"
+    },
+    {
+      "name": "Biocon",
+      "symbol": "BIOCON"
+    },
+    {
+      "name": "Glaxosmi. Pharma",
+      "symbol": "GLAXO"
+    },
+    {
+      "name": "Laurus Labs",
+      "symbol": "LAURUSLABS"
+    },
+    {
+      "name": "Cohance Life",
+      "symbol": "COHANCE"
+    },
+    {
+      "name": "Ipca Labs.",
+      "symbol": "IPCALAB"
+    },
+    {
+      "name": "Ajanta Pharma",
+      "symbol": "AJANTPHARM"
+    },
+    {
+      "name": "Gland Pharma",
+      "symbol": "GLAND"
+    },
+    {
+      "name": "Emcure Pharma",
+      "symbol": "EMCURE"
+    },
+    {
+      "name": "J B Chemicals &",
+      "symbol": "JBCHEPHARM"
+    },
+    {
+      "name": "Piramal Pharma",
+      "symbol": "PPLPHARMA"
+    },
+    {
+      "name": "Wockhardt",
+      "symbol": "WOCKPHARMA"
+    },
+    {
+      "name": "Pfizer",
+      "symbol": "PFIZER"
+    },
+    {
+      "name": "ERIS Lifescience",
+      "symbol": "ERIS"
+    }
+  ]
+}

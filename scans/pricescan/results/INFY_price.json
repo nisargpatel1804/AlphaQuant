@@ -1,0 +1,366 @@
+{
+    "ticker": "INFY",
+    "timestamp": "2025-12-20 11:09:26",
+    "last_close": 1638.699951171875,
+    "industry": "Computers - Software & Consulting",
+    "categories": {
+        "Previous Day Breakout": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Closing Above Previous High",
+                    "category": "Previous Day Breakout",
+                    "status": "Bullish",
+                    "value": 1638.699951171875,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Weekly Breakout": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Close Crossing Last Week High",
+                    "category": "Weekly Breakout",
+                    "status": "Bullish",
+                    "value": 1638.699951171875,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Monthly Breakout": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Close Above Last Month High",
+                    "category": "Monthly Breakout",
+                    "status": "Bullish",
+                    "value": 1638.699951171875,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "52 Week Breakout": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "52 Week Range": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "Close in Middle 50% of 52W Range",
+                    "category": "52 Week Range",
+                    "status": "Neutral",
+                    "value": 56.08027092167796,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Neutral"
+                },
+                {
+                    "label": "Moderately High Rise from 52 Week Low",
+                    "category": "52 Week Range",
+                    "status": "Bullish",
+                    "value": 29.089222720150726,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Moderate Fall from 52 Week High",
+                    "category": "52 Week Range",
+                    "status": "Bearish",
+                    "value": 15.00056800080042,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                }
+            ]
+        },
+        "2 Year Breakout": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "5 Year Breakout": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "All Time Breakout": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "1 Day Behaviour": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "2 Days Behaviour": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Making Higher Highs for 2 Days",
+                    "category": "2 Days Behaviour",
+                    "status": "Bullish",
+                    "value": null,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "3 Days Behaviour": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Making Higher Highs for 3 Days",
+                    "category": "3 Days Behaviour",
+                    "status": "Bullish",
+                    "value": null,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Relative Performance": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Outperforming Sector (21D)",
+                    "category": "Relative Performance",
+                    "status": "Bullish",
+                    "value": 5.688662713963777,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Relative Strength (21 Days)": {
+            "signal": "Neutral",
+            "scans": [
+                {
+                    "label": "RS (21D) Positive",
+                    "category": "Relative Strength (21 Days)",
+                    "status": "Bullish",
+                    "value": 7.578697662748635,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "RS (21D) Trending Down",
+                    "category": "Relative Strength (21 Days)",
+                    "status": "Bearish",
+                    "value": 7.578697662748635,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                }
+            ]
+        },
+        "Relative Strength (55 Days)": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "RS (55D) Positive",
+                    "category": "Relative Strength (55 Days)",
+                    "status": "Bullish",
+                    "value": 9.37343397139616,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "RS (55D) Trending Up",
+                    "category": "Relative Strength (55 Days)",
+                    "status": "Bullish",
+                    "value": 9.37343397139616,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "RS (55D) in Strong Zone",
+                    "category": "Relative Strength (55 Days)",
+                    "status": "Bullish",
+                    "value": 9.37343397139616,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Relative Strength (21 Weeks)": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "RS (21W) Crossing 0 From Below",
+                    "category": "Relative Strength (21 Weeks)",
+                    "status": "Bullish",
+                    "value": 4.995760645177505,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "RS (21W) Positive",
+                    "category": "Relative Strength (21 Weeks)",
+                    "status": "Bullish",
+                    "value": 4.995760645177505,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "RS (21W) Trending Up",
+                    "category": "Relative Strength (21 Weeks)",
+                    "status": "Bullish",
+                    "value": 4.995760645177505,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Adaptive & Static RS": {
+            "signal": "Buy",
+            "scans": [
+                {
+                    "label": "Adaptive RS > Static RS",
+                    "category": "Adaptive & Static RS",
+                    "status": "Bullish",
+                    "value": null,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "Adaptive RS Trending Down",
+                    "category": "Adaptive & Static RS",
+                    "status": "Bearish",
+                    "value": null,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                },
+                {
+                    "label": "Static RS Trending Up",
+                    "category": "Adaptive & Static RS",
+                    "status": "Bullish",
+                    "value": null,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "Absolute Return": {
+            "signal": "Strong Buy",
+            "scans": [
+                {
+                    "label": "1W Return (Positive)",
+                    "category": "Absolute Return",
+                    "status": "Bullish",
+                    "value": 2.5341009408931248,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "1M Return (Positive)",
+                    "category": "Absolute Return",
+                    "status": "Bullish",
+                    "value": 6.651477459933286,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "3M Return (Positive)",
+                    "category": "Absolute Return",
+                    "status": "Bullish",
+                    "value": 8.024061013879846,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "6M Return (Positive)",
+                    "category": "Absolute Return",
+                    "status": "Bullish",
+                    "value": 2.51934843899706,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                },
+                {
+                    "label": "1Y Return (Negative)",
+                    "category": "Absolute Return",
+                    "status": "Bearish",
+                    "value": -14.641498209339787,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                },
+                {
+                    "label": "2Y Return (Positive)",
+                    "category": "Absolute Return",
+                    "status": "Bullish",
+                    "value": 20.120662645950492,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Buy"
+                }
+            ]
+        },
+        "VWAP Scans": {
+            "signal": "Strong Sell",
+            "scans": [
+                {
+                    "label": "Close Crossing Daily VWAP (From Above)",
+                    "category": "VWAP Scans",
+                    "status": "Bearish",
+                    "value": 1641.1333414713542,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                },
+                {
+                    "label": "Close Below Daily VWAP",
+                    "category": "VWAP Scans",
+                    "status": "Bearish",
+                    "value": 1641.1333414713542,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                },
+                {
+                    "label": "Close Near Daily VWAP (Resistance)",
+                    "category": "VWAP Scans",
+                    "status": "Bearish",
+                    "value": 1641.1333414713542,
+                    "meta": {},
+                    "condition_met": true,
+                    "action": "Sell"
+                }
+            ]
+        }
+    },
+    "scan_summary": {
+        "expected_total": 117,
+        "implemented_total": 117,
+        "triggered_total": 29,
+        "signals": {
+            "Strong Buy": 3,
+            "Buy": 7,
+            "Neutral": 7,
+            "Sell": 0,
+            "Strong Sell": 1
+        }
+    }
+}

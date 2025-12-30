@@ -29,7 +29,7 @@ from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeout
 
 # Import shared constants from utils
-from .utils import USER_AGENTS
+from scans.fundamentals.utils import USER_AGENTS
 
 # ----------------------------------------------------------------------
 # Key Mapping Constants

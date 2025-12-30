@@ -14,10 +14,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .fetcher import StrikeOptionsFetcher
-from .scans import StrikeOptionsScanner
-from .models import TickerStrikeData
-from .config import OUTPUT_DIR
+from scans.strikeoptions.fetcher import StrikeOptionsFetcher
+from scans.strikeoptions.scans import StrikeOptionsScanner
+from scans.strikeoptions.models import TickerStrikeData
+from scans.strikeoptions.config import OUTPUT_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -91,8 +91,16 @@ class StrikeOptionsEngine:
 
 if __name__ == "__main__":
     # Simple test execution
+    import argparse
+    parser = argparse.ArgumentParser(description="Strike Options Scan Engine")
+    parser.add_argument("ticker", nargs='?', type=str, help="Ticker to scan")
+    parser.add_argument("--ticker", type=str, help="Ticker to scan")
+    args = parser.parse_args()
+
+    ticker = args.ticker or "RELIANCE"
+
     engine = StrikeOptionsEngine()
-    result = engine.process_ticker("RELIANCE")
+    result = engine.process_ticker(ticker)
     if result:
         engine.save_results(result)
         print(f"Test complete. Expiry: {result.expiry_date}")

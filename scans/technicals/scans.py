@@ -7,7 +7,7 @@ import numpy as np
 from typing import Dict, List, Any, Tuple, Optional
 from dataclasses import dataclass
 
-from .config import (
+from scans.technicals.config import (
     NEARING_THRESHOLD_PCT,
     MOMENTUM_BULLISH_THRESHOLD, MOMENTUM_BEARISH_THRESHOLD,
     RSI_OVERBOUGHT, RSI_OVERSOLD, RSI_BULLISH_ZONE,

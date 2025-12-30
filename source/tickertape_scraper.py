@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -12,6 +13,25 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 
+
+
+def _repo_root() -> str:
+    """Find the repository root (where top-level app.py/requirements.txt/RESULTS live).
+
+    This walks up from the module directory and prefers a directory containing
+    `app.py`, `requirements.txt`, `.git` or an existing `RESULTS` folder.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    cur = here
+    for _ in range(10):
+        if os.path.exists(os.path.join(cur, "app.py")) or os.path.exists(os.path.join(cur, "requirements.txt")) or os.path.exists(os.path.join(cur, "RESULTS")) or os.path.exists(os.path.join(cur, ".git")):
+            return cur
+        parent = os.path.abspath(os.path.join(cur, ".."))
+        if parent == cur:
+            break
+        cur = parent
+    # Fallback to workspace_root if nothing else found
+    return os.path.abspath(os.path.join(here, ".."))
 
 
 # No per-stock scraping; only global endpoints are used.
@@ -370,7 +390,16 @@ def main(argv: List[str]) -> int:
     p.add_argument("--delay", type=float, default=0.8, help="Sleep seconds between requests")
     args = p.parse_args(argv)
     data = scrape_tickertape(delay=args.delay)
-    print(json.dumps(data, indent=args.indent))
+    
+    # Auto-save to source/tickertape.json
+    repo = _repo_root()
+    out_dir = os.path.join(repo, "source")
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, "tickertape.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=args.indent, ensure_ascii=False)
+    
+    print(f"Saved to {out_path}")
     return 0
 
 

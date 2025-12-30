@@ -116,9 +116,43 @@ def _fetch_with_retries(url: str, session: Optional[requests.Session] = None, ma
 
 
 def _workspace_root() -> str:
-    # scrapers/shared/ -> go up two levels to workspace
+    # Walk up directories looking for a repository root indicator such as
+    # `stock_links.json` or `app.py`. This makes the script resilient when
+    # placed under `AlphaQuant/` or `scrapers/shared/` layouts.
     here = os.path.dirname(os.path.abspath(__file__))
-    return os.path.abspath(os.path.join(here, "..", ".."))
+    cur = here
+    for _ in range(6):
+        # Prefer an explicit stock_links.json at this level
+        if os.path.exists(os.path.join(cur, "stock_links.json")):
+            return cur
+        # Accept repo root indicators as fallback
+        if os.path.exists(os.path.join(cur, "app.py")) or os.path.exists(os.path.join(cur, "requirements.txt")):
+            return cur
+        parent = os.path.abspath(os.path.join(cur, ".."))
+        if parent == cur:
+            break
+        cur = parent
+    # Last resort: return the parent directory of this file
+    return os.path.abspath(os.path.join(here, ".."))
+
+
+def _repo_root() -> str:
+    """Find the repository root (where top-level app.py/requirements.txt/RESULTS live).
+
+    This walks up from the module directory and prefers a directory containing
+    `app.py`, `requirements.txt`, `.git` or an existing `RESULTS` folder.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    cur = here
+    for _ in range(10):
+        if os.path.exists(os.path.join(cur, "app.py")) or os.path.exists(os.path.join(cur, "requirements.txt")) or os.path.exists(os.path.join(cur, "RESULTS")) or os.path.exists(os.path.join(cur, ".git")):
+            return cur
+        parent = os.path.abspath(os.path.join(cur, ".."))
+        if parent == cur:
+            break
+        cur = parent
+    # Fallback to workspace_root if nothing else found
+    return _workspace_root()
 
 
 def _stock_links_path() -> str:
@@ -261,12 +295,14 @@ def scrape_single(url: str, kind: str, id_or_symbol: Optional[str] = None, sessi
 
 
 def save_result(res: SeasonalityResult, symbol_hint: Optional[str] = None) -> str:
-    # Special case: RELIANCE goes to data/shared/peers_reliance.json
+    # Special case: RELIANCE goes to RESULTS/AlphaQuant/seasonality_reliance.json
     base = (symbol_hint or (res.id_or_symbol or "UNKNOWN")).upper()
     if base == "RELIANCE":
-        out_dir = os.path.join(_workspace_root(), "data", "shared")
+        # Save RELIANCE seasonality into the top-level RESULTS/scans/AlphaQuant folder
+        repo = _repo_root()
+        out_dir = os.path.join(repo, "RESULTS", "scans", "AlphaQuant")
         _ensure_dir(out_dir)
-        path = os.path.join(out_dir, "peers_reliance.json")
+        path = os.path.join(out_dir, "seasonality_reliance.json")
     elif res.kind == "index":
         out_dir = _output_dir()
         _ensure_dir(out_dir)
@@ -372,8 +408,10 @@ def scrape_all_from_stock_links(session: Optional[requests.Session] = None) -> L
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Moneycontrol Seasonality scraper")
+    # Allow positional symbols for convenience: `python3 seasonality.py RELIANCE`
+    parser.add_argument("symbols", nargs="*", help="Positional ticker symbols (e.g., RELIANCE)")
     parser.add_argument("--ids", type=str, default="", help="Comma-separated Moneycontrol IDs (e.g., RI,TEL,C)")
-    parser.add_argument("--symbols", type=str, default="", help="Comma-separated symbols present in stock_links.json")
+    parser.add_argument("--symbols-flag", "--symbols", dest="symbols_flag", type=str, default="", help="Comma-separated symbols present in stock_links.json")
     parser.add_argument("--all", action="store_true", help="Scrape all symbols from stock_links.json")
     parser.add_argument("--sleep", type=float, default=0.3, help="Sleep seconds between requests")
     args = parser.parse_args(argv)
@@ -381,8 +419,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     sess = requests.Session()
     saved_paths: List[str] = []
 
+    # Normalize symbols: combine positional and flag-based inputs
+    positional_syms = [s.strip().upper() for s in (args.symbols or []) if s and s.strip()]
+    flag_syms = [s.strip().upper() for s in args.symbols_flag.split(",") if s.strip()] if getattr(args, "symbols_flag", "") else []
+    combined_symbols = positional_syms + flag_syms
+
     # Default behavior: index + provided samples + all stock_links
-    if not args.ids and not args.symbols and not args.all:
+    if not args.ids and not combined_symbols and not args.all:
         saved_paths.extend(scrape_index_and_samples(session=sess))
         saved_paths.extend(scrape_all_from_stock_links(session=sess))
     else:
@@ -395,9 +438,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                 res = scrape_single(url, kind="stock", id_or_symbol=sid, session=sess)
                 saved_paths.append(save_result(res, symbol_hint=id_to_symbol.get(sid)))
                 time.sleep(args.sleep)
-        if args.symbols:
-            symbols = [x.strip().upper() for x in args.symbols.split(",") if x.strip()]
-            saved_paths.extend(scrape_by_symbols(symbols, session=sess))
+        if combined_symbols:
+            saved_paths.extend(scrape_by_symbols(combined_symbols, session=sess))
         if args.all:
             saved_paths.extend(scrape_all_from_stock_links(session=sess))
 

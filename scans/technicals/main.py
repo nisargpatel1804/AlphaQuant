@@ -16,10 +16,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .fetcher import TechnicalFetcher
-from .indicators import TechnicalIndicators
-from .scans import TechnicalScans
-from ..fundamentals.utils import get_nifty_tickers
+from scans.technicals.fetcher import TechnicalFetcher
+from scans.technicals.indicators import TechnicalIndicators
+from scans.technicals.scans import TechnicalScans
+from scans.fundamentals.utils import get_nifty_tickers
 
 # Configure logging
 logging.basicConfig(
@@ -115,6 +115,7 @@ def save_results(ticker: str, results: Dict[str, Any]):
 
 def main():
     parser = argparse.ArgumentParser(description="ReScanX Technical Analysis Engine")
+    parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker")
     parser.add_argument("--limit", type=int, help="Limit the number of stocks to process")
     parser.add_argument("--industry", type=str, help="Run for a specific industry")

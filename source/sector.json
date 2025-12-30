@@ -1,0 +1,2309 @@
+{
+  "sector_analysis": {
+    "total_sectors": 40,
+    "sectors": [
+      {
+        "name": "Banks",
+        "trend": "Neutral",
+        "market_cap_cr": 5747056,
+        "market_cap_change_pct": 0.59,
+        "advance_count": 28,
+        "decline_count": 11,
+        "industries_count": 2,
+        "stocks_count": 40
+      },
+      {
+        "name": "Finance",
+        "trend": "Bearish",
+        "market_cap_cr": 4487105,
+        "market_cap_change_pct": -0.14,
+        "advance_count": 230,
+        "decline_count": 264,
+        "industries_count": 8,
+        "stocks_count": 520
+      },
+      {
+        "name": "Software & IT Services",
+        "trend": "Bearish",
+        "market_cap_cr": 4283917,
+        "market_cap_change_pct": -0.67,
+        "advance_count": 106,
+        "decline_count": 167,
+        "industries_count": 7,
+        "stocks_count": 282
+      },
+      {
+        "name": "Automobile & Ancillaries",
+        "trend": "Bearish",
+        "market_cap_cr": 3828382,
+        "market_cap_change_pct": 0.62,
+        "advance_count": 92,
+        "decline_count": 115,
+        "industries_count": 34,
+        "stocks_count": 208
+      },
+      {
+        "name": "Oil & Gas",
+        "trend": "Bearish",
+        "market_cap_cr": 3033477,
+        "market_cap_change_pct": -0.33,
+        "advance_count": 8,
+        "decline_count": 15,
+        "industries_count": 2,
+        "stocks_count": 23
+      },
+      {
+        "name": "Healthcare",
+        "trend": "Bearish",
+        "market_cap_cr": 2959823,
+        "market_cap_change_pct": -0.44,
+        "advance_count": 125,
+        "decline_count": 164,
+        "industries_count": 5,
+        "stocks_count": 295
+      },
+      {
+        "name": "Metals & Mining",
+        "trend": "Neutral",
+        "market_cap_cr": 2471206,
+        "market_cap_change_pct": 1.48,
+        "advance_count": 119,
+        "decline_count": 109,
+        "industries_count": 10,
+        "stocks_count": 235
+      },
+      {
+        "name": "FMCG",
+        "trend": "Bearish",
+        "market_cap_cr": 1996735,
+        "market_cap_change_pct": -0.36,
+        "advance_count": 68,
+        "decline_count": 74,
+        "industries_count": 5,
+        "stocks_count": 147
+      },
+      {
+        "name": "Telecom",
+        "trend": "Bearish",
+        "market_cap_cr": 1772817,
+        "market_cap_change_pct": 0.5,
+        "advance_count": 22,
+        "decline_count": 20,
+        "industries_count": 4,
+        "stocks_count": 42
+      },
+      {
+        "name": "Capital Goods",
+        "trend": "Bearish",
+        "market_cap_cr": 1769033,
+        "market_cap_change_pct": -0.16,
+        "advance_count": 139,
+        "decline_count": 167,
+        "industries_count": 9,
+        "stocks_count": 314
+      },
+      {
+        "name": "Power",
+        "trend": "Bearish",
+        "market_cap_cr": 1636388,
+        "market_cap_change_pct": 0.44,
+        "advance_count": 14,
+        "decline_count": 27,
+        "industries_count": 1,
+        "stocks_count": 43
+      },
+      {
+        "name": "Chemicals",
+        "trend": "Bearish",
+        "market_cap_cr": 1584305,
+        "market_cap_change_pct": -0.72,
+        "advance_count": 113,
+        "decline_count": 171,
+        "industries_count": 10,
+        "stocks_count": 289
+      },
+      {
+        "name": "Infrastructure",
+        "trend": "Bearish",
+        "market_cap_cr": 1417158,
+        "market_cap_change_pct": 0.09,
+        "advance_count": 62,
+        "decline_count": 80,
+        "industries_count": 9,
+        "stocks_count": 145
+      },
+      {
+        "name": "Insurance",
+        "trend": "Neutral",
+        "market_cap_cr": 1328122,
+        "market_cap_change_pct": 0.3,
+        "advance_count": 6,
+        "decline_count": 5,
+        "industries_count": 3,
+        "stocks_count": 11
+      },
+      {
+        "name": "Diversified",
+        "trend": "Bearish",
+        "market_cap_cr": 1022165,
+        "market_cap_change_pct": -0.3,
+        "advance_count": 16,
+        "decline_count": 28,
+        "industries_count": 1,
+        "stocks_count": 44
+      },
+      {
+        "name": "Real Estate",
+        "trend": "Bearish",
+        "market_cap_cr": 992064,
+        "market_cap_change_pct": -0.67,
+        "advance_count": 51,
+        "decline_count": 102,
+        "industries_count": 4,
+        "stocks_count": 159
+      },
+      {
+        "name": "Construction Materials",
+        "trend": "Bearish",
+        "market_cap_cr": 942713,
+        "market_cap_change_pct": -0.43,
+        "advance_count": 50,
+        "decline_count": 66,
+        "industries_count": 7,
+        "stocks_count": 116
+      },
+      {
+        "name": "Aviation",
+        "trend": "Bearish",
+        "market_cap_cr": 891646,
+        "market_cap_change_pct": -0.8,
+        "advance_count": 7,
+        "decline_count": 13,
+        "industries_count": 2,
+        "stocks_count": 20
+      },
+      {
+        "name": "Retailing",
+        "trend": "Bearish",
+        "market_cap_cr": 664451,
+        "market_cap_change_pct": -0.69,
+        "advance_count": 19,
+        "decline_count": 30,
+        "industries_count": 3,
+        "stocks_count": 51
+      },
+      {
+        "name": "Miscellaneous",
+        "trend": "Bearish",
+        "market_cap_cr": 610371,
+        "market_cap_change_pct": -0.22,
+        "advance_count": 78,
+        "decline_count": 103,
+        "industries_count": 9,
+        "stocks_count": 188
+      },
+      {
+        "name": "Diamond  &  Jewellery",
+        "trend": "Bearish",
+        "market_cap_cr": 492078,
+        "market_cap_change_pct": -0.39,
+        "advance_count": 20,
+        "decline_count": 38,
+        "industries_count": 1,
+        "stocks_count": 60
+      },
+      {
+        "name": "Consumer Durables",
+        "trend": "Bearish",
+        "market_cap_cr": 448089,
+        "market_cap_change_pct": -1.1,
+        "advance_count": 26,
+        "decline_count": 33,
+        "industries_count": 6,
+        "stocks_count": 61
+      },
+      {
+        "name": "Trading",
+        "trend": "Bearish",
+        "market_cap_cr": 378015,
+        "market_cap_change_pct": 0.11,
+        "advance_count": 70,
+        "decline_count": 89,
+        "industries_count": 1,
+        "stocks_count": 169
+      },
+      {
+        "name": "Hospitality",
+        "trend": "Bearish",
+        "market_cap_cr": 373009,
+        "market_cap_change_pct": -0.58,
+        "advance_count": 41,
+        "decline_count": 40,
+        "industries_count": 4,
+        "stocks_count": 86
+      },
+      {
+        "name": "Agri",
+        "trend": "Bearish",
+        "market_cap_cr": 341881,
+        "market_cap_change_pct": -0.39,
+        "advance_count": 74,
+        "decline_count": 84,
+        "industries_count": 10,
+        "stocks_count": 168
+      },
+      {
+        "name": "Textiles",
+        "trend": "Bearish",
+        "market_cap_cr": 296966,
+        "market_cap_change_pct": -0.59,
+        "advance_count": 133,
+        "decline_count": 172,
+        "industries_count": 6,
+        "stocks_count": 319
+      },
+      {
+        "name": "Electricals",
+        "trend": "Bearish",
+        "market_cap_cr": 285070,
+        "market_cap_change_pct": -0.47,
+        "advance_count": 28,
+        "decline_count": 39,
+        "industries_count": 2,
+        "stocks_count": 69
+      },
+      {
+        "name": "Industrial Gases & Fuels",
+        "trend": "Bearish",
+        "market_cap_cr": 250286,
+        "market_cap_change_pct": -0.22,
+        "advance_count": 6,
+        "decline_count": 10,
+        "industries_count": 3,
+        "stocks_count": 16
+      },
+      {
+        "name": "Alcohol",
+        "trend": "Bearish",
+        "market_cap_cr": 238896,
+        "market_cap_change_pct": 0.22,
+        "advance_count": 7,
+        "decline_count": 15,
+        "industries_count": 1,
+        "stocks_count": 22
+      },
+      {
+        "name": "Logistics",
+        "trend": "Bearish",
+        "market_cap_cr": 226009,
+        "market_cap_change_pct": -0.11,
+        "advance_count": 34,
+        "decline_count": 57,
+        "industries_count": 5,
+        "stocks_count": 97
+      },
+      {
+        "name": "Plastic Products",
+        "trend": "Bearish",
+        "market_cap_cr": 180395,
+        "market_cap_change_pct": -0.07,
+        "advance_count": 49,
+        "decline_count": 53,
+        "industries_count": 9,
+        "stocks_count": 104
+      },
+      {
+        "name": "Ship Building",
+        "trend": "Bearish",
+        "market_cap_cr": 169995,
+        "market_cap_change_pct": -2.53,
+        "advance_count": 1,
+        "decline_count": 4,
+        "industries_count": 1,
+        "stocks_count": 5
+      },
+      {
+        "name": "Media & Entertainment",
+        "trend": "Bearish",
+        "market_cap_cr": 103985,
+        "market_cap_change_pct": -0.1,
+        "advance_count": 31,
+        "decline_count": 47,
+        "industries_count": 4,
+        "stocks_count": 87
+      },
+      {
+        "name": "ETF",
+        "trend": "Neutral",
+        "market_cap_cr": 74014,
+        "market_cap_change_pct": 0.3,
+        "advance_count": 33,
+        "decline_count": 47,
+        "industries_count": 3,
+        "stocks_count": 83
+      },
+      {
+        "name": "Footwear",
+        "trend": "Bearish",
+        "market_cap_cr": 70719,
+        "market_cap_change_pct": 1.17,
+        "advance_count": 9,
+        "decline_count": 4,
+        "industries_count": 1,
+        "stocks_count": 13
+      },
+      {
+        "name": "Manufacturing",
+        "trend": "Neutral",
+        "market_cap_cr": 53072,
+        "market_cap_change_pct": -0.73,
+        "advance_count": 2,
+        "decline_count": 6,
+        "industries_count": 2,
+        "stocks_count": 8
+      },
+      {
+        "name": "Containers & Packaging",
+        "trend": "Bearish",
+        "market_cap_cr": 26345,
+        "market_cap_change_pct": -0.52,
+        "advance_count": 15,
+        "decline_count": 31,
+        "industries_count": 5,
+        "stocks_count": 50
+      },
+      {
+        "name": "Paper",
+        "trend": "Bearish",
+        "market_cap_cr": 21748,
+        "market_cap_change_pct": -0.67,
+        "advance_count": 23,
+        "decline_count": 24,
+        "industries_count": 2,
+        "stocks_count": 49
+      },
+      {
+        "name": "Plastics Products",
+        "trend": "Very Bullish",
+        "market_cap_cr": 2055,
+        "market_cap_change_pct": 1.26,
+        "advance_count": 1,
+        "decline_count": null,
+        "industries_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Photographic Products",
+        "trend": "Bearish",
+        "market_cap_cr": 1687,
+        "market_cap_change_pct": -0.14,
+        "advance_count": 2,
+        "decline_count": 2,
+        "industries_count": 1,
+        "stocks_count": 4
+      }
+    ],
+    "sectoral_indices": [
+      {
+        "name": "Nifty Capital Market",
+        "price": 4595.85,
+        "change_pct": -0.84
+      },
+      {
+        "name": "Nifty India Defence",
+        "price": 7644.35,
+        "change_pct": -1.08
+      },
+      {
+        "name": "Nifty 50",
+        "price": 25938.85,
+        "change_pct": -0.01
+      },
+      {
+        "name": "Nifty Bank",
+        "price": 59171.25,
+        "change_pct": 0.41
+      },
+      {
+        "name": "Nifty Midcap 100",
+        "price": 59914.25,
+        "change_pct": -0.15
+      },
+      {
+        "name": "Nifty Next 50",
+        "price": 68667.75,
+        "change_pct": 0.04
+      },
+      {
+        "name": "Nifty 100",
+        "price": 26482.55,
+        "change_pct": 0.0
+      },
+      {
+        "name": "Nifty 200",
+        "price": 14416.45,
+        "change_pct": -0.03
+      }
+    ]
+  },
+  "industry_analysis": {
+    "total_sectors": 201,
+    "sectors": [
+      {
+        "name": "Bank - Private",
+        "trend": "Neutral",
+        "market_cap_cr": 3922902,
+        "market_cap_change_pct": 0.13,
+        "advance_count": 16,
+        "decline_count": 11,
+        "stocks_count": 139
+      },
+      {
+        "name": "IT Services & Consulting",
+        "trend": "Bearish",
+        "market_cap_cr": 3426456,
+        "market_cap_change_pct": -0.57,
+        "advance_count": 58,
+        "decline_count": 76,
+        "stocks_count": 15
+      },
+      {
+        "name": "Oil Exploration and Production",
+        "trend": "Neutral",
+        "market_cap_cr": 2505788,
+        "market_cap_change_pct": -0.28,
+        "advance_count": 7,
+        "decline_count": 8,
+        "stocks_count": 204
+      },
+      {
+        "name": "Pharmaceuticals & Drugs",
+        "trend": "Bearish",
+        "market_cap_cr": 2264512,
+        "market_cap_change_pct": -0.31,
+        "advance_count": 84,
+        "decline_count": 115,
+        "stocks_count": 200
+      },
+      {
+        "name": "Finance - NBFC",
+        "trend": "Bearish",
+        "market_cap_cr": 2075667,
+        "market_cap_change_pct": -0.17,
+        "advance_count": 88,
+        "decline_count": 100,
+        "stocks_count": 12
+      },
+      {
+        "name": "Bank - Public",
+        "trend": "Neutral",
+        "market_cap_cr": 1824154,
+        "market_cap_change_pct": 1.59,
+        "advance_count": 12,
+        "decline_count": null,
+        "stocks_count": 43
+      },
+      {
+        "name": "Power Generation/Distribution",
+        "trend": "Bearish",
+        "market_cap_cr": 1636388,
+        "market_cap_change_pct": 0.44,
+        "advance_count": 14,
+        "decline_count": 27,
+        "stocks_count": 139
+      },
+      {
+        "name": "Iron & Steel",
+        "trend": "Neutral",
+        "market_cap_cr": 1375432,
+        "market_cap_change_pct": 1.71,
+        "advance_count": 72,
+        "decline_count": 62,
+        "stocks_count": 5
+      },
+      {
+        "name": "Telecommunication - Service Provider",
+        "trend": "Bearish",
+        "market_cap_cr": 1360891,
+        "market_cap_change_pct": 0.87,
+        "advance_count": 4,
+        "decline_count": 1,
+        "stocks_count": 38
+      },
+      {
+        "name": "Household & Personal Products",
+        "trend": "Neutral",
+        "market_cap_cr": 1142640,
+        "market_cap_change_pct": -0.24,
+        "advance_count": 17,
+        "decline_count": 21,
+        "stocks_count": 201
+      },
+      {
+        "name": "Finance - Investment",
+        "trend": "Bearish",
+        "market_cap_cr": 1108320,
+        "market_cap_change_pct": 0.38,
+        "advance_count": 93,
+        "decline_count": 98,
+        "stocks_count": 87
+      },
+      {
+        "name": "Electric Equipment",
+        "trend": "Bearish",
+        "market_cap_cr": 1044797,
+        "market_cap_change_pct": -0.48,
+        "advance_count": 36,
+        "decline_count": 47,
+        "stocks_count": 44
+      },
+      {
+        "name": "Diversified",
+        "trend": "Bearish",
+        "market_cap_cr": 1022165,
+        "market_cap_change_pct": -0.3,
+        "advance_count": 16,
+        "decline_count": 28,
+        "stocks_count": 6
+      },
+      {
+        "name": "Life & Health Insurance",
+        "trend": "Bearish",
+        "market_cap_cr": 1020352,
+        "market_cap_change_pct": 0.26,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 41
+      },
+      {
+        "name": "Cement",
+        "trend": "Bearish",
+        "market_cap_cr": 807071,
+        "market_cap_change_pct": -0.71,
+        "advance_count": 17,
+        "decline_count": 24,
+        "stocks_count": 86
+      },
+      {
+        "name": "Construction - Residential & Commercial Complexes",
+        "trend": "Bearish",
+        "market_cap_cr": 726653,
+        "market_cap_change_pct": -0.78,
+        "advance_count": 31,
+        "decline_count": 54,
+        "stocks_count": 4
+      },
+      {
+        "name": "Automobile - Passenger Cars",
+        "trend": "Neutral",
+        "market_cap_cr": 711531,
+        "market_cap_change_pct": 0.24,
+        "advance_count": 3,
+        "decline_count": 1,
+        "stocks_count": 16
+      },
+      {
+        "name": "Aerospace & Defence",
+        "trend": "Bearish",
+        "market_cap_cr": 692589,
+        "market_cap_change_pct": -0.66,
+        "advance_count": 5,
+        "decline_count": 11,
+        "stocks_count": 37
+      },
+      {
+        "name": "Retailing",
+        "trend": "Bearish",
+        "market_cap_cr": 631721,
+        "market_cap_change_pct": -0.71,
+        "advance_count": 11,
+        "decline_count": 24,
+        "stocks_count": 99
+      },
+      {
+        "name": "Consumer Food",
+        "trend": "Bearish",
+        "market_cap_cr": 628585,
+        "market_cap_change_pct": -0.38,
+        "advance_count": 47,
+        "decline_count": 47,
+        "stocks_count": 17
+      },
+      {
+        "name": "Online Services",
+        "trend": "Bearish",
+        "market_cap_cr": 617684,
+        "market_cap_change_pct": -1.08,
+        "advance_count": 5,
+        "decline_count": 12,
+        "stocks_count": 17
+      },
+      {
+        "name": "Engineering & Construction",
+        "trend": "Bearish",
+        "market_cap_cr": 605501,
+        "market_cap_change_pct": 0.23,
+        "advance_count": 10,
+        "decline_count": 7,
+        "stocks_count": 24
+      },
+      {
+        "name": "Metals - Non Ferrous",
+        "trend": "Bullish",
+        "market_cap_cr": 588225,
+        "market_cap_change_pct": 2.17,
+        "advance_count": 13,
+        "decline_count": 11,
+        "stocks_count": 59
+      },
+      {
+        "name": "Hospital & Healthcare Services",
+        "trend": "Bearish",
+        "market_cap_cr": 553663,
+        "market_cap_change_pct": -0.98,
+        "advance_count": 25,
+        "decline_count": 34,
+        "stocks_count": 9
+      },
+      {
+        "name": "Automobile - 2 & 3 Wheelers",
+        "trend": "Bearish",
+        "market_cap_cr": 548920,
+        "market_cap_change_pct": 2.08,
+        "advance_count": 4,
+        "decline_count": 5,
+        "stocks_count": 8
+      },
+      {
+        "name": "Refineries",
+        "trend": "Bearish",
+        "market_cap_cr": 527689,
+        "market_cap_change_pct": -0.62,
+        "advance_count": 1,
+        "decline_count": 7,
+        "stocks_count": 60
+      },
+      {
+        "name": "Diamond  &  Jewellery",
+        "trend": "Bearish",
+        "market_cap_cr": 492078,
+        "market_cap_change_pct": -0.39,
+        "advance_count": 20,
+        "decline_count": 38,
+        "stocks_count": 9
+      },
+      {
+        "name": "Transport Infrastructure",
+        "trend": "Neutral",
+        "market_cap_cr": 464092,
+        "market_cap_change_pct": 0.51,
+        "advance_count": 7,
+        "decline_count": 2,
+        "stocks_count": 1
+      },
+      {
+        "name": "Automobile - Auto & Truck Manufacturers",
+        "trend": "Very Bullish",
+        "market_cap_cr": 455169,
+        "market_cap_change_pct": 1.9,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 139
+      },
+      {
+        "name": "Engineering - Industrial Equipments",
+        "trend": "Bearish",
+        "market_cap_cr": 440378,
+        "market_cap_change_pct": 0.71,
+        "advance_count": 57,
+        "decline_count": 80,
+        "stocks_count": 28
+      },
+      {
+        "name": "Finance - Others",
+        "trend": "Bearish",
+        "market_cap_cr": 394015,
+        "market_cap_change_pct": -0.21,
+        "advance_count": 13,
+        "decline_count": 14,
+        "stocks_count": 169
+      },
+      {
+        "name": "Trading",
+        "trend": "Bearish",
+        "market_cap_cr": 378015,
+        "market_cap_change_pct": 0.11,
+        "advance_count": 70,
+        "decline_count": 89,
+        "stocks_count": 10
+      },
+      {
+        "name": "Paints",
+        "trend": "Bearish",
+        "market_cap_cr": 368386,
+        "market_cap_change_pct": -0.98,
+        "advance_count": 5,
+        "decline_count": 5,
+        "stocks_count": 2
+      },
+      {
+        "name": "Automobile - LCVS/ HVCS",
+        "trend": "Neutral",
+        "market_cap_cr": 330495,
+        "market_cap_change_pct": -0.31,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 57
+      },
+      {
+        "name": "Finance - Stock Broking",
+        "trend": "Bearish",
+        "market_cap_cr": 323484,
+        "market_cap_change_pct": -1.13,
+        "advance_count": 23,
+        "decline_count": 32,
+        "stocks_count": 10
+      },
+      {
+        "name": "Finance Term Lending",
+        "trend": "Neutral",
+        "market_cap_cr": 312486,
+        "market_cap_change_pct": -0.88,
+        "advance_count": 4,
+        "decline_count": 6,
+        "stocks_count": 65
+      },
+      {
+        "name": "Hotel, Resort & Restaurants",
+        "trend": "Bearish",
+        "market_cap_cr": 310341,
+        "market_cap_change_pct": -0.59,
+        "advance_count": 31,
+        "decline_count": 32,
+        "stocks_count": 4
+      },
+      {
+        "name": "Automobile - Trucks/LCVs",
+        "trend": "Very Bullish",
+        "market_cap_cr": 287654,
+        "market_cap_change_pct": 1.28,
+        "advance_count": 4,
+        "decline_count": null,
+        "stocks_count": 84
+      },
+      {
+        "name": "Speciality Chemicals",
+        "trend": "Bearish",
+        "market_cap_cr": 285644,
+        "market_cap_change_pct": 0.16,
+        "advance_count": 33,
+        "decline_count": 50,
+        "stocks_count": 6
+      },
+      {
+        "name": "Auto Ancillaries - Auto, Truck & Motorcycle Parts",
+        "trend": "Bearish",
+        "market_cap_cr": 279286,
+        "market_cap_change_pct": -0.32,
+        "advance_count": 3,
+        "decline_count": 3,
+        "stocks_count": 26
+      },
+      {
+        "name": "Telecommunication - Equipment",
+        "trend": "Neutral",
+        "market_cap_cr": 276168,
+        "market_cap_change_pct": -1.33,
+        "advance_count": 12,
+        "decline_count": 14,
+        "stocks_count": 22
+      },
+      {
+        "name": "Finance - Housing",
+        "trend": "Neutral",
+        "market_cap_cr": 273028,
+        "market_cap_change_pct": 0.11,
+        "advance_count": 9,
+        "decline_count": 12,
+        "stocks_count": 2
+      },
+      {
+        "name": "Coal",
+        "trend": "Very Bullish",
+        "market_cap_cr": 264220,
+        "market_cap_change_pct": -0.63,
+        "advance_count": null,
+        "decline_count": 2,
+        "stocks_count": 230
+      },
+      {
+        "name": "Textiles & Apparel",
+        "trend": "Bearish",
+        "market_cap_cr": 244132,
+        "market_cap_change_pct": -0.62,
+        "advance_count": 93,
+        "decline_count": 129,
+        "stocks_count": 11
+      },
+      {
+        "name": "Gas Distribution",
+        "trend": "Bearish",
+        "market_cap_cr": 242790,
+        "market_cap_change_pct": -0.23,
+        "advance_count": 4,
+        "decline_count": 7,
+        "stocks_count": 4
+      },
+      {
+        "name": "Multiline Insurance & Brokers",
+        "trend": "Neutral",
+        "market_cap_cr": 240330,
+        "market_cap_change_pct": -0.54,
+        "advance_count": 3,
+        "decline_count": 1,
+        "stocks_count": 22
+      },
+      {
+        "name": "Breweries & Distilleries",
+        "trend": "Bearish",
+        "market_cap_cr": 238896,
+        "market_cap_change_pct": 0.22,
+        "advance_count": 7,
+        "decline_count": 15,
+        "stocks_count": 30
+      },
+      {
+        "name": "Fertilizers",
+        "trend": "Bullish",
+        "market_cap_cr": 237322,
+        "market_cap_change_pct": -1.3,
+        "advance_count": 18,
+        "decline_count": 12,
+        "stocks_count": 31
+      },
+      {
+        "name": "Pesticides & Agrochemicals",
+        "trend": "Bearish",
+        "market_cap_cr": 227875,
+        "market_cap_change_pct": -0.29,
+        "advance_count": 8,
+        "decline_count": 23,
+        "stocks_count": 70
+      },
+      {
+        "name": "Commodity Chemicals",
+        "trend": "Neutral",
+        "market_cap_cr": 225653,
+        "market_cap_change_pct": -1.36,
+        "advance_count": 25,
+        "decline_count": 42,
+        "stocks_count": 32
+      },
+      {
+        "name": "Cables",
+        "trend": "Neutral",
+        "market_cap_cr": 214915,
+        "market_cap_change_pct": -0.42,
+        "advance_count": 12,
+        "decline_count": 20,
+        "stocks_count": 13
+      },
+      {
+        "name": "Renewables",
+        "trend": "Very Bearish",
+        "market_cap_cr": 207756,
+        "market_cap_change_pct": 0.51,
+        "advance_count": 9,
+        "decline_count": 4,
+        "stocks_count": 4
+      },
+      {
+        "name": "Airlines",
+        "trend": "Bearish",
+        "market_cap_cr": 199057,
+        "market_cap_change_pct": -1.26,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 64
+      },
+      {
+        "name": "Construction - Infrastructure",
+        "trend": "Bearish",
+        "market_cap_cr": 191821,
+        "market_cap_change_pct": -1.4,
+        "advance_count": 18,
+        "decline_count": 45,
+        "stocks_count": 8
+      },
+      {
+        "name": "Diversified chemicals",
+        "trend": "Bearish",
+        "market_cap_cr": 188780,
+        "market_cap_change_pct": -0.65,
+        "advance_count": null,
+        "decline_count": 8,
+        "stocks_count": 18
+      },
+      {
+        "name": "Domestic Appliances",
+        "trend": "Bearish",
+        "market_cap_cr": 187575,
+        "market_cap_change_pct": -1.27,
+        "advance_count": 6,
+        "decline_count": 12,
+        "stocks_count": 94
+      },
+      {
+        "name": "Software",
+        "trend": "Bearish",
+        "market_cap_cr": 183875,
+        "market_cap_change_pct": -0.52,
+        "advance_count": 32,
+        "decline_count": 58,
+        "stocks_count": 20
+      },
+      {
+        "name": "Auto Ancillaries - Tyres & Rubber Products",
+        "trend": "Bearish",
+        "market_cap_cr": 179821,
+        "market_cap_change_pct": 0.25,
+        "advance_count": 8,
+        "decline_count": 11,
+        "stocks_count": 64
+      },
+      {
+        "name": "Construction - Real Estate",
+        "trend": "Bearish",
+        "market_cap_cr": 172837,
+        "market_cap_change_pct": -0.14,
+        "advance_count": 19,
+        "decline_count": 40,
+        "stocks_count": 47
+      },
+      {
+        "name": "Misc. Commercial Services",
+        "trend": "Bearish",
+        "market_cap_cr": 170342,
+        "market_cap_change_pct": -0.49,
+        "advance_count": 22,
+        "decline_count": 23,
+        "stocks_count": 5
+      },
+      {
+        "name": "Ship Building",
+        "trend": "Bearish",
+        "market_cap_cr": 169995,
+        "market_cap_change_pct": -2.53,
+        "advance_count": 1,
+        "decline_count": 4,
+        "stocks_count": 2
+      },
+      {
+        "name": "Beverages",
+        "trend": "Neutral",
+        "market_cap_cr": 163879,
+        "market_cap_change_pct": 0.36,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 20
+      },
+      {
+        "name": "Auto Ancillaries - Others",
+        "trend": "Bearish",
+        "market_cap_cr": 140474,
+        "market_cap_change_pct": -0.42,
+        "advance_count": 7,
+        "decline_count": 13,
+        "stocks_count": 23
+      },
+      {
+        "name": "Metals - Castings/Forgings",
+        "trend": "Neutral",
+        "market_cap_cr": 137483,
+        "market_cap_change_pct": -0.59,
+        "advance_count": 10,
+        "decline_count": 12,
+        "stocks_count": 20
+      },
+      {
+        "name": "Tea/Coffee",
+        "trend": "Neutral",
+        "market_cap_cr": 133779,
+        "market_cap_change_pct": -1.25,
+        "advance_count": 12,
+        "decline_count": 7,
+        "stocks_count": 6
+      },
+      {
+        "name": "Telecommunications Services",
+        "trend": "Bearish",
+        "market_cap_cr": 130226,
+        "market_cap_change_pct": 0.63,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 2
+      },
+      {
+        "name": "Auto Ancillaries - Diesel Engines",
+        "trend": "Neutral",
+        "market_cap_cr": 126020,
+        "market_cap_change_pct": -0.27,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 41
+      },
+      {
+        "name": "Infrastructure",
+        "trend": "Bearish",
+        "market_cap_cr": 117957,
+        "market_cap_change_pct": 0.77,
+        "advance_count": 23,
+        "decline_count": 17,
+        "stocks_count": 37
+      },
+      {
+        "name": "Engineering",
+        "trend": "Bearish",
+        "market_cap_cr": 114786,
+        "market_cap_change_pct": -0.46,
+        "advance_count": 20,
+        "decline_count": 15,
+        "stocks_count": 15
+      },
+      {
+        "name": "Electronic Goods",
+        "trend": "Neutral",
+        "market_cap_cr": 112138,
+        "market_cap_change_pct": -0.48,
+        "advance_count": 8,
+        "decline_count": 7,
+        "stocks_count": 6
+      },
+      {
+        "name": "Air Conditioners",
+        "trend": "Bearish",
+        "market_cap_cr": 108211,
+        "market_cap_change_pct": -2.03,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 12
+      },
+      {
+        "name": "Auto Ancillaries - Bearings",
+        "trend": "Bearish",
+        "market_cap_cr": 108049,
+        "market_cap_change_pct": 0.35,
+        "advance_count": 7,
+        "decline_count": 5,
+        "stocks_count": 26
+      },
+      {
+        "name": "Auto Ancillaries - Castings/Forgings",
+        "trend": "Bearish",
+        "market_cap_cr": 92158,
+        "market_cap_change_pct": -1.46,
+        "advance_count": 12,
+        "decline_count": 14,
+        "stocks_count": 6
+      },
+      {
+        "name": "Real Estate Rental, Development & Operations",
+        "trend": "Neutral",
+        "market_cap_cr": 91458,
+        "market_cap_change_pct": -0.84,
+        "advance_count": 1,
+        "decline_count": 5,
+        "stocks_count": 71
+      },
+      {
+        "name": "Miscellaneous",
+        "trend": "Neutral",
+        "market_cap_cr": 86142,
+        "market_cap_change_pct": 0.59,
+        "advance_count": 26,
+        "decline_count": 41,
+        "stocks_count": 5
+      },
+      {
+        "name": "Auto Ancillaries - Head lamps & lights",
+        "trend": "Neutral",
+        "market_cap_cr": 84446,
+        "market_cap_change_pct": 0.09,
+        "advance_count": 1,
+        "decline_count": 4,
+        "stocks_count": 30
+      },
+      {
+        "name": "Vegetable Oils & Products",
+        "trend": "Bearish",
+        "market_cap_cr": 80245,
+        "market_cap_change_pct": 0.58,
+        "advance_count": 13,
+        "decline_count": 13,
+        "stocks_count": 20
+      },
+      {
+        "name": "Auto Ancillaries",
+        "trend": "Neutral",
+        "market_cap_cr": 80005,
+        "market_cap_change_pct": 1.54,
+        "advance_count": 6,
+        "decline_count": 14,
+        "stocks_count": 12
+      },
+      {
+        "name": "Batteries",
+        "trend": "Bearish",
+        "market_cap_cr": 77153,
+        "market_cap_change_pct": -0.5,
+        "advance_count": 5,
+        "decline_count": 7,
+        "stocks_count": 9
+      },
+      {
+        "name": "Biotechnology & Medical Research",
+        "trend": "Bearish",
+        "market_cap_cr": 72660,
+        "market_cap_change_pct": 0.2,
+        "advance_count": 5,
+        "decline_count": 3,
+        "stocks_count": 13
+      },
+      {
+        "name": "Footwear",
+        "trend": "Bearish",
+        "market_cap_cr": 70719,
+        "market_cap_change_pct": 1.17,
+        "advance_count": 9,
+        "decline_count": 4,
+        "stocks_count": 37
+      },
+      {
+        "name": "Electronics - Components",
+        "trend": "Bearish",
+        "market_cap_cr": 70155,
+        "market_cap_change_pct": -0.61,
+        "advance_count": 16,
+        "decline_count": 19,
+        "stocks_count": 31
+      },
+      {
+        "name": "Ground Freight & Logistics Services",
+        "trend": "Bearish",
+        "market_cap_cr": 67824,
+        "market_cap_change_pct": -0.1,
+        "advance_count": 13,
+        "decline_count": 16,
+        "stocks_count": 1
+      },
+      {
+        "name": "Reinsurance",
+        "trend": "Very Bullish",
+        "market_cap_cr": 67439,
+        "market_cap_change_pct": 4.05,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 24
+      },
+      {
+        "name": "Aluminium & Aluminium Products",
+        "trend": "Neutral",
+        "market_cap_cr": 64890,
+        "market_cap_change_pct": 4.61,
+        "advance_count": 9,
+        "decline_count": 14,
+        "stocks_count": 72
+      },
+      {
+        "name": "ETF",
+        "trend": "Neutral",
+        "market_cap_cr": 64737,
+        "market_cap_change_pct": 0.35,
+        "advance_count": 32,
+        "decline_count": 37,
+        "stocks_count": 34
+      },
+      {
+        "name": "Sugar",
+        "trend": "Bearish",
+        "market_cap_cr": 62723,
+        "market_cap_change_pct": -0.73,
+        "advance_count": 10,
+        "decline_count": 23,
+        "stocks_count": 7
+      },
+      {
+        "name": "Cigarettes/Tobacco",
+        "trend": "Bearish",
+        "market_cap_cr": 61613,
+        "market_cap_change_pct": -4.24,
+        "advance_count": 2,
+        "decline_count": 5,
+        "stocks_count": 49
+      },
+      {
+        "name": "Film Production, Distribution & Entertainment",
+        "trend": "Bearish",
+        "market_cap_cr": 57260,
+        "market_cap_change_pct": 0.1,
+        "advance_count": 18,
+        "decline_count": 25,
+        "stocks_count": 16
+      },
+      {
+        "name": "Travel Services",
+        "trend": "Neutral",
+        "market_cap_cr": 56162,
+        "market_cap_change_pct": -0.57,
+        "advance_count": 8,
+        "decline_count": 6,
+        "stocks_count": 14
+      },
+      {
+        "name": "Plastics - Tubes/Pipes/Hoses & Fittings",
+        "trend": "Bearish",
+        "market_cap_cr": 55693,
+        "market_cap_change_pct": -0.46,
+        "advance_count": 6,
+        "decline_count": 8,
+        "stocks_count": 5
+      },
+      {
+        "name": "Auto Ancillaries - Brakes",
+        "trend": "Bearish",
+        "market_cap_cr": 54206,
+        "market_cap_change_pct": 1.87,
+        "advance_count": 2,
+        "decline_count": 3,
+        "stocks_count": 4
+      },
+      {
+        "name": "Automobile - Tractors",
+        "trend": "Bullish",
+        "market_cap_cr": 53494,
+        "market_cap_change_pct": -0.24,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 9
+      },
+      {
+        "name": "Compressors / Pumps",
+        "trend": "Neutral",
+        "market_cap_cr": 53240,
+        "market_cap_change_pct": 0.78,
+        "advance_count": 5,
+        "decline_count": 4,
+        "stocks_count": 22
+      },
+      {
+        "name": "Educational Institutions",
+        "trend": "Bearish",
+        "market_cap_cr": 52014,
+        "market_cap_change_pct": -0.96,
+        "advance_count": 7,
+        "decline_count": 15,
+        "stocks_count": 18
+      },
+      {
+        "name": "BPO/ITeS",
+        "trend": "Bearish",
+        "market_cap_cr": 51283,
+        "market_cap_change_pct": -2.67,
+        "advance_count": 6,
+        "decline_count": 12,
+        "stocks_count": 23
+      },
+      {
+        "name": "Engineering - Construction",
+        "trend": "Bearish",
+        "market_cap_cr": 50347,
+        "market_cap_change_pct": -0.44,
+        "advance_count": 9,
+        "decline_count": 14,
+        "stocks_count": 2
+      },
+      {
+        "name": "Cycles",
+        "trend": "Neutral",
+        "market_cap_cr": 49712,
+        "market_cap_change_pct": -1.56,
+        "advance_count": null,
+        "decline_count": 2,
+        "stocks_count": 10
+      },
+      {
+        "name": "Plastics - Moulded Articles and Furnitures",
+        "trend": "Neutral",
+        "market_cap_cr": 49061,
+        "market_cap_change_pct": 0.11,
+        "advance_count": 7,
+        "decline_count": 3,
+        "stocks_count": 9
+      },
+      {
+        "name": "Courier Services",
+        "trend": "Bearish",
+        "market_cap_cr": 45875,
+        "market_cap_change_pct": -0.2,
+        "advance_count": 1,
+        "decline_count": 8,
+        "stocks_count": 13
+      },
+      {
+        "name": "Glass & Glass Products",
+        "trend": "Bearish",
+        "market_cap_cr": 43293,
+        "market_cap_change_pct": 4.62,
+        "advance_count": 6,
+        "decline_count": 7,
+        "stocks_count": 24
+      },
+      {
+        "name": "TV Broadcasting & Software Production",
+        "trend": "Bearish",
+        "market_cap_cr": 42849,
+        "market_cap_change_pct": -0.4,
+        "advance_count": 8,
+        "decline_count": 14,
+        "stocks_count": 3
+      },
+      {
+        "name": "Ratings",
+        "trend": "Bearish",
+        "market_cap_cr": 41294,
+        "market_cap_change_pct": -2.33,
+        "advance_count": null,
+        "decline_count": 3,
+        "stocks_count": 3
+      },
+      {
+        "name": "Ports",
+        "trend": "Neutral",
+        "market_cap_cr": 39197,
+        "market_cap_change_pct": 0.13,
+        "advance_count": 2,
+        "decline_count": 1,
+        "stocks_count": 15
+      },
+      {
+        "name": "Medical Equipment/Supplies/Accessories",
+        "trend": "Bearish",
+        "market_cap_cr": 38522,
+        "market_cap_change_pct": -0.86,
+        "advance_count": 7,
+        "decline_count": 8,
+        "stocks_count": 24
+      },
+      {
+        "name": "Plastic Products - Others",
+        "trend": "Neutral",
+        "market_cap_cr": 38146,
+        "market_cap_change_pct": 0.45,
+        "advance_count": 16,
+        "decline_count": 7,
+        "stocks_count": 27
+      },
+      {
+        "name": "Ceramics/Marble/Granite/Sanitaryware",
+        "trend": "Bearish",
+        "market_cap_cr": 38112,
+        "market_cap_change_pct": -0.23,
+        "advance_count": 11,
+        "decline_count": 16,
+        "stocks_count": 39
+      },
+      {
+        "name": "Logistics",
+        "trend": "Bearish",
+        "market_cap_cr": 36594,
+        "market_cap_change_pct": -0.48,
+        "advance_count": 12,
+        "decline_count": 25,
+        "stocks_count": 15
+      },
+      {
+        "name": "Shipping",
+        "trend": "Bearish",
+        "market_cap_cr": 36518,
+        "market_cap_change_pct": 0.08,
+        "advance_count": 6,
+        "decline_count": 7,
+        "stocks_count": 6
+      },
+      {
+        "name": "Abrasives",
+        "trend": "Bearish",
+        "market_cap_cr": 35714,
+        "market_cap_change_pct": 0.09,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 8
+      },
+      {
+        "name": "Labs & Life Sciences Services",
+        "trend": "Bearish",
+        "market_cap_cr": 30465,
+        "market_cap_change_pct": -1.55,
+        "advance_count": 4,
+        "decline_count": 4,
+        "stocks_count": 57
+      },
+      {
+        "name": "Textiles",
+        "trend": "Bearish",
+        "market_cap_cr": 30307,
+        "market_cap_change_pct": -0.53,
+        "advance_count": 27,
+        "decline_count": 26,
+        "stocks_count": 10
+      },
+      {
+        "name": "Auto Ancillaries - Spare Parts & Accessories",
+        "trend": "Bearish",
+        "market_cap_cr": 29599,
+        "market_cap_change_pct": 1.7,
+        "advance_count": 2,
+        "decline_count": 8,
+        "stocks_count": 6
+      },
+      {
+        "name": "Lubricants",
+        "trend": "Bearish",
+        "market_cap_cr": 29152,
+        "market_cap_change_pct": -0.41,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 4
+      },
+      {
+        "name": "Defence",
+        "trend": "Neutral",
+        "market_cap_cr": 27972,
+        "market_cap_change_pct": -2.21,
+        "advance_count": null,
+        "decline_count": 4,
+        "stocks_count": 8
+      },
+      {
+        "name": "Refractories",
+        "trend": "Neutral",
+        "market_cap_cr": 27183,
+        "market_cap_change_pct": -1.14,
+        "advance_count": 3,
+        "decline_count": 5,
+        "stocks_count": 16
+      },
+      {
+        "name": "Wood & Wood Products",
+        "trend": "Bearish",
+        "market_cap_cr": 26894,
+        "market_cap_change_pct": -1.15,
+        "advance_count": 6,
+        "decline_count": 10,
+        "stocks_count": 18
+      },
+      {
+        "name": "Computer Peripherals",
+        "trend": "Bearish",
+        "market_cap_cr": 24943,
+        "market_cap_change_pct": 0.14,
+        "advance_count": 8,
+        "decline_count": 8,
+        "stocks_count": 6
+      },
+      {
+        "name": "Electrodes & Electrical Equipments",
+        "trend": "Bullish",
+        "market_cap_cr": 24586,
+        "market_cap_change_pct": -0.97,
+        "advance_count": 4,
+        "decline_count": 2,
+        "stocks_count": 5
+      },
+      {
+        "name": "Transmission Towers / Equipments",
+        "trend": "Bearish",
+        "market_cap_cr": 24321,
+        "market_cap_change_pct": -2.27,
+        "advance_count": null,
+        "decline_count": 4,
+        "stocks_count": 8
+      },
+      {
+        "name": "Specialty Mining & Metals",
+        "trend": "Bullish",
+        "market_cap_cr": 23949,
+        "market_cap_change_pct": 0.08,
+        "advance_count": 5,
+        "decline_count": 3,
+        "stocks_count": 24
+      },
+      {
+        "name": "Food Processing",
+        "trend": "Neutral",
+        "market_cap_cr": 23715,
+        "market_cap_change_pct": -0.28,
+        "advance_count": 13,
+        "decline_count": 10,
+        "stocks_count": 28
+      },
+      {
+        "name": "Agriculture",
+        "trend": "Bearish",
+        "market_cap_cr": 23713,
+        "market_cap_change_pct": 1.25,
+        "advance_count": 13,
+        "decline_count": 14,
+        "stocks_count": 11
+      },
+      {
+        "name": "Speciality Retailers",
+        "trend": "Bearish",
+        "market_cap_cr": 22679,
+        "market_cap_change_pct": -0.2,
+        "advance_count": 7,
+        "decline_count": 4,
+        "stocks_count": 36
+      },
+      {
+        "name": "Plastic Products",
+        "trend": "Bearish",
+        "market_cap_cr": 22623,
+        "market_cap_change_pct": -0.64,
+        "advance_count": 13,
+        "decline_count": 23,
+        "stocks_count": 2
+      },
+      {
+        "name": "Auto Ancillaries - Engine Parts",
+        "trend": "Neutral",
+        "market_cap_cr": 22094,
+        "market_cap_change_pct": 0.22,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 40
+      },
+      {
+        "name": "Paper & Forest Products",
+        "trend": "Bearish",
+        "market_cap_cr": 20227,
+        "market_cap_change_pct": -0.74,
+        "advance_count": 19,
+        "decline_count": 19,
+        "stocks_count": 10
+      },
+      {
+        "name": "Auto Ancillaries - Gears",
+        "trend": "Neutral",
+        "market_cap_cr": 19348,
+        "market_cap_change_pct": -0.17,
+        "advance_count": 4,
+        "decline_count": 6,
+        "stocks_count": 29
+      },
+      {
+        "name": "Dyes & Pigments",
+        "trend": "Bearish",
+        "market_cap_cr": 18195,
+        "market_cap_change_pct": -0.55,
+        "advance_count": 12,
+        "decline_count": 17,
+        "stocks_count": 2
+      },
+      {
+        "name": "Railways Wagons",
+        "trend": "Very Bullish",
+        "market_cap_cr": 17358,
+        "market_cap_change_pct": -2.37,
+        "advance_count": null,
+        "decline_count": 2,
+        "stocks_count": 7
+      },
+      {
+        "name": "Printing & Stationery",
+        "trend": "Very Bearish",
+        "market_cap_cr": 17240,
+        "market_cap_change_pct": 0.31,
+        "advance_count": 3,
+        "decline_count": 4,
+        "stocks_count": 9
+      },
+      {
+        "name": "Textile - Machinery",
+        "trend": "Bearish",
+        "market_cap_cr": 17238,
+        "market_cap_change_pct": -0.5,
+        "advance_count": 4,
+        "decline_count": 5,
+        "stocks_count": 5
+      },
+      {
+        "name": "Auto Ancillaries - Pistons",
+        "trend": "Neutral",
+        "market_cap_cr": 17044,
+        "market_cap_change_pct": 1.15,
+        "advance_count": 3,
+        "decline_count": 2,
+        "stocks_count": 21
+      },
+      {
+        "name": "Printing & Publishing",
+        "trend": "Bearish",
+        "market_cap_cr": 16519,
+        "market_cap_change_pct": 0.09,
+        "advance_count": 12,
+        "decline_count": 8,
+        "stocks_count": 3
+      },
+      {
+        "name": "Carbon Black",
+        "trend": "Bearish",
+        "market_cap_cr": 16498,
+        "market_cap_change_pct": -2.4,
+        "advance_count": 1,
+        "decline_count": 2,
+        "stocks_count": 23
+      },
+      {
+        "name": "Chemicals",
+        "trend": "Bearish",
+        "market_cap_cr": 15148,
+        "market_cap_change_pct": 2.08,
+        "advance_count": 11,
+        "decline_count": 11,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Shock absorbers",
+        "trend": "Very Bearish",
+        "market_cap_cr": 14382,
+        "market_cap_change_pct": -0.26,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 3
+      },
+      {
+        "name": "Watches & Accessories",
+        "trend": "Neutral",
+        "market_cap_cr": 14276,
+        "market_cap_change_pct": 1.24,
+        "advance_count": 2,
+        "decline_count": 1,
+        "stocks_count": 3
+      },
+      {
+        "name": "Automobile - Dealers & Distributors",
+        "trend": "Bearish",
+        "market_cap_cr": 14032,
+        "market_cap_change_pct": 2.27,
+        "advance_count": 2,
+        "decline_count": 1,
+        "stocks_count": 9
+      },
+      {
+        "name": "Electrodes & Welding Equipment",
+        "trend": "Neutral",
+        "market_cap_cr": 13807,
+        "market_cap_change_pct": 0.05,
+        "advance_count": 6,
+        "decline_count": 3,
+        "stocks_count": 7
+      },
+      {
+        "name": "Laminates/Decoratives",
+        "trend": "Bearish",
+        "market_cap_cr": 13241,
+        "market_cap_change_pct": 0.37,
+        "advance_count": 5,
+        "decline_count": 2,
+        "stocks_count": 9
+      },
+      {
+        "name": "Aquaculture",
+        "trend": "Neutral",
+        "market_cap_cr": 12907,
+        "market_cap_change_pct": 0.94,
+        "advance_count": 5,
+        "decline_count": 4,
+        "stocks_count": 11
+      },
+      {
+        "name": "Other Construction Materials",
+        "trend": "Neutral",
+        "market_cap_cr": 12340,
+        "market_cap_change_pct": 1.37,
+        "advance_count": 5,
+        "decline_count": 6,
+        "stocks_count": 13
+      },
+      {
+        "name": "Containers & Packaging",
+        "trend": "Bearish",
+        "market_cap_cr": 11742,
+        "market_cap_change_pct": -1.47,
+        "advance_count": 2,
+        "decline_count": 11,
+        "stocks_count": 8
+      },
+      {
+        "name": "Ferro Manganese",
+        "trend": "Neutral",
+        "market_cap_cr": 11498,
+        "market_cap_change_pct": 1.98,
+        "advance_count": 7,
+        "decline_count": 1,
+        "stocks_count": 3
+      },
+      {
+        "name": "Food & Drug Retailing",
+        "trend": "Neutral",
+        "market_cap_cr": 10051,
+        "market_cap_change_pct": -0.55,
+        "advance_count": 1,
+        "decline_count": 2,
+        "stocks_count": 6
+      },
+      {
+        "name": "Packaging Materials-Plastic Products",
+        "trend": "Bearish",
+        "market_cap_cr": 7686,
+        "market_cap_change_pct": -0.04,
+        "advance_count": 2,
+        "decline_count": 4,
+        "stocks_count": 8
+      },
+      {
+        "name": "Packaging Materials-Containers & Packaging",
+        "trend": "Bearish",
+        "market_cap_cr": 6992,
+        "market_cap_change_pct": 1.17,
+        "advance_count": 5,
+        "decline_count": 3,
+        "stocks_count": 1
+      },
+      {
+        "name": "Electric Equipment - Transformers",
+        "trend": "Very Bearish",
+        "market_cap_cr": 6830,
+        "market_cap_change_pct": -2.44,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 4
+      },
+      {
+        "name": "Others-Industrial Gases & Fuels",
+        "trend": "Bearish",
+        "market_cap_cr": 6304,
+        "market_cap_change_pct": 0.54,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 4
+      },
+      {
+        "name": "Amusement Parks/Recreation/Club",
+        "trend": "Bearish",
+        "market_cap_cr": 6190,
+        "market_cap_change_pct": -0.38,
+        "advance_count": 1,
+        "decline_count": 2,
+        "stocks_count": 5
+      },
+      {
+        "name": "Cable & D2H",
+        "trend": "Very Bearish",
+        "market_cap_cr": 5531,
+        "market_cap_change_pct": 0.21,
+        "advance_count": 4,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Air Conditioning Parts",
+        "trend": "Very Bearish",
+        "market_cap_cr": 5530,
+        "market_cap_change_pct": 0.44,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 2
+      },
+      {
+        "name": "Auto Ancillaries - Wheels",
+        "trend": "Neutral",
+        "market_cap_cr": 5082,
+        "market_cap_change_pct": 0.78,
+        "advance_count": 2,
+        "decline_count": null,
+        "stocks_count": 4
+      },
+      {
+        "name": "Packaging - Films",
+        "trend": "Very Bearish",
+        "market_cap_cr": 5058,
+        "market_cap_change_pct": -0.46,
+        "advance_count": 1,
+        "decline_count": 3,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Springs",
+        "trend": "Very Bullish",
+        "market_cap_cr": 4966,
+        "market_cap_change_pct": -0.2,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 2
+      },
+      {
+        "name": "Electric Equipment - Boilers / Turbines",
+        "trend": "Neutral",
+        "market_cap_cr": 3950,
+        "market_cap_change_pct": 2.06,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 12
+      },
+      {
+        "name": "Media",
+        "trend": "Bearish",
+        "market_cap_cr": 3851,
+        "market_cap_change_pct": 0.34,
+        "advance_count": 4,
+        "decline_count": 7,
+        "stocks_count": 2
+      },
+      {
+        "name": "Auto Ancillaries - Axle Shafts",
+        "trend": "Neutral",
+        "market_cap_cr": 3134,
+        "market_cap_change_pct": 2.66,
+        "advance_count": 2,
+        "decline_count": null,
+        "stocks_count": 13
+      },
+      {
+        "name": "Textile - Spinning",
+        "trend": "Bearish",
+        "market_cap_cr": 2930,
+        "market_cap_change_pct": -0.66,
+        "advance_count": 5,
+        "decline_count": 7,
+        "stocks_count": 11
+      },
+      {
+        "name": "IT - Education",
+        "trend": "Bearish",
+        "market_cap_cr": 2895,
+        "market_cap_change_pct": -1.03,
+        "advance_count": 5,
+        "decline_count": 6,
+        "stocks_count": 4
+      },
+      {
+        "name": "Packaging - Polyfilms",
+        "trend": "Neutral",
+        "market_cap_cr": 2846,
+        "market_cap_change_pct": 1.51,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 2
+      },
+      {
+        "name": "Metal - Casting/Forgings",
+        "trend": "Very Bearish",
+        "market_cap_cr": 2822,
+        "market_cap_change_pct": 0.64,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 5
+      },
+      {
+        "name": "Fish/Poultry & Meat Products",
+        "trend": "Bullish",
+        "market_cap_cr": 2405,
+        "market_cap_change_pct": 1.35,
+        "advance_count": 3,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Plastics - Thermoplastics",
+        "trend": "Very Bearish",
+        "market_cap_cr": 2230,
+        "market_cap_change_pct": 0.85,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Electric Equipment - Switchgears",
+        "trend": "Very Bearish",
+        "market_cap_cr": 2130,
+        "market_cap_change_pct": 0.13,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 16
+      },
+      {
+        "name": "Other agriculture products",
+        "trend": "Bearish",
+        "market_cap_cr": 2071,
+        "market_cap_change_pct": -1.37,
+        "advance_count": 4,
+        "decline_count": 11,
+        "stocks_count": 1
+      },
+      {
+        "name": "Plastics Products",
+        "trend": "Very Bullish",
+        "market_cap_cr": 2055,
+        "market_cap_change_pct": 1.26,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 8
+      },
+      {
+        "name": "Plastics - Pet Bottels, Jars & Containers",
+        "trend": "Bearish",
+        "market_cap_cr": 1945,
+        "market_cap_change_pct": -0.68,
+        "advance_count": 1,
+        "decline_count": 6,
+        "stocks_count": 8
+      },
+      {
+        "name": "Leather",
+        "trend": "Bearish",
+        "market_cap_cr": 1866,
+        "market_cap_change_pct": -0.27,
+        "advance_count": 2,
+        "decline_count": 5,
+        "stocks_count": 1
+      },
+      {
+        "name": "Gold",
+        "trend": "Very Bearish",
+        "market_cap_cr": 1826,
+        "market_cap_change_pct": -12.13,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Cement & Construction Materials",
+        "trend": "Very Bearish",
+        "market_cap_cr": 1763,
+        "market_cap_change_pct": -1.55,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 4
+      },
+      {
+        "name": "Photographic Products",
+        "trend": "Bearish",
+        "market_cap_cr": 1687,
+        "market_cap_change_pct": -0.14,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 4
+      },
+      {
+        "name": "Auto Ancillaries - Sheet Metals",
+        "trend": "Bullish",
+        "market_cap_cr": 1588,
+        "market_cap_change_pct": 0.09,
+        "advance_count": 1,
+        "decline_count": 3,
+        "stocks_count": 2
+      },
+      {
+        "name": "IT - Networking",
+        "trend": "Very Bearish",
+        "market_cap_cr": 1573,
+        "market_cap_change_pct": -2.18,
+        "advance_count": null,
+        "decline_count": 2,
+        "stocks_count": 9
+      },
+      {
+        "name": "Paper & Paper Products",
+        "trend": "Bearish",
+        "market_cap_cr": 1521,
+        "market_cap_change_pct": 0.29,
+        "advance_count": 4,
+        "decline_count": 5,
+        "stocks_count": 7
+      },
+      {
+        "name": "Packaging - Sacks and Bags",
+        "trend": "Neutral",
+        "market_cap_cr": 1287,
+        "market_cap_change_pct": -1.68,
+        "advance_count": 4,
+        "decline_count": 3,
+        "stocks_count": 18
+      },
+      {
+        "name": "Packaging - Packaging Materials",
+        "trend": "Bearish",
+        "market_cap_cr": 1266,
+        "market_cap_change_pct": 0.2,
+        "advance_count": 3,
+        "decline_count": 11,
+        "stocks_count": 1
+      },
+      {
+        "name": "LPG",
+        "trend": "Neutral",
+        "market_cap_cr": 1192,
+        "market_cap_change_pct": -2.05,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 3
+      },
+      {
+        "name": "Fasteners",
+        "trend": "Very Bearish",
+        "market_cap_cr": 1121,
+        "market_cap_change_pct": 0.2,
+        "advance_count": 1,
+        "decline_count": 2,
+        "stocks_count": 3
+      },
+      {
+        "name": "Real Estate Operations",
+        "trend": "Neutral",
+        "market_cap_cr": 1117,
+        "market_cap_change_pct": -1.4,
+        "advance_count": null,
+        "decline_count": 3,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Seating covers & parts",
+        "trend": "Very Bearish",
+        "market_cap_cr": 1080,
+        "market_cap_change_pct": 1.3,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Bus Body",
+        "trend": "Neutral",
+        "market_cap_cr": 1053,
+        "market_cap_change_pct": 0.12,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "electronics",
+        "trend": "Very Bearish",
+        "market_cap_cr": 947,
+        "market_cap_change_pct": -3.59,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 4
+      },
+      {
+        "name": "Metals & Mining",
+        "trend": "Neutral",
+        "market_cap_cr": 862,
+        "market_cap_change_pct": 1.07,
+        "advance_count": 2,
+        "decline_count": 2,
+        "stocks_count": 1
+      },
+      {
+        "name": "Pesticides & Agrochemical",
+        "trend": "Very Bearish",
+        "market_cap_cr": 804,
+        "market_cap_change_pct": -1.75,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 2
+      },
+      {
+        "name": "Textiles and Apparel",
+        "trend": "Neutral",
+        "market_cap_cr": 494,
+        "market_cap_change_pct": 4.58,
+        "advance_count": 2,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Engineeing",
+        "trend": "Very Bearish",
+        "market_cap_cr": 466,
+        "market_cap_change_pct": 1.23,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillary",
+        "trend": "Very Bearish",
+        "market_cap_cr": 377,
+        "market_cap_change_pct": 2.61,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Leisure Services",
+        "trend": "Neutral",
+        "market_cap_cr": 315,
+        "market_cap_change_pct": 3.91,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Rubber  Products",
+        "trend": "Very Bearish",
+        "market_cap_cr": 227,
+        "market_cap_change_pct": -0.4,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Auto Ancillaries - Clutches",
+        "trend": "Neutral",
+        "market_cap_cr": 209,
+        "market_cap_change_pct": 1.17,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 10
+      },
+      {
+        "name": "Gold ETF",
+        "trend": "Very Bullish",
+        "market_cap_cr": 208,
+        "market_cap_change_pct": -2.01,
+        "advance_count": null,
+        "decline_count": 10,
+        "stocks_count": 1
+      },
+      {
+        "name": "Plastics - Self Adhesive Tapes",
+        "trend": "Neutral",
+        "market_cap_cr": 166,
+        "market_cap_change_pct": 3.96,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Education Institution",
+        "trend": "Very Bearish",
+        "market_cap_cr": 162,
+        "market_cap_change_pct": -1.04,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "It-Networking",
+        "trend": "Very Bullish",
+        "market_cap_cr": 151,
+        "market_cap_change_pct": -4.27,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Solvent  Extraction",
+        "trend": "Very Bearish",
+        "market_cap_cr": 95,
+        "market_cap_change_pct": 1.85,
+        "advance_count": 1,
+        "decline_count": null,
+        "stocks_count": 1
+      },
+      {
+        "name": "Finance & Investments",
+        "trend": "Very Bearish",
+        "market_cap_cr": 72,
+        "market_cap_change_pct": -1.06,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Finance - Investments",
+        "trend": "Very Bullish",
+        "market_cap_cr": 33,
+        "market_cap_change_pct": -1.92,
+        "advance_count": null,
+        "decline_count": 1,
+        "stocks_count": 2
+      },
+      {
+        "name": "Printing And Publishing",
+        "trend": "Neutral",
+        "market_cap_cr": 25,
+        "market_cap_change_pct": -1.14,
+        "advance_count": 1,
+        "decline_count": 1,
+        "stocks_count": 1
+      },
+      {
+        "name": "Detergents & Soaps",
+        "trend": "Neutral",
+        "market_cap_cr": 18,
+        "market_cap_change_pct": 2.49,
+        "advance_count": 1,
+        "decline_count": null
+      }
+    ],
+    "sectoral_indices": [
+      {
+        "name": "Nifty Capital Market",
+        "price": 4595.85,
+        "change_pct": -0.84
+      },
+      {
+        "name": "Nifty India Defence",
+        "price": 7644.35,
+        "change_pct": -1.08
+      },
+      {
+        "name": "Nifty 50",
+        "price": 25938.85,
+        "change_pct": -0.01
+      },
+      {
+        "name": "Nifty Bank",
+        "price": 59171.25,
+        "change_pct": 0.41
+      },
+      {
+        "name": "Nifty Midcap 100",
+        "price": 59914.25,
+        "change_pct": -0.15
+      },
+      {
+        "name": "Nifty Next 50",
+        "price": 68667.75,
+        "change_pct": 0.04
+      },
+      {
+        "name": "Nifty 100",
+        "price": 26482.55,
+        "change_pct": 0.0
+      },
+      {
+        "name": "Nifty 200",
+        "price": 14416.45,
+        "change_pct": -0.03
+      }
+    ]
+  },
+  "summary": {
+    "total_sectors": 40,
+    "total_industries": 201,
+    "total_entities": 241
+  }
+}

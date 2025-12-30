@@ -341,12 +341,7 @@ fig_port.update_xaxes(
     showspikes=True, spikethickness=1, spikecolor="#888888", spikemode="across",
     tickfont=dict(color='#666')
 )
-fig_port.update_yaxes(
-    showgrid=True, gridcolor='#f5f5f5', tickfont=dict(color='#666'),
-    range=y_range_port # Explicit buffer
-)
-
-st.plotly_chart(fig_port, use_container_width=True, config={'displayModeBar': False})
+st.plotly_chart(fig_port, width='stretch', config={'displayModeBar': False})
 
 # --- Chart 2: Relative Comparison ---
 
@@ -385,7 +380,7 @@ fig_compare.update_yaxes(
     range=y_range_rel # Explicit buffer
 )
 
-st.plotly_chart(fig_compare, use_container_width=True, config={'displayModeBar': False})
+st.plotly_chart(fig_compare, width='stretch', config={'displayModeBar': False})
 
 # --- Download Button ---
 csv = portfolio_pct.to_csv().encode('utf-8')
@@ -416,7 +411,7 @@ for ticker in selected_tickers:
 
         with st.container():
             fig = create_stock_chart(ticker, df_full, visible_start_date)
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(fig, width='stretch', config={'displayModeBar': False})
             st.markdown("---")
         
     except Exception:

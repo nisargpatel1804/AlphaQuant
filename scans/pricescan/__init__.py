@@ -6,11 +6,16 @@ Implements 117 Price Scans across 18 subtypes including:
 - Relative Strength (vs Benchmark & vs Sector)
 """
 
-from .main import PriceScanEngine
-from .models import TickerPriceScanData, PriceScanResult
-from .fetcher import PriceScanFetcher
-from .sector_manager import SectorManager
-from .scans import PriceScanner
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from scans.pricescan.main import PriceScanEngine as PriceScanEngine
+from scans.pricescan.models import TickerPriceScanData, PriceScanResult
+from scans.pricescan.fetcher import PriceScanFetcher
+from scans.pricescan.sector_manager import SectorManager
+from scans.pricescan.scans import PriceScanner
 
 __all__ = [
     "PriceScanEngine",
@@ -20,3 +25,11 @@ __all__ = [
     "SectorManager",
     "PriceScanner"
 ]
+
+
+def __getattr__(name: str) -> Any:
+    if name == "PriceScanEngine":
+        from scans.pricescan.main import PriceScanEngine
+
+        return PriceScanEngine
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

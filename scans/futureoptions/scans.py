@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Any, Optional
 
-from .config import (
+from scans.futureoptions.config import (
     CAT_FUT_OI, CAT_FUT_LONG, CAT_FUT_SHORT, CAT_PCR,
     PCR_HIGH_THRESHOLD, PCR_LOW_THRESHOLD,
     AGGRESSIVE_VOL_MULT, AVG_PERIOD_VOL
 )
-from .models import FOScanResult
+from scans.futureoptions.models import FOScanResult
 
 class FOScanner:
     def __init__(self, df: pd.DataFrame):

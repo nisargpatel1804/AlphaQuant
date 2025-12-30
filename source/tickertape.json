@@ -1,0 +1,16 @@
+{
+  "market_mood_index": {
+    "value": 45.18491873028731,
+    "zone_fear": 1,
+    "changes_percent": {
+      "yesterday": -8.41,
+      "last_week": 16.72,
+      "last_month": -25.56
+    },
+    "nifty_returns": {
+      "yesterday": -0.01,
+      "week": -0.89,
+      "month": -1.06
+    }
+  }
+}

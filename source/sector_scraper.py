@@ -37,7 +37,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Default output directory for AlphaQuant outputs
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "RESULTS" / "AlphaQuant"
+DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "RESULTS" / "scans" / "AlphaQuant"
 DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 class MoneyControlSectorScraper:
@@ -362,6 +362,9 @@ if __name__ == "__main__":
 
     scraper = MoneyControlSectorScraper()
     data = scraper.scrape_both_pages()
+    # Auto-save to sector.json in the source directory
+    output_path = scraper.save_to_json(data, Path(__file__).parent / "sector.json")
+    print(f"Saved scraped data to {output_path}")
     if args.save_json:
         scraper.save_to_json(data, args.save_json)
-        print(f"Saved real scraped data to {args.save_json}")
+        print(f"Also saved to {args.save_json}")

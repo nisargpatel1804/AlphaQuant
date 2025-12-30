@@ -14,7 +14,7 @@ except Exception:
     ta = None
     _HAS_PANDAS_TA = False
 
-from .config import (
+from scans.technicals.config import (
     MA_PERIODS, WEEKLY_MA_PERIODS,
     RSI_PERIOD, CCI_PERIOD,
     STOCH_K_PERIOD, STOCH_D_PERIOD, STOCH_SMOOTH_K,

@@ -14,10 +14,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .fetcher import CandleFetcher
-from .scans import CandleScanner
-from .models import TickerCandleData
-from .config import OUTPUT_DIR
+from scans.candlestick.fetcher import CandleFetcher
+from scans.candlestick.scans import CandleScanner
+from scans.candlestick.models import TickerCandleData
+from scans.candlestick.config import OUTPUT_DIR
 
 # Configure logging
 logging.basicConfig(
@@ -100,11 +100,14 @@ if __name__ == "__main__":
     # Simple test execution
     import argparse
     parser = argparse.ArgumentParser(description="Candlestick Scan Engine")
-    parser.add_argument("--ticker", type=str, default="RELIANCE", help="Ticker to scan")
+    parser.add_argument("ticker", nargs='?', type=str, help="Ticker to scan")
+    parser.add_argument("--ticker", type=str, help="Ticker to scan")
     args = parser.parse_args()
 
+    ticker = args.ticker or "RELIANCE"
+
     engine = CandleEngine()
-    result = engine.process_ticker(args.ticker)
+    result = engine.process_ticker(ticker)
     
     if result:
         engine.save_results(result)

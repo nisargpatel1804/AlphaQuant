@@ -9,8 +9,9 @@ from typing import Tuple, Optional, Dict, List
 from datetime import datetime, timedelta
 from pathlib import Path
 import numpy as np
+import logging
 
-from .config import BENCHMARK_TICKER, BETA_LOOKBACK_YEARS
+from scans.technicals.config import BENCHMARK_TICKER, BETA_LOOKBACK_YEARS
 
 class TechnicalFetcher:
     def __init__(self):
@@ -121,6 +122,9 @@ class TechnicalFetcher:
 
             # Prepare benchmark returns
             bench = benchmark_series.dropna()
+            # Ensure bench has datetime index
+            if not isinstance(bench.index, pd.DatetimeIndex):
+                bench.index = pd.to_datetime(bench.index)
             # Align benchmark date range with stock data to avoid mismatch errors
             bench = bench[bench.index >= pd.Timestamp(start_date)]
             
@@ -132,28 +136,32 @@ class TechnicalFetcher:
 
             betas: List[float] = []
             for col in close_df.columns:
-                s = close_df[col].dropna()
-                # Ensure minimal data points for statistical significance
-                if len(s) < 60:
+                try:
+                    s = close_df[col].dropna()
+                    # Ensure minimal data points for statistical significance
+                    if len(s) < 60:
+                        continue
+                    
+                    stock_rets = s.pct_change().dropna()
+                    
+                    # Intersection of dates
+                    common_idx = stock_rets.index.intersection(bench_rets.index)
+                    if len(common_idx) < 30:
+                        continue
+                    
+                    # Calculate Beta: Covariance(Stock, Bench) / Variance(Bench)
+                    cov = stock_rets.loc[common_idx].cov(bench_rets.loc[common_idx])
+                    if pd.isna(cov):
+                        continue
+                    
+                    beta = float(cov / variance)
+                    
+                    # Filter outliers (e.g., erroneous data spikes)
+                    if np.isfinite(beta) and -5.0 < beta < 5.0:
+                        betas.append(beta)
+                except Exception as e:
+                    logging.debug(f"Error calculating beta for {col}: {e}")
                     continue
-                
-                stock_rets = s.pct_change().dropna()
-                
-                # Intersection of dates
-                common_idx = stock_rets.index.intersection(bench_rets.index)
-                if len(common_idx) < 30:
-                    continue
-                
-                # Calculate Beta: Covariance(Stock, Bench) / Variance(Bench)
-                cov = stock_rets.loc[common_idx].cov(bench_rets.loc[common_idx])
-                if pd.isna(cov):
-                    continue
-                
-                beta = float(cov / variance)
-                
-                # Filter outliers (e.g., erroneous data spikes)
-                if np.isfinite(beta) and -5.0 < beta < 5.0:
-                    betas.append(beta)
 
             if not betas:
                 return industry, None
@@ -163,7 +171,7 @@ class TechnicalFetcher:
             return industry, avg_beta
             
         except Exception as e:
-            print(f"Error calculating industry beta for {industry}: {e}")
+            logging.error(f"Error calculating industry beta for {industry}: {e}")
             return industry, None
 
     def fetch_benchmark(self) -> pd.Series:
@@ -181,7 +189,7 @@ class TechnicalFetcher:
             # auto_adjust=True is critical for accurate index returns
             data = yf.download(BENCHMARK_TICKER, start=start_date, progress=False, auto_adjust=True, threads=False)
             
-            if data.empty:
+            if data is None or data.empty:
                 # Retry once with a broader date or alternative ticker if needed, but raising here is safer
                 raise ValueError(f"Benchmark data for {BENCHMARK_TICKER} is empty.")
 
@@ -207,7 +215,8 @@ class TechnicalFetcher:
             return self._benchmark_cache
 
         except Exception as e:
-            print(f"Error fetching benchmark {BENCHMARK_TICKER}: {e}")
+            logging.error(f"Error fetching benchmark {BENCHMARK_TICKER}: {e}")
+            # Return empty series to allow processing to continue without beta
             return pd.Series(dtype=float)
 
     def fetch_stock_data(self, ticker: str) -> Tuple[pd.DataFrame, pd.DataFrame]:

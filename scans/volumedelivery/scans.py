@@ -6,13 +6,13 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Any, Optional
 
-from .config import (
+from scans.volumedelivery.config import (
     CAT_DAILY_VD, CAT_WEEKLY_VD, CAT_MONTHLY_VD,
     HIGH_DELIVERY_PCT, VERY_HIGH_DELIVERY_PCT,
     HIGH_VOLUME_MULT, VERY_HIGH_VOLUME_MULT,
     AVG_PERIOD_DAILY, AVG_PERIOD_WEEKLY, AVG_PERIOD_MONTHLY
 )
-from .models import VolumeDeliveryResult
+from scans.volumedelivery.models import VolumeDeliveryResult
 
 class VolumeDeliveryScanner:
     def __init__(self, daily_df: pd.DataFrame, weekly_df: pd.DataFrame, monthly_df: pd.DataFrame):

@@ -20,9 +20,9 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import from local package
-from .fetcher import ScreenerScraper
-from .scans import FundamentalScans
-from .utils import (
+from scans.fundamentals.fetcher import ScreenerScraper
+from scans.fundamentals.scans import FundamentalScans
+from scans.fundamentals.utils import (
     get_nifty_tickers,
     load_master_industry_map,
     build_ticker_to_industry_and_pe,
@@ -115,7 +115,8 @@ def process_ticker(
 
 def main():
     parser = argparse.ArgumentParser(description="ReScanX Fundamentals Engine")
-    parser.add_argument("--ticker", type=str, help="Process a single ticker")
+    parser.add_argument("ticker", nargs="?", type=str, help="Process a single ticker (positional)")
+    parser.add_argument("--ticker", dest="ticker_opt", type=str, help="Process a single ticker")
     parser.add_argument("--limit", type=int, help="Limit total stocks processed")
     parser.add_argument("--industry", type=str, help="Process all stocks in a specific industry")
     parser.add_argument("--force", action="store_true", help="(Deprecated) No effect; data is always fetched fresh")
@@ -133,9 +134,10 @@ def main():
     master_map = load_master_industry_map()
     ticker_to_ind, ind_to_pe = build_ticker_to_industry_and_pe(master_map)
 
-    tickers = []
-    if args.ticker:
-        tickers = [args.ticker.strip().upper()]
+    tickers: List[str] = []
+    requested_ticker = (args.ticker_opt or args.ticker)
+    if requested_ticker:
+        tickers = [requested_ticker.strip().upper()]
     elif args.industry:
         target_industry = args.industry.lower()
         for entry in master_map:

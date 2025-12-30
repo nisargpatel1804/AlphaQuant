@@ -6,11 +6,11 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Any, Optional
 
-from .config import (
+from scans.strikeoptions.config import (
     CAT_CALL_OI, CAT_PUT_OI, CAT_ACTIVITY,
     MIN_OI_THRESHOLD, MIN_VOL_THRESHOLD
 )
-from .models import StrikeScanResult
+from scans.strikeoptions.models import StrikeScanResult
 
 class StrikeOptionsScanner:
     def __init__(self, calls: pd.DataFrame, puts: pd.DataFrame):

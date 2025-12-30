@@ -16,11 +16,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .config import OUTPUT_DIR
-from .fetcher import VolumeDeliveryFetcher
-from .scans import VolumeDeliveryScanner
-from .models import TickerVolumeDeliveryData
-from ..fundamentals.utils import get_nifty_tickers
+from scans.volumedelivery.config import OUTPUT_DIR
+from scans.volumedelivery.fetcher import VolumeDeliveryFetcher
+from scans.volumedelivery.scans import VolumeDeliveryScanner
+from scans.volumedelivery.models import TickerVolumeDeliveryData
+from scans.fundamentals.utils import get_nifty_tickers
 
 # Configure logging
 logging.basicConfig(
@@ -109,6 +109,7 @@ class VolumeDeliveryEngine:
 
 def main():
     parser = argparse.ArgumentParser(description="ReScanX Volume & Delivery Engine")
+    parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker (e.g., RELIANCE)")
     parser.add_argument("--all", action="store_true", help="Run for all Nifty 500 stocks")
     parser.add_argument("--limit", type=int, help="Limit number of stocks")

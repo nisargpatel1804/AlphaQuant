@@ -9,7 +9,7 @@ import numpy as np
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 
-from .config import (
+from scans.pricescan.config import (
     NEARING_THRESHOLD_PCT,
     LOOKBACK_52_WEEK, LOOKBACK_2_YEAR, LOOKBACK_5_YEAR,
     RANGE_BOTTOM_25_PCT, RANGE_TOP_25_PCT,
@@ -22,7 +22,7 @@ from .config import (
     VWAP_NEARING_THRESHOLD,
     CONSECUTIVE_DAYS_2, CONSECUTIVE_DAYS_3
 )
-from .models import (
+from scans.pricescan.models import (
     PriceScanResult,
     SUBTYPE_PREV_DAY, SUBTYPE_WEEKLY_BREAKOUT, SUBTYPE_MONTHLY_BREAKOUT,
     SUBTYPE_52W_BREAKOUT, SUBTYPE_52W_RANGE,

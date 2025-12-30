@@ -10,7 +10,7 @@ from typing import Tuple, Optional, Dict
 from datetime import datetime, timedelta
 import time
 
-from .config import (
+from scans.pricescan.config import (
     BENCHMARK_TICKER, 
     FETCH_HISTORY_DURATION, 
     FETCH_INTERVAL,

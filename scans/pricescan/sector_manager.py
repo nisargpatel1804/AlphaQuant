@@ -15,7 +15,7 @@ import time
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 
-from .config import (
+from scans.pricescan.config import (
     MASTER_INDUSTRY_MAP_PATH, 
     FETCH_HISTORY_DURATION, 
     FETCH_INTERVAL,

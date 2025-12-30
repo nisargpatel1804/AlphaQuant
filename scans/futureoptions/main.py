@@ -15,10 +15,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .fetcher import FOFetcher
-from .scans import FOScanner
-from .models import TickerFOData
-from .config import OUTPUT_DIR
+from scans.futureoptions.fetcher import FOFetcher
+from scans.futureoptions.scans import FOScanner
+from scans.futureoptions.models import TickerFOData
+from scans.futureoptions.config import OUTPUT_DIR
 
 # Configure logging
 logging.basicConfig(
@@ -108,8 +108,16 @@ class FOEngine:
 
 if __name__ == "__main__":
     # Simple test execution
+    import argparse
+    parser = argparse.ArgumentParser(description="Futures & Options Scan Engine")
+    parser.add_argument("ticker", nargs='?', type=str, help="Ticker to scan")
+    parser.add_argument("--ticker", type=str, help="Ticker to scan")
+    args = parser.parse_args()
+
+    ticker = args.ticker or "RELIANCE"
+
     engine = FOEngine()
-    result = engine.process_ticker("RELIANCE")
+    result = engine.process_ticker(ticker)
     if result:
         engine.save_results(result)
         print("Test complete.")

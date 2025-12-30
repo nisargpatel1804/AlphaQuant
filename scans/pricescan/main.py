@@ -21,15 +21,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from .config import (
+from scans.pricescan.config import (
     PRICESCAN_RESULTS_DIR, 
     NIFTY_500_CSV_PATH,
     BENCHMARK_TICKER
 )
-from .fetcher import PriceScanFetcher
-from .scans import PriceScanner
-from .sector_manager import SectorManager
-from .models import TickerPriceScanData
+from scans.pricescan.fetcher import PriceScanFetcher
+from scans.pricescan.scans import PriceScanner
+from scans.pricescan.sector_manager import SectorManager
+from scans.pricescan.models import TickerPriceScanData
 
 # Configure logging
 logging.basicConfig(
@@ -160,6 +160,7 @@ def get_nifty_tickers() -> List[str]:
 
 def main():
     parser = argparse.ArgumentParser(description="ReScanX Price Scan Engine")
+    parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker (e.g., RELIANCE)")
     parser.add_argument("--industry", type=str, help="Run for a specific industry (e.g., 'Cement')")
     parser.add_argument("--all", action="store_true", help="Run for all Nifty 500 stocks")
@@ -173,8 +174,9 @@ def main():
     # 2. Determine Target Tickers
     target_tickers = []
     
-    if args.ticker:
-        target_tickers = [args.ticker.strip().upper()]
+    ticker_input = args.ticker or getattr(args, 'ticker', None)
+    if ticker_input:
+        target_tickers = [ticker_input.strip().upper()]
     
     elif args.industry:
         # Find all stocks in that industry from the sector manager's map

@@ -1,5 +1,5 @@
 """
-Price Scan Module (ReScanX).
+Price Scan Module (AlphaQuant).
 Implements 117 Price Scans across 18 subtypes including:
 - Breakouts (Daily, Weekly, Monthly, 52W, ATH)
 - Behavioural Scans (Gap, Sequences)

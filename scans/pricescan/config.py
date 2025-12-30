@@ -7,7 +7,7 @@ from pathlib import Path
 # --------------------------------------------------------------------------
 # 1. File Path Configuration
 # --------------------------------------------------------------------------
-# Resolves to D:\Projects\ReScanX (project root)
+# Resolves to the project root (e.g., D:\Projects\AlphaQuant)
 # Use parents[2] to go from scans/pricescan/config.py -> project root
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

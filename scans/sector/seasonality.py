@@ -118,7 +118,7 @@ def _fetch_with_retries(url: str, session: Optional[requests.Session] = None, ma
 def _workspace_root() -> str:
     # Walk up directories looking for a repository root indicator such as
     # `stock_links.json` or `app.py`. This makes the script resilient when
-    # placed under `AlphaQuant/` or `scrapers/shared/` layouts.
+    # placed under `scans/sector/` or `scrapers/shared/` layouts.
     here = os.path.dirname(os.path.abspath(__file__))
     cur = here
     for _ in range(6):
@@ -295,12 +295,12 @@ def scrape_single(url: str, kind: str, id_or_symbol: Optional[str] = None, sessi
 
 
 def save_result(res: SeasonalityResult, symbol_hint: Optional[str] = None) -> str:
-    # Special case: RELIANCE goes to RESULTS/AlphaQuant/seasonality_reliance.json
+    # Special case: RELIANCE goes to RESULTS/scans/sector/seasonality_reliance.json
     base = (symbol_hint or (res.id_or_symbol or "UNKNOWN")).upper()
     if base == "RELIANCE":
-        # Save RELIANCE seasonality into the top-level RESULTS/scans/AlphaQuant folder
+        # Save RELIANCE seasonality into the top-level RESULTS/scans/sector folder
         repo = _repo_root()
-        out_dir = os.path.join(repo, "RESULTS", "scans", "AlphaQuant")
+        out_dir = os.path.join(repo, "RESULTS", "scans", "sector")
         _ensure_dir(out_dir)
         path = os.path.join(out_dir, "seasonality_reliance.json")
     elif res.kind == "index":

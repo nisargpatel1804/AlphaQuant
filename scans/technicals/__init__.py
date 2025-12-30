@@ -1,5 +1,5 @@
 """
-Technical Analysis Module (ReScanX).
+Technical Analysis Module (AlphaQuant).
 Provides tools for fetching market data, calculating indicators,
 and executing technical scans.
 """

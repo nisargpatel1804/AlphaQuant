@@ -36,8 +36,8 @@ except ImportError as e:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Default output directory for AlphaQuant outputs
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "RESULTS" / "scans" / "AlphaQuant"
+# Default output directory for sector outputs
+DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "RESULTS" / "scans" / "sector"
 DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 class MoneyControlSectorScraper:

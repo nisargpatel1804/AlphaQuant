@@ -1,5 +1,5 @@
 """
-ReScanX Scans Package.
+AlphaQuant Scans Package.
 Contains all scanning modules for financial analysis.
 """
 

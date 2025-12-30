@@ -1,7 +1,7 @@
-"""
-ReScanX Master Dashboard.
-Integrates Fundamentals, Technicals, Price Scans, Volume & Delivery,
-Futures & Options, Strike Options, and Candlestick Scans into a unified interface.
+"""AlphaQuant Master Dashboard.
+
+Integrates Fundamentals, Technicals, Price Scans, Volume & Delivery, Futures & Options,
+Strike Options, and Candlestick Scans into a unified interface.
 """
 from __future__ import annotations
 
@@ -88,7 +88,7 @@ except ImportError as e:
 
 # 4. Page Configuration
 st.set_page_config(
-    page_title="ReScanX Analytics",
+    page_title="AlphaQuant Analytics",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -148,7 +148,7 @@ def get_candle_engine():
 def main():
     # --- Sidebar ---
     with st.sidebar:
-        st.title("ReScanX")
+        st.title("AlphaQuant")
         st.caption("v3.0 | Complete Suite")
         
         # Ticker Selection

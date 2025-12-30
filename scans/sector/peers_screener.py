@@ -288,7 +288,7 @@ class PeersScreener:
         # Determine default output directory inside repository RESULTS folder
         if output_dir is None:
             project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-            output_dir = os.path.join(project_root, 'RESULTS', 'scans', 'AlphaQuant')
+            output_dir = os.path.join(project_root, 'RESULTS', 'scans', 'sector')
         os.makedirs(output_dir, exist_ok=True)
         # Clean output: only company_symbol and peers (name, symbol)
         company_symbol = peers_data.get("company_symbol", "unknown")
@@ -322,8 +322,8 @@ def main():
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python scans/AlphaQuant/peers_screener.py SYMBOL")
-        print("Example: python scans/AlphaQuant/peers_screener.py RELIANCE")
+        print("Usage: python scans/sector/peers_screener.py SYMBOL")
+        print("Example: python scans/sector/peers_screener.py RELIANCE")
         return
 
     company_symbol = sys.argv[1].strip().upper()

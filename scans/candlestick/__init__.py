@@ -1,5 +1,5 @@
 """
-Candlestick Analysis Module (ReScanX).
+Candlestick Analysis Module (AlphaQuant).
 Provides tools for identifying 24 key candlestick patterns across 7 categories
 (Bullish, Bearish, Reversal, Continuation, Neutral).
 """

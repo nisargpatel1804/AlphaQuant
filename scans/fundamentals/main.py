@@ -114,7 +114,7 @@ def process_ticker(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="ReScanX Fundamentals Engine")
+    parser = argparse.ArgumentParser(description="AlphaQuant Fundamentals Engine")
     parser.add_argument("ticker", nargs="?", type=str, help="Process a single ticker (positional)")
     parser.add_argument("--ticker", dest="ticker_opt", type=str, help="Process a single ticker")
     parser.add_argument("--limit", type=int, help="Limit total stocks processed")

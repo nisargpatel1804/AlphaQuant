@@ -159,7 +159,7 @@ def get_nifty_tickers() -> List[str]:
     return tickers
 
 def main():
-    parser = argparse.ArgumentParser(description="ReScanX Price Scan Engine")
+    parser = argparse.ArgumentParser(description="AlphaQuant Price Scan Engine")
     parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker (e.g., RELIANCE)")
     parser.add_argument("--industry", type=str, help="Run for a specific industry (e.g., 'Cement')")

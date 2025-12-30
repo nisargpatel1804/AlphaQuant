@@ -1,5 +1,5 @@
 """
-Volume & Delivery Analysis Module (ReScanX).
+Volume & Delivery Analysis Module (AlphaQuant).
 Provides tools for analyzing daily, weekly, and monthly volume/delivery trends,
 detecting spikes, and generating accumulation/distribution signals.
 """

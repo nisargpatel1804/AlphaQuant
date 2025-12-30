@@ -114,7 +114,7 @@ def save_results(ticker: str, results: Dict[str, Any]):
         logging.error(f"Failed to save {ticker}: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="ReScanX Technical Analysis Engine")
+    parser = argparse.ArgumentParser(description="AlphaQuant Technical Analysis Engine")
     parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker")
     parser.add_argument("--limit", type=int, help="Limit the number of stocks to process")

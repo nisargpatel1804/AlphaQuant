@@ -1,5 +1,5 @@
 """
-Fundamentals Analysis Module (ReScanX).
+Fundamentals Analysis Module (AlphaQuant).
 Provides tools for scraping Screener.in, processing financial data,
 and executing fundamental health scans.
 """

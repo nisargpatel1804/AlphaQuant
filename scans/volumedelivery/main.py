@@ -108,7 +108,7 @@ class VolumeDeliveryEngine:
             logger.error(f"Failed to save results for {data.ticker}: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="ReScanX Volume & Delivery Engine")
+    parser = argparse.ArgumentParser(description="AlphaQuant Volume & Delivery Engine")
     parser.add_argument("ticker", nargs='?', type=str, help="Run for a single ticker (positional)")
     parser.add_argument("--ticker", type=str, help="Run for a single ticker (e.g., RELIANCE)")
     parser.add_argument("--all", action="store_true", help="Run for all Nifty 500 stocks")

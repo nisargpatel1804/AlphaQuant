@@ -1,5 +1,5 @@
 """
-Strike Options Analysis Module (ReScanX).
+Strike Options Analysis Module (AlphaQuant).
 Provides tools for analyzing option chains, identifying key support/resistance levels
 based on Open Interest (Call High OI, Put High OI), and detecting high activity strikes.
 """

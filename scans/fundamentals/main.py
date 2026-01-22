@@ -47,7 +47,8 @@ def process_ticker(
     scraper: ScreenerScraper,
     ticker_to_industry: Dict[str, str],
     industry_pe_map: Dict[str, float],
-    force: bool = True
+    force: bool = True,
+    dump_payload: bool = False,
 ) -> Optional[Dict[str, Any]]:
     """
     Full pipeline for a single ticker:
@@ -92,6 +93,13 @@ def process_ticker(
     report = {
         "ticker": ticker,
         "timestamp": datetime.now().isoformat(),
+        "scrape_metadata": {
+            "source_url": metadata.get("source_url"),
+            "scraped_at": metadata.get("scraped_at"),
+            "reporting": metadata.get("reporting"),
+            "reporting_selection": metadata.get("reporting_selection"),
+            "pledge_data_missing": metadata.get("pledge_data_missing"),
+        },
         "industry_context": {
             "industry": metadata.get("industry", "Unknown"),
             "current_price": metadata.get("current_price"),
@@ -101,6 +109,15 @@ def process_ticker(
         },
         "categories": category_results
     }
+
+    # 4b. Optional: save the full scraped payload for verification/debugging
+    if dump_payload and payload is not None:
+        try:
+            payload_file = RESULTS_DIR / f"{ticker}_fund_payload.json"
+            with open(payload_file, "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2)
+        except Exception as e:
+            logging.error(f"Failed to save payload dump: {e}")
 
     # 5. Local Save (Scan Results)
     try:
@@ -121,6 +138,7 @@ def main():
     parser.add_argument("--industry", type=str, help="Process all stocks in a specific industry")
     parser.add_argument("--force", action="store_true", help="(Deprecated) No effect; data is always fetched fresh")
     parser.add_argument("--batch-size", type=int, default=10, help="Pause after N stocks")
+    parser.add_argument("--dump-payload", action="store_true", help="Also save full scraped payload JSON per ticker")
     
     args = parser.parse_args()
 
@@ -167,7 +185,8 @@ def main():
             scraper=scraper,
             ticker_to_industry=ticker_to_ind,
             industry_pe_map=ind_to_pe,
-            force=True
+            force=True,
+            dump_payload=bool(args.dump_payload),
         )
         
         if result:

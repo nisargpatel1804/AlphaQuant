@@ -17,10 +17,10 @@ Output:
     - <symbol>.json for symbols from stock_links.json (falls back to <id>.json if symbol unknown)
 
 CLI:
-  - python scrapers/shared/seasonality.py                # scrape landing + sample ids + all from stock_links.json
-  - python scrapers/shared/seasonality.py --ids RI,TEL   # scrape explicit ids
-  - python scrapers/shared/seasonality.py --symbols RELIANCE,INFY  # scrape by symbols from stock_links.json
-  - python scrapers/shared/seasonality.py --all          # scrape all from stock_links.json
+    - python scans/sector/seasonality.py                # scrape landing page only
+    - python scans/sector/seasonality.py --ids RI,TEL   # scrape explicit ids
+    - python scans/sector/seasonality.py --symbols RELIANCE,INFY  # scrape by symbols from stock_links.json
+    - python scans/sector/seasonality.py --all          # scrape all from stock_links.json
 
 Notes:
 - Resiliently locates the H1 text "SEASONALITY ANALYSIS" and the following table with Year/Jan..Dec headers.
@@ -295,21 +295,12 @@ def scrape_single(url: str, kind: str, id_or_symbol: Optional[str] = None, sessi
 
 
 def save_result(res: SeasonalityResult, symbol_hint: Optional[str] = None) -> str:
-    # Special case: RELIANCE goes to RESULTS/scans/sector/seasonality_reliance.json
     base = (symbol_hint or (res.id_or_symbol or "UNKNOWN")).upper()
-    if base == "RELIANCE":
-        # Save RELIANCE seasonality into the top-level RESULTS/scans/sector folder
-        repo = _repo_root()
-        out_dir = os.path.join(repo, "RESULTS", "scans", "sector")
-        _ensure_dir(out_dir)
-        path = os.path.join(out_dir, "seasonality_reliance.json")
-    elif res.kind == "index":
-        out_dir = _output_dir()
-        _ensure_dir(out_dir)
+    out_dir = _output_dir()
+    _ensure_dir(out_dir)
+    if res.kind == "index":
         path = os.path.join(out_dir, "index.json")
     else:
-        out_dir = _output_dir()
-        _ensure_dir(out_dir)
         path = os.path.join(out_dir, f"{base}.json")
     # Remove 'colour' and 'disclaimer' fields from api_data before saving
     def strip_colour_and_disclaimer(obj):
@@ -353,23 +344,11 @@ def stock_id_to_symbol_map(links: Dict[str, Any]) -> Dict[str, str]:
     return rev
 
 
-def scrape_index_and_samples(session: Optional[requests.Session] = None) -> List[str]:
+def scrape_index_only(session: Optional[requests.Session] = None) -> List[str]:
     saved: List[str] = []
-    # 1) Landing page (index)
     index_url = "https://www.moneycontrol.com/markets/seasonality-analysis"
     res = scrape_single(index_url, kind="index", id_or_symbol=None, session=session)
     saved.append(save_result(res))
-
-    # 2) Sample IDs provided by user
-    sample_ids = ["RI", "TEL", "C", "HDF01", "DRL"]
-    # Build reverse map so we can name files by symbol instead of ID
-    links = load_stock_links()
-    id_to_symbol = stock_id_to_symbol_map(links)
-    for sid in sample_ids:
-        url = build_seasonality_url_for_id(sid, exchange="N")
-        res = scrape_single(url, kind="stock", id_or_symbol=sid, session=session)
-        saved.append(save_result(res, symbol_hint=id_to_symbol.get(sid)))
-        time.sleep(0.4)
     return saved
 
 
@@ -424,10 +403,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     flag_syms = [s.strip().upper() for s in args.symbols_flag.split(",") if s.strip()] if getattr(args, "symbols_flag", "") else []
     combined_symbols = positional_syms + flag_syms
 
-    # Default behavior: index + provided samples + all stock_links
+    # Default behavior: index only (avoid heavy full-scrape by default)
     if not args.ids and not combined_symbols and not args.all:
-        saved_paths.extend(scrape_index_and_samples(session=sess))
-        saved_paths.extend(scrape_all_from_stock_links(session=sess))
+        saved_paths.extend(scrape_index_only(session=sess))
     else:
         if args.ids:
             # Use reverse map to name files by symbol where possible

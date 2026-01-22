@@ -104,7 +104,10 @@ if __name__ == "__main__":
     parser.add_argument("--ticker", type=str, help="Ticker to scan")
     args = parser.parse_args()
 
-    ticker = args.ticker or "RELIANCE"
+    ticker = args.ticker
+    if not ticker:
+        print("Error: ticker is required. Use --ticker <SYMBOL>.")
+        raise SystemExit(1)
 
     engine = CandleEngine()
     result = engine.process_ticker(ticker)

@@ -328,16 +328,29 @@ class ScreenerScraper:
         - If in consolidated.json -> Consolidated URL only.
         - If in neither -> Default to Consolidated (as per Nifty 50 norm).
         """
-        
-        # 1. Determine Target URL
-        if ticker in self._non_consolidated_tickers:
-            # STRICT STANDALONE
-            target_url = self.base_url.format(ticker=ticker)
-            expected_consolidated = False
-        else:
-            # STRICT CONSOLIDATED (Default for Nifty 500)
+
+        in_consolidated_list = ticker in self._consolidated_tickers
+        in_non_consolidated_list = ticker in self._non_consolidated_tickers
+
+        # 1. Determine Target URL (deterministic based on lists)
+        if in_consolidated_list and not in_non_consolidated_list:
             target_url = self.base_url.format(ticker=ticker) + "consolidated/"
             expected_consolidated = True
+            selection_source = "consolidated.json"
+        elif in_non_consolidated_list and not in_consolidated_list:
+            target_url = self.base_url.format(ticker=ticker)
+            expected_consolidated = False
+            selection_source = "nonconsolidated.json"
+        elif in_consolidated_list and in_non_consolidated_list:
+            # Data issue in source lists. Prefer consolidated to avoid losing group numbers.
+            target_url = self.base_url.format(ticker=ticker) + "consolidated/"
+            expected_consolidated = True
+            selection_source = "both_lists_prefer_consolidated"
+        else:
+            # Default: consolidated; allow redirect fallback validation below.
+            target_url = self.base_url.format(ticker=ticker) + "consolidated/"
+            expected_consolidated = True
+            selection_source = "default_consolidated"
 
         # 2. Make Request
         response = self._request_with_headers(target_url)
@@ -350,16 +363,30 @@ class ScreenerScraper:
 
         # 4. Strict Validation of Redirections
         if expected_consolidated and "/consolidated/" not in response.url:
-             # Screener redirected us to Standalone.
-             # Strict check: If we ASKED for consolidated and got Standalone, 
-             # it means consolidated data doesn't exist.
-             if ticker in self._consolidated_tickers:
-                 raise requests.HTTPError(
-                     f"Strict Check Failed: Requested Consolidated data for {ticker}, but was redirected to Standalone URL: {response.url}", 
-                     response=response
-                 )
-             else:
-                 pass
+            # Screener redirected us to Standalone.
+            # If we explicitly selected consolidated via lists, treat as error.
+            if selection_source in {"consolidated.json", "both_lists_prefer_consolidated"}:
+                raise requests.HTTPError(
+                    f"Strict Check Failed: Requested consolidated for {ticker} (via {selection_source}), but got: {response.url}",
+                    response=response,
+                )
+
+        if (not expected_consolidated) and ("/consolidated/" in response.url):
+            # Screener redirected us to consolidated.
+            if selection_source == "nonconsolidated.json":
+                raise requests.HTTPError(
+                    f"Strict Check Failed: Requested standalone for {ticker} (via nonconsolidated.json), but got: {response.url}",
+                    response=response,
+                )
+
+        # 5. Record selection details for downstream reporting
+        self._last_reporting_selection = {
+            "ticker": ticker,
+            "selection_source": selection_source,
+            "expected_reporting": "consolidated" if expected_consolidated else "standalone",
+            "target_url": target_url,
+            "final_url": response.url,
+        }
 
         return response.text, response.url
 
@@ -487,6 +514,7 @@ class ScreenerScraper:
             "pledge_data_missing": not pledge_found,
             "industry": industry,
             "reporting": "consolidated" if "/consolidated/" in (final_url or "") else "standalone",
+            "reporting_selection": getattr(self, "_last_reporting_selection", None),
         }
 
         payload = {
@@ -586,14 +614,26 @@ def _parse_period(text: str) -> Optional[str]:
 
 async def _expand_balance_sheet_sections(page: Page) -> None:
     try:
-        expand_buttons = await page.query_selector_all('section#balance-sheet button.button-plain')
-        for button in expand_buttons:
-            try:
-                if '+' in await button.inner_html():
-                    await button.click()
-                    await page.wait_for_timeout(200)
-            except Exception: continue
-    except Exception: pass
+        # Try a few passes because expanding one level can reveal new buttons.
+        for _ in range(3):
+            expand_buttons = await page.query_selector_all('section#balance-sheet button.button-plain')
+            clicked_any = False
+            for button in expand_buttons:
+                try:
+                    txt = (await button.inner_text()).strip()
+                    aria = (await button.get_attribute("aria-label") or "").strip().lower()
+                    # Screener uses small +/- buttons; inner_text is more reliable than inner_html.
+                    should_click = ("+" in txt) or ("expand" in aria) or ("show" in aria)
+                    if should_click:
+                        await button.click()
+                        clicked_any = True
+                        await page.wait_for_timeout(150)
+                except Exception:
+                    continue
+            if not clicked_any:
+                break
+    except Exception:
+        pass
 
 async def scrape_balance_sheet_with_playwright(ticker: str, target_url: str = None) -> Dict[str, Dict[str, float]]:
     # Use target_url strictly

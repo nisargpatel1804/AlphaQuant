@@ -157,8 +157,7 @@ def main():
             st.error("Ticker list unavailable.")
             return
 
-        default_idx = tickers.index("RELIANCE") if "RELIANCE" in tickers else 0
-        selected_ticker = st.selectbox("Select Ticker", tickers, index=default_idx)
+        selected_ticker = st.selectbox("Select Ticker", tickers, index=0)
         
         st.divider()
         

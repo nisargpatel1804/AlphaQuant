@@ -8,6 +8,8 @@ import io
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from scans.fundamentals.utils import get_nifty_tickers
+
 # --- Page Config ---
 st.set_page_config(page_title="Pro Portfolio Backtester", layout="wide", page_icon="📈")
 
@@ -73,12 +75,12 @@ def get_nifty500_tickers():
             return sorted(tickers)
         return []
     except Exception:
-        # Robust Fallback list if NSE is blocking
-        return [
-            "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS", "INFY.NS", 
-            "ITC.NS", "SBIN.NS", "BHARTIARTL.NS", "LICI.NS", "HINDUNILVR.NS",
-            "BAJFINANCE.NS", "LT.NS", "HCLTECH.NS", "M&M.NS", "ADANIENT.NS"
-        ]
+        # Fallback to cached/local Nifty 500 list if NSE is blocking
+        try:
+            tickers = get_nifty_tickers()
+            return sorted([f"{sym}.NS" for sym in tickers]) if tickers else []
+        except Exception:
+            return []
 
 def get_start_date(timeframe_code):
     today = datetime.date.today()

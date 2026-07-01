@@ -1,0 +1,40 @@
+{
+    "ticker": "RELIANCE",
+    "timestamp": "2025-12-30 13:30:15",
+    "last_close": 1539.800048828125,
+    "last_volume": 8815329.0,
+    "industry": null,
+    "categories": {
+        "Daily Volume & Delivery": {
+            "signal": "Sell",
+            "scans": [
+                {
+                    "label": "Higher Trade Quantity",
+                    "category": "Daily Volume & Delivery",
+                    "status": "Higher than Prev",
+                    "value": 8815329.0,
+                    "action": "Sell",
+                    "condition_met": true
+                }
+            ]
+        },
+        "Weekly Volume & Delivery": {
+            "signal": "Neutral",
+            "scans": []
+        },
+        "Monthly Volume & Delivery": {
+            "signal": "Neutral",
+            "scans": []
+        }
+    },
+    "scan_summary": {
+        "triggered_total": 1,
+        "signals": {
+            "Strong Buy": 0,
+            "Buy": 0,
+            "Neutral": 2,
+            "Sell": 1,
+            "Strong Sell": 0
+        }
+    }
+}

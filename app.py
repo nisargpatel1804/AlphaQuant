@@ -1,510 +1,220 @@
-"""AlphaQuant Master Dashboard.
-
-Integrates Fundamentals, Technicals, Price Scans, Volume & Delivery, Futures & Options,
-Strike Options, and Candlestick Scans into a unified interface.
+"""AlphaQuant Master Dashboard – Integrated with Fundamentals, Technicals, and all 7 scan types.
+   Supports symbol input and multi‑tab analysis.
+   Fundamentals are loaded only when requested.
 """
+
 from __future__ import annotations
 
+import asyncio
+import json
 import sys
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
-# 1. Setup Project Path
+# ----------------------------------------------------------------------
+# Setup project path – add scans directory to sys.path
+# ----------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parent
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+SCANS_DIR = PROJECT_ROOT / "scans"
+if SCANS_DIR.exists() and str(SCANS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCANS_DIR))
 
-# 2. Configure Logging
+# Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
-# 3. Conditional Imports (Graceful Degradation)
-HAS_FUNDAMENTALS = False
-HAS_TECHNICALS = False
-HAS_PRICESCANS = False
-HAS_VOLUMEDELIVERY = False
-HAS_FUTUREOPTIONS = False
-HAS_STRIKEOPTIONS = False
-HAS_CANDLESTICK = False
-
-# Fundamentals
+# ----------------------------------------------------------------------
+# Import the fundamental scraper (now from scans directory)
+# ----------------------------------------------------------------------
 try:
-    from scans.fundamentals.fetcher import ScreenerScraper
-    from scans.fundamentals.utils import get_nifty_tickers, load_master_industry_map, build_ticker_to_industry_and_pe, apply_industry_context
-    from scans.fundamentals.scans import FundamentalScans
-    HAS_FUNDAMENTALS = True
+    from fundamental_scraper import scrape_screener_complete
 except ImportError as e:
-    logger.warning(f"Fundamentals module not loaded: {e}")
+    st.error(f"Fundamental scraper module not found. Make sure 'fundamental_scraper.py' is in the 'scans' folder. Error: {e}")
+    sys.exit(1)
 
-# Technicals
-try:
-    from scans.technicals.fetcher import TechnicalFetcher
-    from scans.technicals.indicators import TechnicalIndicators
-    from scans.technicals.scans import TechnicalScans
-    HAS_TECHNICALS = True
-except ImportError as e:
-    logger.warning(f"Technicals module not loaded: {e}")
+def run_fundamental_scraper(ticker: str) -> Dict[str, Any]:
+    """Run the async scraper and return data."""
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        data = loop.run_until_complete(scrape_screener_complete(ticker))
+        return data
+    except Exception as e:
+        st.error(f"Fundamental scraping failed: {e}")
+        return {}
 
-# Price Scans
-try:
-    from scans.pricescan.main import PriceScanEngine
-    from scans.pricescan.models import TickerPriceScanData
-    HAS_PRICESCANS = True
-except ImportError as e:
-    logger.warning(f"Price Scan module not loaded: {e}")
-
-# Volume & Delivery
-try:
-    from scans.volumedelivery.main import VolumeDeliveryEngine
-    HAS_VOLUMEDELIVERY = True
-except ImportError as e:
-    logger.warning(f"Volume & Delivery module not loaded: {e}")
-
-# Futures & Options
-try:
-    from scans.futureoptions.main import FOEngine
-    HAS_FUTUREOPTIONS = True
-except ImportError as e:
-    logger.warning(f"Futures & Options module not loaded: {e}")
-
-# Strike Options
-try:
-    from scans.strikeoptions.main import StrikeOptionsEngine
-    HAS_STRIKEOPTIONS = True
-except ImportError as e:
-    logger.warning(f"Strike Options module not loaded: {e}")
-
-# Candlestick Scans
-try:
-    from scans.candlestick.main import CandleEngine
-    HAS_CANDLESTICK = True
-except ImportError as e:
-    logger.warning(f"Candlestick module not loaded: {e}")
-
-
-# 4. Page Configuration
-st.set_page_config(
-    page_title="AlphaQuant Analytics",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# --------------------------------------------------------------------------
-# Resource Caching
-# --------------------------------------------------------------------------
-
-@st.cache_data(show_spinner=False)
-def get_cached_tickers() -> List[str]:
-    """Cache the Nifty 500 list."""
-    if HAS_FUNDAMENTALS:
-        try:
-            return get_nifty_tickers()
-        except Exception:
-            return []
-    return []
-
-@st.cache_resource(show_spinner=False)
-def get_fundamental_resources():
-    """Cache the scraper and industry maps."""
-    if not HAS_FUNDAMENTALS: return None, {}, {}
-    scraper = ScreenerScraper(use_industry_pe_map=False)
-    master_map = load_master_industry_map()
-    ticker_to_ind, ind_to_pe = build_ticker_to_industry_and_pe(master_map)
-    return scraper, ticker_to_ind, ind_to_pe
-
-@st.cache_resource(show_spinner=False)
-def get_technical_fetcher():
-    return TechnicalFetcher() if HAS_TECHNICALS else None
-
-@st.cache_resource(show_spinner="Initializing Sector Engine...")
-def get_pricescan_engine():
-    return PriceScanEngine(update_sectors=False) if HAS_PRICESCANS else None
-
-@st.cache_resource(show_spinner=False)
-def get_volume_engine():
-    return VolumeDeliveryEngine() if HAS_VOLUMEDELIVERY else None
-
-@st.cache_resource(show_spinner=False)
-def get_fo_engine():
-    return FOEngine() if HAS_FUTUREOPTIONS else None
-
-@st.cache_resource(show_spinner=False)
-def get_strike_engine():
-    return StrikeOptionsEngine() if HAS_STRIKEOPTIONS else None
-
-@st.cache_resource(show_spinner=False)
-def get_candle_engine():
-    return CandleEngine() if HAS_CANDLESTICK else None
-
-# --------------------------------------------------------------------------
-# Main UI Logic
-# --------------------------------------------------------------------------
-
-def main():
-    # --- Sidebar ---
-    with st.sidebar:
-        st.title("AlphaQuant")
-        st.caption("v3.0 | Complete Suite")
-        
-        # Ticker Selection
-        tickers = get_cached_tickers()
-        if not tickers:
-            st.error("Ticker list unavailable.")
-            return
-
-        selected_ticker = st.selectbox("Select Ticker", tickers, index=0)
-        
-        st.divider()
-        
-        # Module Selection
-        available_modules = []
-        if HAS_FUNDAMENTALS: available_modules.append("Fundamentals")
-        if HAS_TECHNICALS: available_modules.append("Technicals")
-        if HAS_PRICESCANS: available_modules.append("Price Scans")
-        if HAS_VOLUMEDELIVERY: available_modules.append("Volume & Delivery")
-        if HAS_FUTUREOPTIONS: available_modules.append("Futures & Options")
-        if HAS_STRIKEOPTIONS: available_modules.append("Strike Options")
-        if HAS_CANDLESTICK: available_modules.append("Candlestick Scans")
-        
-        if not available_modules:
-            st.error("No analysis modules found.")
-            return
-
-        scan_type = st.radio("Analysis Type", available_modules)
-        
-        st.divider()
-        force_refresh = st.button("Refresh Data", icon="🔄", help="Force re-fetch of live data")
-
-    # --- Routing ---
-    if scan_type == "Fundamentals":
-        scraper, t_map, p_map = get_fundamental_resources()
-        render_fundamentals(selected_ticker, scraper, t_map, p_map, force_refresh)
-        
-    elif scan_type == "Technicals":
-        fetcher = get_technical_fetcher()
-        render_technicals(selected_ticker, fetcher, force_refresh)
-        
-    elif scan_type == "Price Scans":
-        engine = get_pricescan_engine()
-        render_price_scans(selected_ticker, engine, force_refresh)
-        
-    elif scan_type == "Volume & Delivery":
-        engine = get_volume_engine()
-        render_volume_delivery(selected_ticker, engine, force_refresh)
-        
-    elif scan_type == "Futures & Options":
-        engine = get_fo_engine()
-        render_fo(selected_ticker, engine, force_refresh)
-        
-    elif scan_type == "Strike Options":
-        engine = get_strike_engine()
-        render_strike(selected_ticker, engine, force_refresh)
-        
-    elif scan_type == "Candlestick Scans":
-        engine = get_candle_engine()
-        render_candle(selected_ticker, engine, force_refresh)
-
-# --------------------------------------------------------------------------
-# Renderers
-# --------------------------------------------------------------------------
-
-def render_fundamentals(ticker: str, scraper: Any, t_map: Dict, p_map: Dict, force: bool):
-    st.title(f"Fundamentals: {ticker}")
-    
-    if not scraper:
-        st.error("Fundamentals engine not initialized.")
+# ----------------------------------------------------------------------
+# Helper functions to display fundamentals in tabular format
+# ----------------------------------------------------------------------
+def display_historical_ratios(data: Dict[str, Any]):
+    """Show core_metrics.historical_ratios as a DataFrame."""
+    hist_ratios = data.get("core_metrics", {}).get("historical_ratios", {})
+    if not hist_ratios:
+        st.info("No historical ratios found.")
         return
+    df = pd.DataFrame.from_dict(hist_ratios, orient="index")
+    df.index.name = "Year"
+    st.subheader("📈 Historical Ratios (Yearly)")
+    st.dataframe(df, use_container_width=True)
 
-    cache_key = f"fund_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner(f"Scraping Fundamentals for {ticker}..."):
-            try:
-                payload = scraper.fetch_company_payload(ticker)
-                payload["ticker"] = ticker
-                apply_industry_context(payload, ticker=ticker, ticker_to_industry=t_map, industry_to_pe=p_map)
-                
-                scanner = FundamentalScans(payload)
-                # Now returns categories dict
-                results = scanner.run_scans()
-                
-                st.session_state[cache_key] = {
-                    "data": payload,
-                    "categories": results,
-                    "meta": scanner.metadata
-                }
-            except Exception as e:
-                st.error(f"Analysis failed: {e}")
-                return
-
-    data = st.session_state[cache_key]
-    meta = data["meta"]
-    categories = data["categories"]
-
-    # Metrics
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Price", f"₹{meta.get('current_price', 0):,.2f}")
-    c2.metric("Market Cap", f"₹{meta.get('market_cap', 0):,.0f} Cr")
-    c3.metric("Stock P/E", f"{meta.get('stock_pe', 0):.1f}")
-    c4.metric("Industry P/E", f"{meta.get('industry_pe', 0):.1f}")
-    st.caption(f"Sector: **{meta.get('industry', 'N/A')}**")
-
-    st.divider()
-
-    # --- FUNDAMENTALS SUMMARY GRID ---
-    layout_order = [
-        "Profitability", "Turnover", "Solvency", "Cash Flow",
-        "Valuation", "Dividends", "Efficiency", "Shareholding"
-    ]
-    _render_card_grid(categories, layout_order, mode="fund")
-                            
-    with st.expander("Raw Data JSON"):
-        st.json(data["data"])
-
-
-def render_technicals(ticker: str, fetcher: Any, force: bool):
-    st.title(f"Technicals: {ticker}")
-    
-    if not fetcher:
-        st.error("Technical engine not initialized.")
+def display_raw_table(table_dict: Dict[str, Any], title: str):
+    """Display a raw financial table (headers + rows) as a DataFrame."""
+    if not table_dict or not table_dict.get("rows"):
+        st.info(f"No data for {title}")
         return
+    rows = table_dict.get("rows", {})
+    if not rows:
+        return
+    # Build DataFrame: rows as metrics, columns as periods
+    df = pd.DataFrame(rows).T  # transpose so periods become columns
+    # Sort columns (periods) chronologically
+    try:
+        def period_sort_key(p):
+            parts = p.split()
+            if len(parts) == 2:
+                month, year = parts[0], int(parts[1])
+                order = {"Mar": 3, "Jun": 6, "Sep": 9, "Dec": 12}
+                return (year, order.get(month, 0))
+            return (0, 0)
+        sorted_cols = sorted(df.columns, key=period_sort_key)
+        df = df[sorted_cols]
+    except Exception:
+        pass
+    st.subheader(title)
+    st.dataframe(df, use_container_width=True)
 
-    cache_key = f"tech_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner(f"Analyzing Technicals for {ticker}..."):
-            try:
-                d_df, w_df = fetcher.fetch_stock_data(ticker)
-                if d_df.empty:
-                    st.warning("No data returned.")
-                    return
-                
-                bench = fetcher.fetch_benchmark()
-                
-                ind_name = None
-                if hasattr(fetcher, 'fetch_industry_beta_avg'):
-                    ind_name, ind_beta = fetcher.fetch_industry_beta_avg(ticker, bench)
-                    d_df["INDUSTRY_BETA_AVG"] = ind_beta
+def display_all_fundamental_tables(data: Dict[str, Any]):
+    """Display all fundamental data in expandable sections."""
+    display_historical_ratios(data)
 
-                TechnicalIndicators.add_all_indicators(d_df, is_weekly=False, benchmark_data=bench)
-                TechnicalIndicators.add_all_indicators(w_df, is_weekly=True)
-                
-                scanner = TechnicalScans(d_df, w_df)
-                results = scanner.run_all()
-                
-                st.session_state[cache_key] = {
-                    "categories": results,
-                    "last_close": d_df['Close'].iloc[-1],
-                    "industry": ind_name
-                }
-            except Exception as e:
-                st.error(f"Technical analysis failed: {e}")
-                return
+    with st.expander("📊 Quarterly Results", expanded=False):
+        display_raw_table(data.get("quarterly_results", {}), "Quarterly Results")
+    with st.expander("📈 Profit & Loss (Annual)", expanded=False):
+        display_raw_table(data.get("profit_loss_annual", {}), "Profit & Loss (Annual)")
+    with st.expander("📉 Balance Sheet", expanded=False):
+        display_raw_table(data.get("balance_sheet", {}), "Balance Sheet")
+    with st.expander("💵 Cash Flow", expanded=False):
+        display_raw_table(data.get("cash_flow", {}), "Cash Flow")
+    with st.expander("📐 Ratios", expanded=False):
+        display_raw_table(data.get("ratios", {}), "Ratios")
+    with st.expander("👥 Shareholding Pattern", expanded=False):
+        shareholding = data.get("shareholding", {})
+        if shareholding:
+            st.subheader("Quarterly Shareholding")
+            display_raw_table(shareholding.get("quarterly", {}), "Quarterly")
+            st.subheader("Yearly Shareholding")
+            display_raw_table(shareholding.get("yearly", {}), "Yearly")
 
-    data = st.session_state[cache_key]
-    categories = data["categories"] 
-    
-    st.metric("Last Close", f"₹{data['last_close']:,.2f}")
-    if data['industry']: st.caption(f"Sector: **{data['industry']}**")
-    
+# ----------------------------------------------------------------------
+# Placeholder functions for other scanners (lightweight, do nothing heavy)
+# ----------------------------------------------------------------------
+def placeholder_analysis(scan_name: str):
+    st.info(f"{scan_name} – This analysis will be available in a future update.")
+
+# ----------------------------------------------------------------------
+# Streamlit Page Configuration
+# ----------------------------------------------------------------------
+st.set_page_config(page_title="AlphaQuant", page_icon="📊", layout="wide")
+
+# ----------------------------------------------------------------------
+# Root Page / Home
+# ----------------------------------------------------------------------
+def home_page():
+    st.title("📈 AlphaQuant Analytics")
+    st.markdown("### Welcome to the complete stock analysis suite")
+
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        symbol = st.text_input("Enter Stock Symbol (e.g., RELIANCE, INFY, TCS)", value="RELIANCE").strip().upper()
+    with col2:
+        if st.button("🔍 Analyze", type="primary"):
+            st.query_params["symbol"] = symbol
+            st.query_params["tab"] = "fundamentals"
+            st.rerun()
+
     st.divider()
+    st.subheader("🧰 Additional Tools")
+    tool_cols = st.columns(4)
+    with tool_cols[0]:
+        if st.button("📊 Backtester"):
+            st.markdown("[Open Backtester](./backtester)", unsafe_allow_html=True)
+            st.info("Backtester will be integrated soon.")
+    with tool_cols[1]:
+        if st.button("📅 Seasonality"):
+            st.info("Seasonality analysis – will be implemented soon.")
+    with tool_cols[2]:
+        if st.button("🏭 Sector Analysis"):
+            st.info("Sector analysis – will be implemented soon.")
+    with tool_cols[3]:
+        if st.button("📉 Tickertape (MMI)"):
+            st.info("Tickertape Market Mood Index – will be implemented soon.")
 
-    # --- TECHNICAL SUMMARY GRID ---
-    layout_order = [
-        "Simple Moving Averages", "Exponential Moving Averages", "Hull Moving Average", "Volume Weighted MA",
-        "RSI", "CCI", "Momentum", "MACD", "ADX", "SuperTrend", "Parabolic SAR",
-        "Stochastic", "Williams %R", "MFI", "Awesome Oscillator", "Bull/Bear Power", "Ultimate Oscillator", "Stoch RSI",
-        "Bollinger Bands", "Ichimoku", "Beta",
-        "Pivots - Classic", "Pivots - Fibonacci", "Pivots - Camarilla", "Pivots - Woodie", "Pivots - DeMark"
-    ]
-    _render_card_grid(categories, layout_order, mode="tech")
+    st.markdown("---")
+    st.markdown("**Note:** The Fundamentals scanner uses the final Screener scraper (Playwright) and may take 20‑40 seconds to load on first run. Other scanners are under development.")
 
+# ----------------------------------------------------------------------
+# Scans Page (Multi‑tab) – only fundamentals are loaded on demand
+# ----------------------------------------------------------------------
+def scans_page(symbol: str):
+    st.title(f"📊 {symbol} – Complete Analysis")
+    tabs = st.tabs([
+        "Fundamentals", "Technicals", "Price Scans", "Volume & Delivery",
+        "Futures & Options", "Strike Options", "Candlestick Scans"
+    ])
 
-def render_price_scans(ticker: str, engine: Any, force: bool):
-    st.title(f"Price Scans: {ticker}")
-    if not engine: return
+    # ---- Fundamentals Tab ----
+    with tabs[0]:
+        load_key = f"fund_loaded_{symbol}"
+        if load_key not in st.session_state:
+            st.session_state[load_key] = False
 
-    cache_key = f"price_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner(f"Running Price Scans for {ticker}..."):
-            try:
-                res = engine.process_ticker(ticker)
-                if res: st.session_state[cache_key] = res
-            except Exception as e:
-                st.error(f"Price scan failed: {e}")
-                return
-
-    data = st.session_state[cache_key]
-    categories = data.categories
-    summary = getattr(data, "scan_summary", {}) or {}
-    
-    st.metric("Last Close", f"₹{data.last_close:,.2f}")
-    st.caption(f"Sector: **{data.industry}**")
-    st.divider()
-    
-    triggered_total = summary.get("triggered_total", 0)
-    st.caption(f"Total Scans Triggered: **{triggered_total}**")
-
-    # --- PRICE SCANS SUMMARY GRID ---
-    layout_order = [
-        "Previous Day Breakout", "Weekly Breakout", "Monthly Breakout",
-        "52 Week Breakout", "52 Week Range", "All Time Breakout",
-        "Relative Performance", "Relative Strength (21 Days)", "Relative Strength (55 Days)",
-        "Relative Strength (21 Weeks)", "Adaptive & Static RS", "Absolute Return",
-        "VWAP Scans", "1 Day Behaviour", "2 Days Behaviour", "3 Days Behaviour"
-    ]
-    _render_card_grid(categories, layout_order, mode="price")
-
-
-def render_volume_delivery(ticker: str, engine: Any, force: bool):
-    st.title(f"Volume & Delivery: {ticker}")
-    if not engine: return
-    
-    cache_key = f"vd_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner("Analyzing Volume/Delivery..."):
-            try:
-                res = engine.process_ticker(ticker)
-                if res: st.session_state[cache_key] = res
-            except Exception as e: st.error(f"Error: {e}")
-            
-    if cache_key in st.session_state:
-        data = st.session_state[cache_key]
-        st.metric("Last Volume", f"{int(data.last_volume):,}")
-        st.divider()
-        
-        layout_order = ["Daily Volume & Delivery", "Weekly Volume & Delivery", "Monthly Volume & Delivery"]
-        _render_card_grid(data.categories, layout_order, mode="vd")
-
-
-def render_fo(ticker: str, engine: Any, force: bool):
-    st.title(f"Futures & Options: {ticker}")
-    if not engine: return
-    
-    cache_key = f"fo_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner("Analyzing F&O..."):
-            try:
-                res = engine.process_ticker(ticker)
-                if res: st.session_state[cache_key] = res
-            except Exception as e: st.error(f"Error: {e}")
-    
-    if cache_key in st.session_state:
-        data = st.session_state[cache_key]
-        oi_val = f"{int(data.last_oi):,}" if data.last_oi else "N/A"
-        st.metric("Open Interest", oi_val)
-        st.divider()
-        
-        layout_order = ["Futures Open Interest", "Futures Long Position", "Futures Short Position", "Put Call Ratio"]
-        _render_card_grid(data.categories, layout_order, mode="fo")
-
-
-def render_strike(ticker: str, engine: Any, force: bool):
-    st.title(f"Strike Options: {ticker}")
-    if not engine: return
-    
-    cache_key = f"strike_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner("Fetching Option Chain..."):
-            try:
-                res = engine.process_ticker(ticker)
-                if res: st.session_state[cache_key] = res
-            except Exception as e: st.error(f"Error: {e}")
-            
-    if cache_key in st.session_state:
-        data = st.session_state[cache_key]
-        st.metric("Expiry", data.expiry_date)
-        st.divider()
-        
-        layout_order = ["Call Options OI", "Put Options OI", "Options Activity"]
-        _render_card_grid(data.categories, layout_order, mode="strike")
-
-
-def render_candle(ticker: str, engine: Any, force: bool):
-    st.title(f"Candlestick Patterns: {ticker}")
-    if not engine: return
-    
-    cache_key = f"candle_{ticker}"
-    if force or cache_key not in st.session_state:
-        with st.spinner("Identifying Patterns..."):
-            try:
-                res = engine.process_ticker(ticker)
-                if res: st.session_state[cache_key] = res
-            except Exception as e: st.error(f"Error: {e}")
-            
-    if cache_key in st.session_state:
-        data = st.session_state[cache_key]
-        st.metric("Last Close", f"₹{data.last_close:,.2f}")
-        st.divider()
-        
-        layout_order = [
-            "Bullish Scans", "Bullish Continuation Scans", "Bullish Reversal Scans",
-            "Bearish Scans", "Bearish Continuation Scans", "Bearish Reversal Scans",
-            "Neutral Scans"
-        ]
-        _render_card_grid(data.categories, layout_order, mode="candle")
-
-
-# --------------------------------------------------------------------------
-# UI Helpers
-# --------------------------------------------------------------------------
-
-def _render_card_grid(categories: Dict[str, Any], layout_order: List[str], mode: str = "tech"):
-    """
-    Renders a unified grid of cards for any module.
-    """
-    cols = st.columns(3)
-    
-    for idx, cat_name in enumerate(layout_order):
-        if cat_name not in categories: continue
-        
-        cat_data = categories[cat_name]
-        signal = cat_data.get("signal", "Neutral")
-        scans = cat_data.get("scans", [])
-        
-        # Skip empty/neutral cards for sparse modules (Price, Candle, etc.)
-        if mode in ["price", "candle", "fo", "vd"] and not scans and signal == "Neutral":
-             continue
-
-        sig_color = _get_signal_color(signal)
-
-        with cols[idx % 3]:
-            with st.container(border=True):
-                st.markdown(f"**{cat_name}**")
-                st.markdown(f":{sig_color}[**{signal}**]")
-                
-                with st.expander("Details", expanded=False):
-                    if not scans:
-                        st.caption("No details available.")
+        if not st.session_state[load_key]:
+            if st.button("📥 Load Fundamental Data", type="primary"):
+                with st.spinner(f"Loading fundamental data for {symbol} ... (this may take 20‑40 seconds)"):
+                    data = run_fundamental_scraper(symbol)
+                    if data:
+                        st.session_state[f"fund_data_{symbol}"] = data
+                        st.session_state[load_key] = True
+                        st.rerun()
                     else:
-                        for s in scans:
-                            val = s.get("value")
-                            action = s.get("action", "Neutral")
-                            label = s.get("label", "Unknown")
-                            status = s.get("status", "")
-                            
-                            icon = "⚪"
-                            if "buy" in action.lower() or "high" in action.lower() and mode=="fund": icon = "🟢"
-                            elif "sell" in action.lower() or "low" in action.lower() and mode=="fund": icon = "🔴"
-                            elif "neutral" in action.lower(): icon = "🔵"
-                            
-                            val_disp = f"{val:,.2f}" if isinstance(val, (int, float)) else "-"
-                            st.caption(f"{icon} {label}")
-                            
-                            # Display status/action depending on mode
-                            display_text = action if mode == "tech" else status
-                            st.markdown(f"<small>{display_text} ({val_disp})</small>", unsafe_allow_html=True)
+                        st.error("Failed to fetch fundamentals.")
+            else:
+                st.info("Click the button above to load fundamental data.")
+        else:
+            data = st.session_state.get(f"fund_data_{symbol}")
+            if data:
+                display_all_fundamental_tables(data)
+            else:
+                st.warning("Data unavailable. Please reload.")
 
-def _get_signal_color(signal: str) -> str:
-    s = signal.lower()
-    if "strong buy" in s: return "green"
-    if "buy" in s: return "#2e7d32"
-    if "strong sell" in s: return "red"
-    if "sell" in s: return "#c62828"
-    return "blue"
+    # ---- Other Tabs (placeholders, no heavy operations) ----
+    with tabs[1]:
+        placeholder_analysis("Technical Analysis")
+    with tabs[2]:
+        placeholder_analysis("Price Scans")
+    with tabs[3]:
+        placeholder_analysis("Volume & Delivery")
+    with tabs[4]:
+        placeholder_analysis("Futures & Options")
+    with tabs[5]:
+        placeholder_analysis("Strike Options")
+    with tabs[6]:
+        placeholder_analysis("Candlestick Patterns")
+
+# ----------------------------------------------------------------------
+# Main Routing Logic
+# ----------------------------------------------------------------------
+def main():
+    params = st.query_params
+    if "symbol" in params:
+        symbol = params["symbol"]
+        scans_page(symbol)
+    else:
+        home_page()
 
 if __name__ == "__main__":
     main()

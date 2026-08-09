@@ -1,8 +1,9 @@
 # Environment variables
 .env
 
-RESULTS
-
+backend/data
+backend/output
+repomix-output.xml
 # Virtual environment
 venv/
 .venv/

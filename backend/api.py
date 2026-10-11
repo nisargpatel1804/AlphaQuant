@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from backend.models import BacktestRequest, BacktestResponse, ScanResponse
 from backend.utils import normalize_ticker, to_serializable
@@ -48,8 +49,10 @@ from backend.scans.volumedelivery_scanner import (
     process_stock as run_volumedelivery,
 )
 
-# Backtester
+# Backtester & Metrics
 from backend.backtester_core import build_backtest_summary
+from backend.metrics_engine import MetricsEngine
+from backend.screener_engine import run_screener_query, get_available_metrics
 
 # Service modules (placed directly under backend/)
 from backend.seasonality import get_seasonality_report
@@ -59,6 +62,13 @@ from backend.peers import get_peers_report
 from backend.industry import get_industry_master_list, get_industry_pe_map, get_industry_tickers
 
 logger = logging.getLogger(__name__)
+
+
+# ----------------------------------------------------------------------
+# Local Request Models
+# ----------------------------------------------------------------------
+class ScreenerRequest(BaseModel):
+    query: str
 
 
 # ----------------------------------------------------------------------
@@ -155,7 +165,7 @@ async def _cached_or_compute(scan_name: str, ticker: str) -> Dict[str, Any]:
     else:
         logger.warning(f"Scanner '{scan_name}' returned no data for {ticker}. Storing empty dict.")
         data = {}
-        upsert_scan_result(ticker, scan_name, data)  # store empty dict to avoid repeated computation
+        upsert_scan_result(ticker, scan_name, data)
     return data
 
 
@@ -340,6 +350,48 @@ def read_industry_tickers(url: str = Query(..., description="Screener industry p
         return get_industry_tickers(url)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+# 16. Calculated Metrics (Unified Flat Ratios)
+@app.get("/api/v1/metrics/{ticker}")
+async def get_metrics(ticker: str):
+    """
+    Returns 150+ pre-calculated, flattened Screener metrics and technical indicators 
+    for the specified ticker. Retrieves data instantly from the local/DB caches.
+    """
+    try:
+        engine = MetricsEngine()
+        data = engine.build_flat_metrics(ticker)
+        return {
+            "ticker": ticker.upper(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "data": data
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+# 17. Custom Screener Engine
+@app.post("/api/v1/screener/run")
+async def execute_screener(request: ScreenerRequest):
+    """Evaluates custom screener queries across the universe instantly."""
+    results, error, count = run_screener_query(request.query)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "query": request.query,
+        "match_count": count,
+        "data": results
+    }
+
+
+@app.get("/api/v1/screener/metrics")
+async def get_screener_metrics():
+    """Returns all available strict metric names for frontend autocomplete."""
+    metrics = get_available_metrics()
+    return {"metrics": metrics, "count": len(metrics)}
 
 
 # ----------------------------------------------------------------------

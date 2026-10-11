@@ -358,10 +358,14 @@ def get_seasonality_report(symbol: str) -> Dict[str, Any]:
         stock_id = extract_stock_id_from_moneycontrol_url(entry["moneycontrol_link"]) or normalized
         url = build_seasonality_url_for_id(stock_id, exchange="N")
         result = scrape_single(url, kind="stock", id_or_symbol=stock_id, session=requests.Session())
-        return result.to_json()
+        
+        # Return only the cleaned data payload, stripped of wrapper metadata
+        api_data = result.api_data if result.api_data else {}
+        return strip_colour_and_disclaimer(api_data)
     # Fallback: index page if symbol not found
     index_result = scrape_single("https://www.moneycontrol.com/markets/seasonality-analysis", kind="index", id_or_symbol=None, session=requests.Session())
-    return index_result.to_json()
+    api_data = index_result.api_data if index_result.api_data else {}
+    return strip_colour_and_disclaimer(api_data)
 
 
 # ----------------------------------------------------------------------

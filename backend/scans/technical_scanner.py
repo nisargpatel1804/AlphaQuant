@@ -3,7 +3,7 @@
 """
 Technical Scanner (AlphaQuant)
 Consolidated single-file module for fetching OHLCV data, calculating indicators, 
-and executing all technical scans using yfinance and pandas_ta.
+and executing all technical scans using yfinance, pandas, and numpy.
 """
 from __future__ import annotations
 
@@ -24,13 +24,6 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-try:
-    import pandas_ta as ta  # type: ignore
-    _HAS_PANDAS_TA = True
-except Exception:
-    ta = None
-    _HAS_PANDAS_TA = False
-
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%H:%M:%S")
 
@@ -47,7 +40,7 @@ NIFTY_500_URL = "https://www.niftyindices.com/IndexConstituent/ind_nifty500list.
 BENCHMARK_TICKER = "^NSEI"
 BETA_LOOKBACK_YEARS = 1
 
-# thresholds and parameters
+# Thresholds and parameters
 NEARING_THRESHOLD_PCT = 1.5 
 MA_PERIODS = [5, 10, 20, 30, 50, 100, 200]
 WEEKLY_MA_PERIODS = [5, 10, 20, 50]
@@ -58,30 +51,24 @@ RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, RSI_BULLISH_ZONE = 14, 70, 30, 50
 CCI_PERIOD, CCI_OVERBOUGHT, CCI_OVERSOLD, CCI_ZERO = 20, 100, -100, 0
 STOCH_K_PERIOD, STOCH_D_PERIOD, STOCH_SMOOTH_K, STOCH_OVERBOUGHT, STOCH_OVERSOLD = 14, 3, 3, 80, 20
 STOCHRSI_PERIOD, STOCHRSI_RSI_LENGTH, STOCHRSI_STOCH_LENGTH = 14, 14, 14
-STOCHRSI_K, STOCHRSI_D, STOCHRSI_K_PERIOD, STOCHRSI_D_PERIOD = 3, 3, 3, 3
 WILLR_PERIOD, WILLR_OVERBOUGHT, WILLR_OVERSOLD, WILLR_MIDPOINT = 14, -20, -80, -50
 MFI_PERIOD, MFI_OVERBOUGHT, MFI_OVERSOLD, MFI_MIDPOINT = 14, 80, 20, 50
 ROC_PERIOD, ROC_BULLISH_THRESHOLD = 14, 0
 AO_FAST, AO_SLOW = 5, 34
-ULTOSC_MIN, ULTOSC_MID, ULTOSC_MAX, UO_SHORT, UO_MEDIUM, UO_LONG = 7, 14, 28, 7, 14, 28
-BBP_EMA_PERIOD, BULL_BEAR_EMA = 13, 13
+ULTOSC_MIN, ULTOSC_MID, ULTOSC_MAX = 7, 14, 28
+BBP_EMA_PERIOD = 13
 MOMENTUM_PERIOD = 10
 
 MACD_FAST, MACD_SLOW, MACD_SIGNAL = 12, 26, 9
-ADX_PERIOD, ADX_SMOOTHING = 14, 14
+ADX_PERIOD = 14
 ADX_WEAK_TREND, ADX_STRONG_TREND, ADX_VERY_STRONG_TREND, ADX_NO_TREND = 20, 25, 40, 10
 SUPERTREND_LENGTH, SUPERTREND_MULTIPLIER = 7, 3
 PSAR_AF_START, PSAR_AF_INC, PSAR_AF_MAX = 0.02, 0.02, 0.2
-ICHIMOKU_TENKAN_PERIOD, ICHIMOKU_KIJUN_PERIOD, ICHIMOKU_SENKOU_B_PERIOD, ICHIMOKU_DISPLACEMENT = 9, 26, 52, 26
 
 BB_LENGTH, BB_STD_DEV = 20, 2
-BB_SQUEEZE_PERCENTILE, BB_EXPANSION_PERCENTILE = 20, 80
-ATR_PERIOD, ATR_TREND_LOOKBACK = 14, 3
-NR4_LOOKBACK, NR7_LOOKBACK = 4, 7
+ATR_PERIOD = 14
 
 MOMENTUM_BULLISH_THRESHOLD, MOMENTUM_BEARISH_THRESHOLD = 5.0, -5.0
-MOMENTUM_NEUTRAL_LOW, MOMENTUM_NEUTRAL_HIGH = -2.0, 2.0
-BETA_HIGH_THRESHOLD, BETA_LOW_THRESHOLD, BETA_NEUTRAL = 1.5, 0.5, 1.0
 PIVOT_CPR_FACTOR = 1.1
 
 # ==============================================================================
@@ -133,7 +120,6 @@ class TechnicalFetcher:
         self._benchmark_cache: Optional[pd.Series] = None
         self._industry_map_cache: Optional[List[dict]] = None
         self._ticker_to_industry_cache: Optional[Dict[str, str]] = None
-        self._industry_beta_cache: Dict[str, float] = {}
 
     def get_industry_for_ticker(self, ticker: str) -> Optional[str]:
         if self._ticker_to_industry_cache is None:
@@ -188,7 +174,7 @@ class TechnicalFetcher:
             return pd.DataFrame(), pd.DataFrame()
 
 # ==============================================================================
-# 4. INDICATORS (Math Engine)
+# 4. INDICATORS (Math Engine - Complete Implementations)
 # ==============================================================================
 class TechnicalIndicators:
     @staticmethod
@@ -225,7 +211,8 @@ class TechnicalIndicators:
     def add_volume_weighted_indicators(df: pd.DataFrame) -> None:
         if 'Close' in df.columns and 'Volume' in df.columns:
             pv = df['Close'] * df['Volume']
-            df[f'VWMA_{VWMA_PERIOD}'] = pv.rolling(VWMA_PERIOD).sum() / df['Volume'].rolling(VWMA_PERIOD).sum()
+            v_sum = df['Volume'].rolling(VWMA_PERIOD).sum().replace(0, np.nan)
+            df[f'VWMA_{VWMA_PERIOD}'] = pv.rolling(VWMA_PERIOD).sum() / v_sum
         if 'Close' in df.columns:
             df[f'HMA_{HMA_PERIOD}'] = TechnicalIndicators._hma(df['Close'], HMA_PERIOD)
 
@@ -238,33 +225,196 @@ class TechnicalIndicators:
 
     @staticmethod
     def add_oscillators(df: pd.DataFrame) -> None:
-        # RSI
-        delta = df['Close'].diff()
+        c, h, l, v = df['Close'], df['High'], df['Low'], df['Volume']
+
+        # 1. RSI
+        delta = c.diff()
         gain = delta.where(delta > 0, 0).ewm(alpha=1/RSI_PERIOD, adjust=False).mean()
         loss = (-delta.where(delta < 0, 0)).ewm(alpha=1/RSI_PERIOD, adjust=False).mean()
-        df['RSI'] = 100 - (100 / (1 + (gain / loss)))
+        df['RSI'] = 100 - (100 / (1 + (gain / loss.replace(0, np.nan))))
 
-        # Momentum & ROC
-        df['ROC'] = df['Close'].pct_change(periods=ROC_PERIOD) * 100
-        df[f'MOMENTUM_{MOMENTUM_PERIOD}'] = df['Close'] - df['Close'].shift(MOMENTUM_PERIOD)
+        # 2. Momentum & ROC
+        df['ROC'] = c.pct_change(periods=ROC_PERIOD) * 100
+        df[f'MOMENTUM_{MOMENTUM_PERIOD}'] = c - c.shift(MOMENTUM_PERIOD)
 
-        # Awesome Oscillator
-        median = (df['High'] + df['Low']) / 2
+        # 3. Awesome Oscillator (AO)
+        median = (h + l) / 2
         df['AO'] = median.rolling(AO_FAST).mean() - median.rolling(AO_SLOW).mean()
+
+        # 4. CCI (Commodity Channel Index)
+        tp = (h + l + c) / 3
+        tp_sma = tp.rolling(CCI_PERIOD).mean()
+        mad = tp.rolling(CCI_PERIOD).apply(lambda x: np.mean(np.abs(x - np.mean(x))), raw=True)
+        df['CCI'] = (tp - tp_sma) / (0.015 * mad.replace(0, np.nan))
+
+        # 5. MFI (Money Flow Index)
+        raw_mf = tp * v
+        pos_mf = raw_mf.where(tp > tp.shift(1), 0).rolling(MFI_PERIOD).sum()
+        neg_mf = raw_mf.where(tp < tp.shift(1), 0).rolling(MFI_PERIOD).sum()
+        mfr = pos_mf / neg_mf.replace(0, np.nan)
+        df['MFI'] = 100 - (100 / (1 + mfr))
+
+        # 6. Stochastic Oscillator (%K & %D)
+        lowest_low = l.rolling(STOCH_K_PERIOD).min()
+        highest_high = h.rolling(STOCH_K_PERIOD).max()
+        fast_k = 100 * (c - lowest_low) / (highest_high - lowest_low).replace(0, np.nan)
+        df['STOCH_K'] = fast_k.rolling(STOCH_SMOOTH_K).mean()
+        df['STOCH_D'] = df['STOCH_K'].rolling(STOCH_D_PERIOD).mean()
+
+        # 7. Stochastic RSI
+        rsi = df['RSI']
+        lowest_rsi = rsi.rolling(STOCHRSI_PERIOD).min()
+        highest_rsi = rsi.rolling(STOCHRSI_PERIOD).max()
+        stoch_rsi = (rsi - lowest_rsi) / (highest_rsi - lowest_rsi).replace(0, np.nan)
+        df['STOCHRSI_K'] = (stoch_rsi * 100).rolling(3).mean()
+        df['STOCHRSI_D'] = df['STOCHRSI_K'].rolling(3).mean()
+
+        # 8. Williams %R
+        hh_willr = h.rolling(WILLR_PERIOD).max()
+        ll_willr = l.rolling(WILLR_PERIOD).min()
+        df['WILLR'] = -100 * (hh_willr - c) / (hh_willr - ll_willr).replace(0, np.nan)
+
+        # 9. Ultimate Oscillator
+        prev_close = c.shift(1)
+        bp = c - np.minimum(l, prev_close)
+        tr = np.maximum(h, prev_close) - np.minimum(l, prev_close)
+        avg7 = bp.rolling(ULTOSC_MIN).sum() / tr.rolling(ULTOSC_MIN).sum().replace(0, np.nan)
+        avg14 = bp.rolling(ULTOSC_MID).sum() / tr.rolling(ULTOSC_MID).sum().replace(0, np.nan)
+        avg28 = bp.rolling(ULTOSC_MAX).sum() / tr.rolling(ULTOSC_MAX).sum().replace(0, np.nan)
+        df['UO'] = 100 * (4 * avg7 + 2 * avg14 + avg28) / 7
+
+        # 10. Bull / Bear Power
+        ema13 = c.ewm(span=BBP_EMA_PERIOD, adjust=False).mean()
+        bull_power = h - ema13
+        bear_power = l - ema13
+        df['BULL_BEAR_POWER'] = bull_power + bear_power
 
     @staticmethod
     def add_trend_indicators(df: pd.DataFrame) -> None:
-        fast_ema = df['Close'].ewm(span=MACD_FAST, adjust=False).mean()
-        slow_ema = df['Close'].ewm(span=MACD_SLOW, adjust=False).mean()
+        c, h, l = df['Close'], df['High'], df['Low']
+
+        # 1. MACD
+        fast_ema = c.ewm(span=MACD_FAST, adjust=False).mean()
+        slow_ema = c.ewm(span=MACD_SLOW, adjust=False).mean()
         df['MACD_LINE'] = fast_ema - slow_ema
         df['MACD_SIGNAL'] = df['MACD_LINE'].ewm(span=MACD_SIGNAL, adjust=False).mean()
         df['MACD_HIST'] = df['MACD_LINE'] - df['MACD_SIGNAL']
+
+        # 2. ADX, +DI, -DI
+        up_move = h - h.shift(1)
+        down_move = l.shift(1) - l
+        plus_dm = np.where((up_move > down_move) & (up_move > 0), up_move, 0.0)
+        minus_dm = np.where((down_move > up_move) & (down_move > 0), down_move, 0.0)
+
+        prev_close = c.shift(1)
+        tr = np.maximum(h - l, np.maximum((h - prev_close).abs(), (l - prev_close).abs()))
+
+        alpha = 1.0 / ADX_PERIOD
+        tr_smooth = pd.Series(tr, index=df.index).ewm(alpha=alpha, adjust=False).mean()
+        plus_dm_smooth = pd.Series(plus_dm, index=df.index).ewm(alpha=alpha, adjust=False).mean()
+        minus_dm_smooth = pd.Series(minus_dm, index=df.index).ewm(alpha=alpha, adjust=False).mean()
+
+        df['PLUS_DI'] = 100 * (plus_dm_smooth / tr_smooth.replace(0, np.nan))
+        df['MINUS_DI'] = 100 * (minus_dm_smooth / tr_smooth.replace(0, np.nan))
+        di_sum = df['PLUS_DI'] + df['MINUS_DI']
+        dx = 100 * (df['PLUS_DI'] - df['MINUS_DI']).abs() / di_sum.replace(0, np.nan)
+        df['ADX'] = dx.ewm(alpha=alpha, adjust=False).mean()
+
+        # 3. SuperTrend
+        if 'ATR' not in df.columns:
+            df['ATR'] = tr_smooth
+        
+        hl2 = (h + l) / 2
+        basic_upper = hl2 + (SUPERTREND_MULTIPLIER * df['ATR'])
+        basic_lower = hl2 - (SUPERTREND_MULTIPLIER * df['ATR'])
+
+        final_upper = np.zeros(len(df))
+        final_lower = np.zeros(len(df))
+        st_dir = np.ones(len(df))  # 1 = Bullish, -1 = Bearish
+        supertrend = np.zeros(len(df))
+
+        close_vals = c.values
+        b_upper = basic_upper.values
+        b_lower = basic_lower.values
+
+        for i in range(1, len(df)):
+            # Upper band logic
+            if b_upper[i] < final_upper[i-1] or close_vals[i-1] > final_upper[i-1]:
+                final_upper[i] = b_upper[i]
+            else:
+                final_upper[i] = final_upper[i-1]
+
+            # Lower band logic
+            if b_lower[i] > final_lower[i-1] or close_vals[i-1] < final_lower[i-1]:
+                final_lower[i] = b_lower[i]
+            else:
+                final_lower[i] = final_lower[i-1]
+
+            # Trend direction logic
+            if st_dir[i-1] == 1:
+                if close_vals[i] < final_lower[i]:
+                    st_dir[i] = -1
+                    supertrend[i] = final_upper[i]
+                else:
+                    st_dir[i] = 1
+                    supertrend[i] = final_lower[i]
+            else:
+                if close_vals[i] > final_upper[i]:
+                    st_dir[i] = 1
+                    supertrend[i] = final_lower[i]
+                else:
+                    st_dir[i] = -1
+                    supertrend[i] = final_upper[i]
+
+        df['SUPERTREND'] = supertrend
+        df['SUPERTREND_DIR'] = st_dir
+
+        # 4. Parabolic SAR
+        af = PSAR_AF_START
+        is_long = True
+        sar = np.zeros(len(df))
+        ep = h.iloc[0]
+        sar[0] = l.iloc[0]
+
+        h_vals, l_vals = h.values, l.values
+        for i in range(1, len(df)):
+            prev_sar = sar[i-1]
+            if is_long:
+                curr_sar = prev_sar + af * (ep - prev_sar)
+                curr_sar = min(curr_sar, l_vals[i-1], l_vals[i-2] if i > 1 else l_vals[i-1])
+                if l_vals[i] < curr_sar:
+                    is_long = False
+                    curr_sar = ep
+                    ep = l_vals[i]
+                    af = PSAR_AF_START
+                else:
+                    if h_vals[i] > ep:
+                        ep = h_vals[i]
+                        af = min(af + PSAR_AF_INC, PSAR_AF_MAX)
+            else:
+                curr_sar = prev_sar + af * (ep - prev_sar)
+                curr_sar = max(curr_sar, h_vals[i-1], h_vals[i-2] if i > 1 else h_vals[i-1])
+                if h_vals[i] > curr_sar:
+                    is_long = True
+                    curr_sar = ep
+                    ep = h_vals[i]
+                    af = PSAR_AF_START
+                else:
+                    if l_vals[i] < ep:
+                        ep = l_vals[i]
+                        af = min(af + PSAR_AF_INC, PSAR_AF_MAX)
+            sar[i] = curr_sar
+
+        df['PSAR'] = sar
 
     @staticmethod
     def add_volatility_indicators(df: pd.DataFrame) -> None:
         mid = df['Close'].rolling(window=BB_LENGTH).mean()
         std = df['Close'].rolling(window=BB_LENGTH).std()
-        df['BB_MIDDLE'], df['BB_UPPER'], df['BB_LOWER'] = mid, mid + (BB_STD_DEV * std), mid - (BB_STD_DEV * std)
+        df['BB_MIDDLE'] = mid
+        df['BB_UPPER'] = mid + (BB_STD_DEV * std)
+        df['BB_LOWER'] = mid - (BB_STD_DEV * std)
+        df['BB_WIDTH'] = ((df['BB_UPPER'] - df['BB_LOWER']) / mid.replace(0, np.nan)) * 100
         
         tr = pd.concat([df['High'] - df['Low'], (df['High'] - df['Close'].shift(1)).abs(), (df['Low'] - df['Close'].shift(1)).abs()], axis=1).max(axis=1)
         df['ATR'] = tr.rolling(window=ATR_PERIOD).mean()
@@ -549,8 +699,13 @@ class TechnicalScans:
     def check_vwma_status(self) -> str: return self._check_ma_status(f'VWMA_{VWMA_PERIOD}')
 
     def check_ma_crossover_50_200(self) -> str:
-        if 'SMA_50' not in self.df.columns: return "Pending"
+        if 'SMA_50' not in self.df.columns or 'SMA_200' not in self.df.columns: return "Pending"
         cross = self._crossed(self.df['SMA_50'], self.df['SMA_200'])
+        
+        # Record the distance/spread between SMA 50 and SMA 200
+        spread = self.df['SMA_50'] - self.df['SMA_200']
+        self._record_series(spread)
+        
         if cross == 1: return "Golden Cross (Bullish)"
         if cross == -1: return "Death Cross (Bearish)"
         if self.df['SMA_50'].iloc[-1] > self.df['SMA_200'].iloc[-1]: return "Golden Alignment"
@@ -559,6 +714,11 @@ class TechnicalScans:
     def check_price_cross_sma_20(self) -> str:
         if 'SMA_20' not in self.df.columns: return "Pending"
         cross = self._crossed(self.df['Close'], self.df['SMA_20'])
+        
+        # Record the distance/spread between Price and SMA 20
+        spread = self.df['Close'] - self.df['SMA_20']
+        self._record_series(spread)
+        
         if cross == 1: return "Crossed Above"
         if cross == -1: return "Crossed Below"
         return "No Crossover"
@@ -643,7 +803,8 @@ class TechnicalScans:
         return "Buy" if line > sig else "Sell"
 
     def check_adx_status(self) -> str:
-        if 'ADX' not in self.df.columns: return "Pending"
+        if 'ADX' not in self.df.columns or 'PLUS_DI' not in self.df.columns or 'MINUS_DI' not in self.df.columns:
+            return "Pending"
         self._record_series(self.df['ADX'])
         if self.df['ADX'].iloc[-1] < ADX_STRONG_TREND: return "Neutral"
         return "Buy" if self.df['PLUS_DI'].iloc[-1] > self.df['MINUS_DI'].iloc[-1] else "Sell"
@@ -688,8 +849,13 @@ class TechnicalScans:
         return "Neutral"
 
     def check_ichimoku_tk(self) -> str:
-        if 'TENKAN' not in self.df.columns: return "Pending"
+        if 'TENKAN' not in self.df.columns or 'KIJUN' not in self.df.columns: return "Pending"
         cross = self._crossed(self.df['TENKAN'], self.df['KIJUN'])
+        
+        # Record the spread between Tenkan and Kijun
+        spread = self.df['TENKAN'] - self.df['KIJUN']
+        self._record_series(spread)
+        
         if cross == 1: return "TK Cross (Bullish)"
         if cross == -1: return "TK Cross (Bearish)"
         return "No Cross"

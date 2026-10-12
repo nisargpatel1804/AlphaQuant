@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # Core Database Persistence
-from backend.db import upsert_scan_result
-from backend.utils import normalize_ticker, to_serializable
+from backend.core.db import upsert_scan_result
+from backend.core.utils import normalize_ticker, to_serializable
 
 # Scanners
 from backend.scans.candlestick_scanner import (
@@ -44,7 +44,7 @@ from backend.scans.strikeoptions_scanner import (
     load_master_industry_map as load_strike_map,
     process_stock as run_strikeoptions,
 )
-from backend.scans.technical_scanner import (
+from backend.scans.technical_engine import (
     TechnicalFetcher,
     process_stock as run_technicals,
 )
